@@ -7,7 +7,49 @@ const togglePlayer = () => {
     currentPlayer = 'X';
   }
 };
+const isBoardFull=()=>{
+  for(let i=0; i<boardSize; i++){
+    for(let j=0; j<boardSize;j++)
+    {
+      if(board[i][j]===''){
+        return false;
+      }
+    }
+  }
+  return true;
+}
+const getRandomInt=(max)=>{
+  return Math.floor(Math.random()*max);
+}
+const resetGame=()=>{
+  board=makeBoardArray(boardSize);
+  document.body.innerHTML='';
+  canClick=true;
+  initGame();
+}
+const comPicksGrid=()=>{
+  let i=getRandomInt(boardSize);
+  let j= getRandomInt(boardSize);
 
+  if(board[i][j]=='')
+  {
+    return [i,j];
+  }
+  else
+  {
+    return comPicksGrid();
+  }
+}
+const computerClicks=()=>{
+   let i, j;
+   
+   [i,j]=comPicksGrid();
+   console.log('in com click')
+   setTimeout(()=>
+   {
+      squareClick(i,j)
+   },timeDelay)
+}
 const squareClick = (column, row) => {
   console.log('coordinates', column, row);
 
@@ -23,10 +65,29 @@ const squareClick = (column, row) => {
     {
       outputContainer.innerText=`${currentPlayer}: Wins!`
       canClick=false;
+      setTimeout(()=>{
+        outputContainer.innerText=`Game is reset`;
+        resetGame();
+      }, timeDelay*2);
+    }
+    if(isBoardFull())
+    {
+      setTimeout(()=>{
+        outputContainer.innerText=`No more blanks. Game over!`;
+        resetGame();
+      }, timeDelay*2);
     }
 
     // change the player
     togglePlayer();
+    //if computer turn
+    if(isComPlaying &&computerPlayer===currentPlayer)
+    {
+      computerClicks();
+    }
+    //computer generates random i and j
+    //checks if square occupied
+    //squareclick with computer choice
   }
 };
 //count consequitive checks, no just all in the row

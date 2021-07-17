@@ -6,9 +6,13 @@ let board = [
 ];
 let minBoardSize=3;
 
-let boardSize=0;
+let boardSize=minBoardSize;
 let numSqToWin=boardSize;
 
+let isComPlaying= false;
+let computerPlayer='';
+
+let timeDelay=500;
 // the element that contains the rows and squares
 let boardElement;
 
