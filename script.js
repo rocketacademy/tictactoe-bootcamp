@@ -19,6 +19,9 @@ let boardContainer;
 // current player global starts at X
 let currentPlayer = 'X';
 
+// game state canClick
+let canClick = true;
+
 /**
  * HELPER FUNCTIONS
  */
@@ -85,11 +88,28 @@ const togglePlayer = () => {
   }
 };
 
-const squareClick = (column, row) => {
+// const squareClick = (column, row) => {
+//   console.log('coordinates', column, row);
+
+//   // see if the clicked square has been clicked on before
+//   if (board[column][row] === '') {
+//     // alter the data array, set it to the current player
+//     board[column][row] = currentPlayer;
+
+//     // refresh the creen with a new board
+//     // according to the array that was just changed
+//     buildBoard(board);
+
+//     // change the player
+//     togglePlayer();
+//   }
+// };
+
+const squareClick = function (column, row) {
   console.log('coordinates', column, row);
 
   // see if the clicked square has been clicked on before
-  if (board[column][row] === '') {
+  if (board[column][row] === '' && canClick) {
     // alter the data array, set it to the current player
     board[column][row] = currentPlayer;
 
@@ -97,8 +117,46 @@ const squareClick = (column, row) => {
     // according to the array that was just changed
     buildBoard(board);
 
-    // change the player
-    togglePlayer();
+    if (checkWin(board) === true) {
+      // game over
+      canClick = false;
+      const winnerParagraph = document.createElement("p");
+      winnerParagraph.classList.add("winnerParagraph");
+      winnerParagraph.innerText = `${currentPlayer} is the winner!`;
+      document.body.appendChild(winnerParagraph);
+    } else {
+      // change the player
+      togglePlayer();
+    }
+  }
+};
+
+const checkLine = (item, index, line) => {
+  return item === line[0];
+}
+
+const checkWin = (board) => {
+  // check every position
+  // there is a conditional for all 15 win conditions
+
+  // check for horizontal and vertical matches
+  for (let i = 0; i < board.length; i++) {
+    // retrieve all values in a row
+    const ROW = [];
+    const COLUMN = [];
+    for (let j = 0; j < board.length; j++) {
+      ROW.push(board[i][j]);
+      COLUMN.push(board[j][i])
+    }
+
+    // initialize boolean conditions,
+    // disregard rows or columns with empty squares
+    const ROW_MATCHED = (ROW[0] !== "" && ROW.every(checkLine));
+    const COLUMN_MATCHED = (COLUMN[0] !== "" && COLUMN.every(checkLine))
+    
+    if (ROW_MATCHED || COLUMN_MATCHED) {
+      return true;
+    }
   }
 };
 
