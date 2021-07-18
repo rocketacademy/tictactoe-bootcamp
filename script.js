@@ -5,6 +5,8 @@ let board = [
   ['', '', ''],
 ];
 
+let canClick = true;
+
 // the element that contains the rows and squares
 let boardElement;
 
@@ -57,7 +59,9 @@ const buildBoard = (board) => {
       // set the click all over again
       // eslint-disable-next-line
       square.addEventListener('click', () => {
-        squareClick(i, j);
+        if (canClick) {
+          squareClick(i, j);
+        }
       });
     }
 
@@ -78,31 +82,50 @@ const togglePlayer = () => {
 };
 
 const checkWin = () => {
-  // check every position
-  // there is a conditional for all 8 win conditions
-  if ((board[0][0] === board[0][1] && board[0][1] === board[0][2] && !(board[0][0] === ''))) {
-    return true;
+  // check for win conditions in rows
+  let score = 0;
+  for (let i = 0; i < 3; i += 1) {
+    for (let j = 0; j < 3; j += 1) {
+      if (board[i][j] === currentPlayer) { score += 1; }
+      if (score === 3) {
+        return true;
+      }
+    }
+    score = 0;
   }
-  if (board[1][0] === board[1][1] && board[1][1] === board[1][2] && !(board[1][0] === '')) {
-    return true;
+  // check for win conditions in cols
+  for (let i = 0; i < 3; i += 1) {
+    for (let j = 0; j < 3; j += 1) {
+      if (board[j][i] === currentPlayer) { score += 1; }
+      if (score === 3) {
+        return true;
+      }
+    }
+    score = 0;
   }
-  if (board[2][0] === board[2][1] && board[2][1] === board[2][2] && !(board[2][0] === '')) {
-    return true;
+
+  // check for win conditions diagonally left to right 00 -> 11 -> 22
+  for (let i = 0; i < 3; i += 1) {
+    for (let j = 0; j < 3; j += 1) {
+      if (board[i][j] === currentPlayer) { score += 1; }
+      i += 1;
+      if (score === 3) {
+        return true;
+      }
+    }
+    score = 0;
   }
-  if (board[0][0] === board[1][0] && board[1][0] === board[2][0] && !(board[0][0] === '')) {
-    return true;
-  }
-  if (board[0][1] === board[1][1] && board[1][1] === board[2][1] && !(board[0][1] === '')) {
-    return true;
-  }
-  if (board[0][2] === board[1][2] && board[1][2] === board[2][2] && !(board[0][2] === '')) {
-    return true;
-  }
-  if (board[0][0] === board[1][1] && board[1][1] === board[2][2] && !(board[0][0] === '')) {
-    return true;
-  }
-  if (board[0][2] === board[1][1] && board[1][1] === board[2][0] && !(board[0][2] === '')) {
-    return true;
+
+  // check for win conditions diagonally right to left 02 -> 11 -> 20
+  for (let i = 0; i < 3; i += 1) {
+    for (let j = 2; j >= 0; j -= 1) {
+      if (board[i][j] === currentPlayer) { score += 1; }
+      i += 1;
+      if (score === 3) {
+        return true;
+      }
+    }
+    score = 0;
   }
 };
 
@@ -116,10 +139,12 @@ const squareClick = (row, column) => {
     buildBoard(board);
 
     if (checkWin() === true) {
-      gameInfo.innerHTML = `Congrats Player ${currentPlayer}, you won!`; } else {
+      canClick = false;
+      gameInfo.innerHTML = `Congrats Player ${currentPlayer}, you won!`;
+    } else {
     // refresh the screen with a new board
     // according to the array that was just changed
-
+      canClick = true;
       // change the player
       togglePlayer();
     }
@@ -136,9 +161,8 @@ const initGame = () => {
   buildBoard(board);
 };
 
-initGame();
-
 const resetGame = () => {
+  canClick = true;
   gameInfo.innerHTML = `Player ${currentPlayer}\'s turn`;
   const ele = document.getElementById('boardContainer');
   ele.remove();
@@ -149,5 +173,6 @@ const resetGame = () => {
   ];
   initGame();
 };
+initGame();
 
 resetButton.addEventListener('click', resetGame);
