@@ -88,23 +88,6 @@ const togglePlayer = () => {
   }
 };
 
-// const squareClick = (column, row) => {
-//   console.log('coordinates', column, row);
-
-//   // see if the clicked square has been clicked on before
-//   if (board[column][row] === '') {
-//     // alter the data array, set it to the current player
-//     board[column][row] = currentPlayer;
-
-//     // refresh the creen with a new board
-//     // according to the array that was just changed
-//     buildBoard(board);
-
-//     // change the player
-//     togglePlayer();
-//   }
-// };
-
 const squareClick = function (column, row) {
   console.log('coordinates', column, row);
 
@@ -140,7 +123,7 @@ const checkWin = (board) => {
   // there is a conditional for all 15 win conditions
 
   // check for horizontal and vertical matches
-  for (let i = 0; i < board.length; i++) {
+  for (let i = 0; i < board.length; i += 1) {
     // retrieve all values in a row
     const ROW = [];
     const COLUMN = [];
@@ -158,6 +141,33 @@ const checkWin = (board) => {
       return true;
     }
   }
+
+  // bottom-left to top-right match
+  const BOTTOM_LEFT_TO_TOP_RIGHT = [];
+  // i refers to row, j refers to col
+  for (let i = board.length - 1, j = 0; i >= 0; i -= 1, j += 1) {
+    BOTTOM_LEFT_TO_TOP_RIGHT.push(board[i][j]);
+  }
+
+  const BOTTOM_LEFT_TO_TOP_RIGHT_MATCHED = (BOTTOM_LEFT_TO_TOP_RIGHT[0] !== "" && BOTTOM_LEFT_TO_TOP_RIGHT.every(checkLine));
+
+  if (BOTTOM_LEFT_TO_TOP_RIGHT_MATCHED) {
+    return true;
+  }
+
+  // top-left to bottom-right match
+  const TOP_LEFT_TO_BOTTOM_RIGHT = [];
+  // i refers to row, j refers to col
+  for (let i = 0; i < board.length; i += 1) {
+    TOP_LEFT_TO_BOTTOM_RIGHT.push(board[i][i]);
+  }
+
+  const TOP_LEFT_TO_BOTTOM_RIGHT_MATCHED = (TOP_LEFT_TO_BOTTOM_RIGHT[0] !== "" && TOP_LEFT_TO_BOTTOM_RIGHT.every(checkLine));
+  if (TOP_LEFT_TO_BOTTOM_RIGHT_MATCHED) {
+    return true;
+  }
+
+  return false;
 };
 
 initGame();
