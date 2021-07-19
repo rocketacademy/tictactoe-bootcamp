@@ -3,7 +3,7 @@
 /**
  * GLOBAL VARIABLES
  */
-const board = [
+let board = [
   ['', '', ''],
   ['', '', ''],
   ['', '', ''],
@@ -23,8 +23,79 @@ let currentPlayer = 'X';
 let canClick = true;
 
 /**
+ * STRING CONSTANTS
+ */
+
+const WELCOME_MESSAGE = 'Hello, please type in a number (from 3 to 8) for the board size. For instance, typing in 3 will generate a 3x3 Tic Tac Toe board.';
+const INPUT_FIELD_PLACEHOLDER = 'Key in a number from 3 (inclusive) to 8 (inclusive).';
+const BUTTON_TEXT = 'Submit';
+const WARNING_TEXT = 'Please enter a valid number from 3 (inclusive) to 8 (inclusive).'
+
+/**
+ * EVENT LISTENERS
+ */
+
+const handleSubmit = () => {
+  const INPUT_FIELD = document.querySelector('.inputField');
+  if (INPUT_FIELD.value < 3 || INPUT_FIELD.value > 8) {
+    const WARNING_TEXTS = document.querySelectorAll('.color-red');
+    if (WARNING_TEXTS.length === 0) {
+      const WARNING_TEXT_PARAGRAPH = document.createElement('p');
+      WARNING_TEXT_PARAGRAPH.classList.add('color-red');
+      WARNING_TEXT_PARAGRAPH.style.width = '500px';
+      WARNING_TEXT_PARAGRAPH.innerText = WARNING_TEXT;
+      document.body.appendChild(WARNING_TEXT_PARAGRAPH);
+    }
+  } else {
+    board = initBoard(INPUT_FIELD.value, board);
+    // erase existing inputs
+    const INPUTS = document.querySelectorAll('input');
+    for (let i = 0; i < INPUTS.length; i++) {
+      INPUTS[i].remove();
+    }
+    // erase existing paragraphs
+    const PARAGRAPHS = document.querySelectorAll('p');
+    for (let i = 0; i < PARAGRAPHS.length; i++) {
+      PARAGRAPHS[i].remove();
+    }
+    // erase existing buttons
+    const BUTTONS = document.querySelectorAll('button');
+    for (let i = 0; i < BUTTONS.length; i++) {
+      BUTTONS[i].remove();
+    }
+    initGame();
+  }
+}
+
+const checkSubmit = (e) => {
+  if (e.code == "Enter") {
+    handleSubmit();
+  }
+}
+
+/**
  * HELPER FUNCTIONS
  */
+// build board based on user input
+const initBoard = (size, boardObj) => {
+  // empty string item to be pushed for initialising board size
+  const ELEMENT = '';
+
+  // empty board
+  while (boardObj.length > 0) {
+    boardObj.pop();
+  }
+
+  for (let i = 0; i < size; i++) {
+    const ARRAY = [];
+    for (let j = 0; j < size; j++) {
+      ARRAY.push(ELEMENT);
+    }
+    boardObj.push(ARRAY);
+  }
+
+  return boardObj;
+}
 // completely rebuilds the entire board every time there's a click
 const buildBoard = (board) => {
   // start with an empty container
@@ -75,6 +146,29 @@ const initGame = () => {
   // build the board - right now it's empty
   buildBoard(board);
 };
+
+const initSettings = () => {
+  // welcome message
+  const WELCOME_MESSAGE_PARAGRAPH = document.createElement('p');
+  WELCOME_MESSAGE_PARAGRAPH.innerText = WELCOME_MESSAGE;
+  WELCOME_MESSAGE_PARAGRAPH.style.width = '500px';
+  document.body.appendChild(WELCOME_MESSAGE_PARAGRAPH);
+  // input field
+  const INPUT_FIELD = document.createElement('input');
+  INPUT_FIELD.classList.add('inputField');
+  INPUT_FIELD.setAttribute('type', 'number');
+  INPUT_FIELD.style.width = '400px';
+  INPUT_FIELD.placeholder = INPUT_FIELD_PLACEHOLDER;
+  INPUT_FIELD.addEventListener('keypress', checkSubmit);
+  document.body.appendChild(INPUT_FIELD);
+  // submit button
+  const BUTTON = document.createElement('button');
+  BUTTON.innerText = BUTTON_TEXT;
+  INPUT_FIELD.setAttribute('min', 3);
+  INPUT_FIELD.setAttribute('max', 8);
+  BUTTON.addEventListener('click', handleSubmit);
+  document.body.appendChild(BUTTON);
+}
 
 /**
  * GAMEPLAY LOGIC
@@ -170,4 +264,6 @@ const checkWin = (board) => {
   return false;
 };
 
-initGame();
+initSettings();
+
+// initGame();

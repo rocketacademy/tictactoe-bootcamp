@@ -2,6 +2,10 @@ body {
   background-color: pink;
 }
 
+.color-red {
+  color: red;
+}
+
 .square {
   padding: 20px;
   margin: 0;
