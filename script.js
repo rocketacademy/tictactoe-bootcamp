@@ -9,6 +9,9 @@ let board = [
   ['', '', ''],
 ];
 
+// board size
+let boardSize = 3;
+
 // the element that contains the rows and squares
 let boardElement;
 
@@ -47,7 +50,8 @@ const handleSubmit = () => {
       document.body.appendChild(WARNING_TEXT_PARAGRAPH);
     }
   } else {
-    board = initBoard(INPUT_FIELD.value, board);
+    boardSize = INPUT_FIELD.value
+    board = initBoard(boardSize, board);
     // erase existing inputs
     const INPUTS = document.querySelectorAll('input');
     for (let i = 0; i < INPUTS.length; i++) {
@@ -71,6 +75,30 @@ const checkSubmit = (e) => {
   if (e.code == "Enter") {
     handleSubmit();
   }
+}
+
+const resetRound = () => {
+  // clear all HTML elements
+  const DIVS = document.querySelectorAll('div');
+  for (let i = 0; i < DIVS.length; i++) {
+    DIVS[i].remove();
+  }
+  const BUTTONS = document.querySelectorAll('button');
+  for (let i = 0; i < BUTTONS.length; i++) {
+    BUTTONS[i].remove();
+  }
+  const INPUTS = document.querySelectorAll('input');
+  for (let i = 0; i < INPUTS.length; i++) {
+    INPUTS[i].remove();
+  }
+  const PARAGRAPHS = document.querySelectorAll('p');
+  for (let i = 0; i < PARAGRAPHS.length; i++) {
+    PARAGRAPHS[i].remove();
+  }
+  // init board
+  board = initBoard(boardSize, board);
+  // init game
+  initGame();
 }
 
 /**
@@ -151,6 +179,9 @@ const initGame = () => {
 
   // build the board - right now it's empty
   buildBoard(board);
+
+  // enable or re-enable clicking
+  canClick = true;
 };
 
 const initSettings = () => {
@@ -207,10 +238,19 @@ const squareClick = function (column, row) {
     if (checkWin(board) === true) {
       // game over
       canClick = false;
-      const winnerParagraph = document.createElement("p");
-      winnerParagraph.classList.add("winnerParagraph");
-      winnerParagraph.innerText = `${currentPlayer} is the winner!`;
-      document.body.appendChild(winnerParagraph);
+      // remove 'turn' paragraph
+      const TURN_PARAGRAPH = document.querySelector('.turnParagraph');
+      TURN_PARAGRAPH.remove();
+      // add 'winner' paragraph
+      const WINNER_PARAGRAPH = document.createElement('p');
+      WINNER_PARAGRAPH.classList.add("winnerParagraph");
+      WINNER_PARAGRAPH.innerText = `${currentPlayer} is the winner!`;
+      document.body.appendChild(WINNER_PARAGRAPH);
+      // add 'reset' button
+      const RESET_BUTTON = document.createElement('button');
+      RESET_BUTTON.innerText = 'Restart Round';
+      RESET_BUTTON.addEventListener('click', resetRound);
+      document.body.appendChild(RESET_BUTTON);
     } else {
       // change the player
       togglePlayer();
