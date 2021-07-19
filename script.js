@@ -13,6 +13,7 @@ let boardElement;
 // we can empty it out for convenience
 let boardContainer;
 let input;
+let winNum;
 console.log(input);
 // current player global starts at X
 let currentPlayer = 'X';
@@ -147,7 +148,9 @@ const checkWin = () => {
   for (let i = 0; i < input; i += 1) {
     for (let j = 0; j < input; j += 1) {
       if (board[i][j] === currentPlayer) { score += 1; }
-      if (score === input) {
+      else { score = 0; }
+
+      if (score === winNum) {
         return true;
       }
     }
@@ -157,7 +160,9 @@ const checkWin = () => {
   for (let i = 0; i < input; i += 1) {
     for (let j = 0; j < input; j += 1) {
       if (board[j][i] === currentPlayer) { score += 1; }
-      if (score === input) {
+      else { score = 0; }
+
+      if (score === winNum) {
         return true;
       }
     }
@@ -168,8 +173,10 @@ const checkWin = () => {
   for (let i = 0; i < input; i += 1) {
     for (let j = 0; j < input; j += 1) {
       if (board[i][j] === currentPlayer) { score += 1; }
+      else { score = 0; }
+
       i += 1;
-      if (score === input) {
+      if (score === winNum) {
         return true;
       }
     }
@@ -180,8 +187,9 @@ const checkWin = () => {
   for (let i = 0; i < input; i += 1) {
     for (let j = (input - 1); j >= 0; j -= 1) {
       if (board[i][j] === currentPlayer) { score += 1; }
+      else { score = 0; }
       i += 1;
-      if (score === input) {
+      if (score === winNum) {
         return true;
       }
     }
@@ -211,13 +219,24 @@ const squareClick = (row, column) => {
     }
   }
 };
+const winNumCheck = () => {
+  input = Number(inputBoardSize.value);
+  winNum = Number(inputWinNum.value);
+  if (winNum > input) {
+    gameInfo.innerText = 'Your win number is more than board size, pls choose a smaller number!';
+
+    return `${gameInfo.innerText}`;
+  }
+};
 
 // create the board container element and put it on the screen
 const initGame = () => {
   boardContainer = document.createElement('div');
   boardContainer.id = 'boardContainer';
   document.body.appendChild(boardContainer);
-  input = Number(inputBoardSize.value);
+  // input = Number(inputBoardSize.value);
+  // winNum = Number(inputWinNum.value);
+  winNumCheck();
   board = createBoardSize(input);
   buildBoard(board);
   gameInfo.innerText = `Player ${currentPlayer}, check a box!`;
