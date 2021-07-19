@@ -57,7 +57,7 @@ document.body.appendChild(buttonContainer);
 document.body.appendChild(gameInfo);
 
 // create board size according to user input
-const createBoardSize = (input) => {
+const createBoardSize = () => {
   const gameboard = [];
   // create the rows
   for (let i = 0; i < input; i += 1) {
