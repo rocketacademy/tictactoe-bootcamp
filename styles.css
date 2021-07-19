@@ -18,6 +18,11 @@ body {
   color: blue;
 }
 
+.winNumMessage {
+  display: inline-block;
+  color: blue;
+}
+
 .gameInfo {
   color: red;
 }

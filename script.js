@@ -32,7 +32,7 @@ const gameInfo = document.createElement('div');
 gameInfo.innerText = 'Pls select board size!';
 gameInfo.className = 'gameInfo';
 
-// create game info board
+// create input board size message
 const boardSizeMessage = document.createElement('div');
 boardSizeMessage.innerText = 'Board Size: ';
 boardSizeMessage.className = 'boardSizeMessage';
@@ -44,12 +44,28 @@ inputBoardSize.setAttribute('type', 'number');
 inputBoardSize.setAttribute('min', '3');
 inputBoardSize.setAttribute('max', '10');
 
+// create input win num message
+const winNumMessage = document.createElement('div');
+winNumMessage.innerText = 'Choose Winning Number : ';
+winNumMessage.className = 'winNumMessage';
+
+// create drop down for user to select boardsize
+const inputWinNum = document.createElement('input');
+inputWinNum.setAttribute('id', 'winNum');
+inputWinNum.setAttribute('type', 'number');
+inputWinNum.setAttribute('min', '3');
+inputWinNum.setAttribute('max', '10');
+
 const buttonContainer = document.createElement('div');
 const boardSizeContainer = document.createElement('div');
+const winNumContainer = document.createElement('div');
 
 boardSizeContainer.appendChild(boardSizeMessage);
 boardSizeContainer.appendChild(inputBoardSize);
+winNumContainer.appendChild(winNumMessage);
+winNumContainer.appendChild(inputWinNum);
 buttonContainer.appendChild(boardSizeContainer);
+buttonContainer.appendChild(winNumContainer);
 buttonContainer.appendChild(startButton);
 buttonContainer.appendChild(resetButton);
 
