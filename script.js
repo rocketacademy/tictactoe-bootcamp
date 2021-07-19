@@ -25,6 +25,9 @@ let currentPlayer = 'X';
 // game state canClick
 let canClick = true;
 
+// round number (counts from 0)
+let roundNumber = 0;
+
 // next computer move
 let computerMoveTime = 3; // seconds
 let nextComputerRow = -1,
@@ -106,8 +109,8 @@ const resetRound = () => {
   for (let i = 0; i < PARAGRAPHS.length; i++) {
     PARAGRAPHS[i].remove();
   }
-  // reset current player
-  currentPlayer = 'X';
+  // increment round
+  roundNumber += 1;
   // init board
   board = initBoard(boardSize, board);
   // init game
@@ -181,19 +184,19 @@ const getOccurrences = (array, item) => {
   return array.filter(el => el === item).length;
 }
 
-// boolean check if win condition can be found on the line 
-const closestUsableSquareExists = (line, size) => {
+// boolean check if computer has a priority square in a line
+// priority meaning: it is nearly completely filled with X or O.
+// check param refers to priority of search
+const checkLineForMajorityValue = (line, size, check) => {
   const NEARLY_ALL_X = (getOccurrences(line, 'X') === size - 1);
-  const ONE_EMPTY_SQUARE = (getOccurrences(line, '') === 1);
-
-  return (NEARLY_ALL_X && ONE_EMPTY_SQUARE);
-}
-
-const closestWinningSquareExists = (line, size) => {
   const NEARLY_ALL_O = (getOccurrences(line, 'O') === size - 1);
   const ONE_EMPTY_SQUARE = (getOccurrences(line, '') === 1);
 
-  return (NEARLY_ALL_O && ONE_EMPTY_SQUARE);
+  if (check === 'X') {
+    return (NEARLY_ALL_X && ONE_EMPTY_SQUARE);
+  } else {
+    return (NEARLY_ALL_O && ONE_EMPTY_SQUARE);
+  }
 }
 
 /**
@@ -208,17 +211,32 @@ const initGame = () => {
   const TURN_PARAGRAPH = document.createElement('p');
   TURN_PARAGRAPH.classList.add('turnParagraph');
   if (currentPlayer === 'O') {
-    TURN_PARAGRAPH.innerText = `This is the Computer's (${currentPlayer}) turn. Please wait while the Computer makes its move and mark an empty square with a '${currentPlayer}'.`;
+    if (roundNumber > 0) {
+      TURN_PARAGRAPH.innerText = `The Computer will go first this round. Please wait while the Computer makes its move and mark an empty square with a '${currentPlayer}'.`;
+      clearTimeout(computerSetSquareTimeout);
+
+      // computer picks a random row, col
+      let computerRow = Math.floor(Math.random() * boardSize);
+      let computerCol = Math.floor(Math.random() * boardSize);
+
+      computerSetSquareTimeout = setTimeout(() => {
+      setBoardAndCheckWin(computerCol, computerRow);
+        canClick = true;
+      }, computerMoveTime * 1000);
+    } else {
+      TURN_PARAGRAPH.innerText = `This is the Computer's (${currentPlayer}) turn. Please wait while the Computer makes its move and mark an empty square with a '${currentPlayer}'.`;
+    }
+    canClick = false;
+    //
   } else {
     TURN_PARAGRAPH.innerText = `This is your turn, Player. Please make your move by marking a '${currentPlayer}' on a blank square.`;
+    // enable or re-enable clicking
+    canClick = true;
   }
   document.body.appendChild(TURN_PARAGRAPH);
 
   // build the board - right now it's empty
   buildBoard(board);
-
-  // enable or re-enable clicking
-  canClick = true;
 };
 
 const initSettings = () => {
@@ -297,8 +315,8 @@ const setBoardAndCheckWin = (column, row) => {
   // according to the array that was just changed
   buildBoard(board);
 
-  nextComputerRow = getClosestWinningSquare().row;
-  nextComputerCol = getClosestWinningSquare().col;
+  nextComputerRow = getComputerNextSquare().row;
+  nextComputerCol = getComputerNextSquare().col;
   if (checkWin(board) === "win" || checkWin(board) === "draw") {
     // game over
     canClick = false;
@@ -338,7 +356,7 @@ const squareClick = function (column, row) {
 // the computer should place its token on the line.
 // if the (n - 1) tokens belong to the player, computer will defend
 // if the (n - 1) tokens belong to the computer, computer goes for the kill
-const getClosestWinningSquare = () => {
+const getComputerNextSquare = () => {
   let rowCoord = -1;
   let colCoord = -1;
   for (let i = 0; i < board.length; i += 1) {
@@ -350,23 +368,28 @@ const getClosestWinningSquare = () => {
       COLUMN.push(board[j][i])
     }
 
-    if (closestWinningSquareExists(ROW, boardSize)) {
+    // priority: if the majority of the line is `0`,
+    // go for the win
+    if (checkLineForMajorityValue(ROW, boardSize, 'O')) {
       return {
         row: i,
         col: ROW.indexOf('')
       }
-    } else if (closestUsableSquareExists(ROW, boardSize)) {
+    }
+    // if there isn't a win condition (majority of line is `X`),
+    // go for the block
+    else if (checkLineForMajorityValue(ROW, boardSize, 'X')) {
       rowCoord = i;
       colCoord = ROW.indexOf('');
     }
 
-    // checking col for closest winning square
-    if (closestWinningSquareExists(COLUMN, boardSize)) {
+    // checking col for computer's next square
+    if (checkLineForMajorityValue(COLUMN, boardSize, 'O')) {
       return {
         row: COLUMN.indexOf(''),
         col: i
       }
-    } else if (closestUsableSquareExists(COLUMN, boardSize)) {
+    } else if (checkLineForMajorityValue(COLUMN, boardSize, 'X')) {
       rowCoord = COLUMN.indexOf('');
       colCoord = i;
     }
@@ -379,12 +402,12 @@ const getClosestWinningSquare = () => {
     BOTTOM_LEFT_TO_TOP_RIGHT.push(board[i][j]);
   }
 
-  if (closestWinningSquareExists(BOTTOM_LEFT_TO_TOP_RIGHT, boardSize)) {
+  if (checkLineForMajorityValue(BOTTOM_LEFT_TO_TOP_RIGHT, boardSize, 'O')) {
     return {
       row: boardSize - BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('') - 1,
       col: BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('')
     }
-  } else if (closestUsableSquareExists(BOTTOM_LEFT_TO_TOP_RIGHT, boardSize)) {
+  } else if (checkLineForMajorityValue(BOTTOM_LEFT_TO_TOP_RIGHT, boardSize, 'X')) {
     rowCoord = boardSize - BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('') - 1;
     colCoord = BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('');
   }
@@ -396,12 +419,12 @@ const getClosestWinningSquare = () => {
     TOP_LEFT_TO_BOTTOM_RIGHT.push(board[i][i]);
   }
 
-  if (closestWinningSquareExists(TOP_LEFT_TO_BOTTOM_RIGHT, boardSize)) {
+  if (checkLineForMajorityValue(TOP_LEFT_TO_BOTTOM_RIGHT, boardSize, 'O')) {
     return {
       row: BOTTOM_LEFT_TO_TOP_RIGHT.indexOf(''),
       col: BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('')
     }
-  } else if (closestUsableSquareExists(TOP_LEFT_TO_BOTTOM_RIGHT, boardSize)) {
+  } else if (checkLineForMajorityValue(TOP_LEFT_TO_BOTTOM_RIGHT, boardSize, 'X')) {
     rowCoord = BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('');
     colCoord = BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('');
   }
