@@ -25,6 +25,11 @@ let currentPlayer = 'X';
 // game state canClick
 let canClick = true;
 
+// next computer move
+let computerMoveTime = 3; // seconds
+let nextComputerRow = -1,
+    nextComputerCol = -1;
+
 /**
  * STRING CONSTANTS
  */
@@ -169,6 +174,20 @@ const buildBoard = (board) => {
   }
 };
 
+// to retrieve the number of times a particular value appears
+const getOccurrences = (array, item) => {
+  return array.filter(el => el === item).length;
+}
+
+// boolean check if win condition can be found on the line 
+const closestWinningSquareExists = (line, size) => {
+  const NEARLY_ALL_X = ((getOccurrences(line, 'X') === size - 1));
+  const NEARLY_ALL_O = (getOccurrences(line, 'O') === size - 1);
+  const ONE_EMPTY_SQUARE = (getOccurrences(line, '') === 1);
+
+  return ((NEARLY_ALL_X || NEARLY_ALL_O) && ONE_EMPTY_SQUARE);
+}
+
 /**
  * GAME INITIALISATION LOGIC
  */
@@ -235,18 +254,26 @@ const togglePlayer = () => {
 
     canClick = false;
 
-    let computerRow = Math.floor(Math.random() * boardSize);
-    let computerCol = Math.floor(Math.random() * boardSize);
-    while (board[computerCol][computerRow] !== '') {
-      computerRow = Math.floor(Math.random() * boardSize);
-      computerCol = Math.floor(Math.random() * boardSize);
-    }
-
     clearTimeout(computerSetSquareTimeout);
-    computerSetSquareTimeout = setTimeout(() => {
+    if (nextComputerRow !== -1 && nextComputerCol !== -1 && board[nextComputerRow][nextComputerCol] === '') {
+      computerSetSquareTimeout = setTimeout(() => {
+        setBoardAndCheckWin(nextComputerRow, nextComputerCol);
+        canClick = true;
+      }, 3000)
+    } else {
+      let computerRow = Math.floor(Math.random() * boardSize);
+      let computerCol = Math.floor(Math.random() * boardSize);
+
+      while (board[computerCol][computerRow] !== '') {
+        computerRow = Math.floor(Math.random() * boardSize);
+        computerCol = Math.floor(Math.random() * boardSize);
+      }
+
+      computerSetSquareTimeout = setTimeout(() => {
       setBoardAndCheckWin(computerCol, computerRow);
-      canClick = true;
-    }, 2000)
+        canClick = true;
+      }, computerMoveTime * 1000);
+    }
   } else {
     TURN_PARAGRAPH.innerText = `This is your turn, Player. Please make your move by marking a '${currentPlayer}' on a blank square.`;
   }
@@ -261,6 +288,9 @@ const setBoardAndCheckWin = (column, row) => {
   // refresh the creen with a new board
   // according to the array that was just changed
   buildBoard(board);
+
+  nextComputerRow = getClosestWinningSquare().row;
+  nextComputerCol = getClosestWinningSquare().col;
 
   if (checkWin(board) === true) {
     // game over
@@ -292,6 +322,70 @@ const squareClick = function (column, row) {
     setBoardAndCheckWin(column, row)
   }
 };
+
+// if (n - 1) out of (n) squares in a line are the same,
+// the computer should place its token on the line.
+// if the (n - 1) tokens belong to the player, computer will defend
+// if the (n - 1) tokens belong to the computer, computer goes for the kill
+const getClosestWinningSquare = () => {
+  for (let i = 0; i < board.length; i += 1) {
+    // retrieve all values in row and column
+    const ROW = [];
+    const COLUMN = [];
+    for (let j = 0; j < board.length; j++) {
+      ROW.push(board[i][j]);
+      COLUMN.push(board[j][i])
+    }
+
+    // checking row for closest winning square
+    if (closestWinningSquareExists(ROW, boardSize)) {
+      return {
+        row: i,
+        col: ROW.indexOf('')
+      }
+    }
+    // checking col for closest winning square
+    if (closestWinningSquareExists(COLUMN, boardSize)) {
+      return {
+        row: COLUMN.indexOf(''),
+        col: i
+      }
+    }
+  }
+
+  // bottom-left to top-right match
+  const BOTTOM_LEFT_TO_TOP_RIGHT = [];
+  // i refers to row, j refers to col
+  for (let i = board.length - 1, j = 0; i >= 0; i -= 1, j += 1) {
+    BOTTOM_LEFT_TO_TOP_RIGHT.push(board[i][j]);
+  }
+
+  if (closestWinningSquareExists(BOTTOM_LEFT_TO_TOP_RIGHT, boardSize)) {
+    return {
+      row: boardSize - BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('') - 1,
+      col: BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('')
+    }
+  }
+
+  // top-left to bottom-right match
+  const TOP_LEFT_TO_BOTTOM_RIGHT = [];
+  // i refers to row, j refers to col
+  for (let i = 0; i < board.length; i += 1) {
+    TOP_LEFT_TO_BOTTOM_RIGHT.push(board[i][i]);
+  }
+
+  if (closestWinningSquareExists(TOP_LEFT_TO_BOTTOM_RIGHT, boardSize)) {
+    return {
+      row: BOTTOM_LEFT_TO_TOP_RIGHT.indexOf(''),
+      col: BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('')
+    }
+  }
+
+  return {
+    row: -1,
+    col: -1
+  };
+}
 
 const checkLine = (item, index, line) => {
   return item === line[0];
@@ -345,6 +439,8 @@ const checkWin = (board) => {
   if (TOP_LEFT_TO_BOTTOM_RIGHT_MATCHED) {
     return true;
   }
+
+  // draw condition: every space is filled
 
   return false;
 };
