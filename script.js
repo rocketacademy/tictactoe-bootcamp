@@ -75,7 +75,7 @@ const checkWin = () => {
       if (board[i][j] === currentPlayer) { score += 1; }
       else { score = 0; }
 
-      if (score === winNum) {
+      if (score === input) {
         return true;
       }
     }
@@ -87,7 +87,7 @@ const checkWin = () => {
       if (board[j][i] === currentPlayer) { score += 1; }
       else { score = 0; }
 
-      if (score === winNum) {
+      if (score === input) {
         return true;
       }
     }
@@ -101,7 +101,7 @@ const checkWin = () => {
       else { score = 0; }
 
       i += 1;
-      if (score === winNum) {
+      if (score === input) {
         return true;
       }
     }
@@ -114,7 +114,7 @@ const checkWin = () => {
       if (board[i][j] === currentPlayer) { score += 1; }
       else { score = 0; }
       i += 1;
-      if (score === winNum) {
+      if (score === input) {
         return true;
       }
     }
@@ -144,24 +144,13 @@ const squareClick = (row, column) => {
     }
   }
 };
-const winNumCheck = () => {
-  input = Number(inputBoardSize.value);
-  winNum = Number(inputWinNum.value);
-  if (winNum > input) {
-    gameInfo.innerText = 'Your win number is more than board size, pls choose a smaller number!';
-
-    return `${gameInfo.innerText}`;
-  }
-};
 
 // create the board container element and put it on the screen
 const initGame = () => {
   boardContainer = document.createElement('div');
   boardContainer.id = 'boardContainer';
   document.body.appendChild(boardContainer);
-  // input = Number(inputBoardSize.value);
-  // winNum = Number(inputWinNum.value);
-  winNumCheck();
+  input = Number(inputBoardSize.value);
   board = createBoardSize(input);
   buildBoard(board);
   gameInfo.innerText = `Player ${currentPlayer}, check a box!`;

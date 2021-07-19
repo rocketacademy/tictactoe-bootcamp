@@ -8,7 +8,6 @@ let boardElement;
 // we can empty it out for convenience
 let boardContainer;
 let input;
-let winNum;
 console.log(input);
 // current player global starts at X
 let currentPlayer = 'X';
