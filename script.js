@@ -143,6 +143,12 @@ const initGame = () => {
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
 
+  // text for determining player turn
+  const TURN_PARAGRAPH = document.createElement('p');
+  TURN_PARAGRAPH.classList.add('turnParagraph');
+  TURN_PARAGRAPH.innerText = `This is Player ${currentPlayer}'s turn. Player ${currentPlayer}, please make your move.`
+  document.body.appendChild(TURN_PARAGRAPH);
+
   // build the board - right now it's empty
   buildBoard(board);
 };
@@ -180,6 +186,10 @@ const togglePlayer = () => {
   } else {
     currentPlayer = 'X';
   }
+
+  // .turnParagraph is already created previously in initGame();
+  const TURN_PARAGRAPH = document.querySelector('.turnParagraph');
+  TURN_PARAGRAPH.innerText = `This is Player ${currentPlayer}'s turn. Player ${currentPlayer}, please make your move.`;
 };
 
 const squareClick = function (column, row) {
