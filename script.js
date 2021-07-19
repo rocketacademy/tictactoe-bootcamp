@@ -35,6 +35,12 @@ const BUTTON_TEXT = 'Submit';
 const WARNING_TEXT = 'Please enter a valid number from 3 (inclusive) to 8 (inclusive).'
 
 /**
+ * TIMEOUT OR INTERVAL VARIABLES
+ */
+
+let computerSetSquareTimeout;
+
+/**
  * EVENT LISTENERS
  */
 
@@ -174,7 +180,11 @@ const initGame = () => {
   // text for determining player turn
   const TURN_PARAGRAPH = document.createElement('p');
   TURN_PARAGRAPH.classList.add('turnParagraph');
-  TURN_PARAGRAPH.innerText = `This is Player ${currentPlayer}'s turn. Player ${currentPlayer}, please make your move.`
+  if (currentPlayer === 'O') {
+    TURN_PARAGRAPH.innerText = `This is the Computer's (${currentPlayer}) turn. Please wait while the Computer makes its move and mark an empty square with a '${currentPlayer}'.`;
+  } else {
+    TURN_PARAGRAPH.innerText = `This is your turn, Player. Please make your move by marking a '${currentPlayer}' on a blank square.`;
+  }
   document.body.appendChild(TURN_PARAGRAPH);
 
   // build the board - right now it's empty
@@ -220,41 +230,65 @@ const togglePlayer = () => {
 
   // .turnParagraph is already created previously in initGame();
   const TURN_PARAGRAPH = document.querySelector('.turnParagraph');
-  TURN_PARAGRAPH.innerText = `This is Player ${currentPlayer}'s turn. Player ${currentPlayer}, please make your move.`;
+  if (currentPlayer === 'O') {
+    TURN_PARAGRAPH.innerText = `This is the Computer's (${currentPlayer}) turn. Please wait while the Computer makes its move and mark an empty square with a '${currentPlayer}'.`;
+
+    canClick = false;
+
+    let computerRow = Math.floor(Math.random() * boardSize);
+    let computerCol = Math.floor(Math.random() * boardSize);
+    while (board[computerCol][computerRow] !== '') {
+      computerRow = Math.floor(Math.random() * boardSize);
+      computerCol = Math.floor(Math.random() * boardSize);
+    }
+
+    setTimeout(() => {
+      setBoardAndCheckWin(computerCol, computerRow);
+      canClick = true;
+    }, 2000)
+  } else {
+    TURN_PARAGRAPH.innerText = `This is your turn, Player. Please make your move by marking a '${currentPlayer}' on a blank square.`;
+  }
 };
+
+// having setBoardAndCheckWin away from squareClick
+// also keeps squareClick access only to player, not computer
+const setBoardAndCheckWin = (column, row) => {
+  // alter the data array, set it to the current player
+  board[column][row] = currentPlayer;
+
+  // refresh the creen with a new board
+  // according to the array that was just changed
+  buildBoard(board);
+
+  if (checkWin(board) === true) {
+    // game over
+    canClick = false;
+    // remove 'turn' paragraph
+    const TURN_PARAGRAPH = document.querySelector('.turnParagraph');
+    TURN_PARAGRAPH.remove();
+    // add 'winner' paragraph
+    const WINNER_PARAGRAPH = document.createElement('p');
+    WINNER_PARAGRAPH.classList.add("winnerParagraph");
+    WINNER_PARAGRAPH.innerText = `${currentPlayer} is the winner!`;
+    document.body.appendChild(WINNER_PARAGRAPH);
+    // add 'reset' button
+    const RESET_BUTTON = document.createElement('button');
+    RESET_BUTTON.innerText = 'Restart Round';
+    RESET_BUTTON.addEventListener('click', resetRound);
+    document.body.appendChild(RESET_BUTTON);
+  } else {
+    // change the player
+    togglePlayer();
+  }
+}
 
 const squareClick = function (column, row) {
   console.log('coordinates', column, row);
 
   // see if the clicked square has been clicked on before
   if (board[column][row] === '' && canClick) {
-    // alter the data array, set it to the current player
-    board[column][row] = currentPlayer;
-
-    // refresh the creen with a new board
-    // according to the array that was just changed
-    buildBoard(board);
-
-    if (checkWin(board) === true) {
-      // game over
-      canClick = false;
-      // remove 'turn' paragraph
-      const TURN_PARAGRAPH = document.querySelector('.turnParagraph');
-      TURN_PARAGRAPH.remove();
-      // add 'winner' paragraph
-      const WINNER_PARAGRAPH = document.createElement('p');
-      WINNER_PARAGRAPH.classList.add("winnerParagraph");
-      WINNER_PARAGRAPH.innerText = `${currentPlayer} is the winner!`;
-      document.body.appendChild(WINNER_PARAGRAPH);
-      // add 'reset' button
-      const RESET_BUTTON = document.createElement('button');
-      RESET_BUTTON.innerText = 'Restart Round';
-      RESET_BUTTON.addEventListener('click', resetRound);
-      document.body.appendChild(RESET_BUTTON);
-    } else {
-      // change the player
-      togglePlayer();
-    }
+    setBoardAndCheckWin(column, row)
   }
 };
 
