@@ -1,19 +1,19 @@
 // keep data about the game in a 2-D array
-let board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
-
+// let board = [
+//   ['', '', ''],
+//   ['', '', ''],
+//   ['', '', ''],
+// ];
+let board = [];
 let canClick = true;
-
 // the element that contains the rows and squares
 let boardElement;
 
 // the element that contains the entire board
 // we can empty it out for convenience
 let boardContainer;
-
+let input;
+console.log(input);
 // current player global starts at X
 let currentPlayer = 'X';
 
@@ -21,16 +21,60 @@ let currentPlayer = 'X';
 const resetButton = document.createElement('button');
 resetButton.innerText = 'Reset';
 resetButton.classList.add('button', 'reset');
-document.body.appendChild(resetButton);
+
+// create reset button
+const startButton = document.createElement('button');
+startButton.innerText = 'Start';
+startButton.classList.add('button', 'start');
 
 // create game info board
 const gameInfo = document.createElement('div');
-gameInfo.innerText = `Player ${currentPlayer} pls check a box`;
+gameInfo.innerText = 'Pls select board size!';
 gameInfo.className = 'gameInfo';
+
+// create game info board
+const boardSizeMessage = document.createElement('div');
+boardSizeMessage.innerText = 'Board Size: ';
+boardSizeMessage.className = 'boardSizeMessage';
+
+// create drop down for user to select boardsize
+const inputBoardSize = document.createElement('input');
+inputBoardSize.setAttribute('id', 'boardSize');
+inputBoardSize.setAttribute('type', 'number');
+inputBoardSize.setAttribute('min', '3');
+inputBoardSize.setAttribute('max', '10');
+
+const buttonContainer = document.createElement('div');
+const boardSizeContainer = document.createElement('div');
+
+boardSizeContainer.appendChild(boardSizeMessage);
+boardSizeContainer.appendChild(inputBoardSize);
+buttonContainer.appendChild(boardSizeContainer);
+buttonContainer.appendChild(startButton);
+buttonContainer.appendChild(resetButton);
+
+document.body.appendChild(buttonContainer);
 document.body.appendChild(gameInfo);
 
+// create board size according to user input
+const createBoardSize = (input) => {
+  const gameboard = [];
+  // create the rows
+  for (let i = 0; i < input; i += 1) {
+    //  create empty rows
+    gameboard.push([]);
+
+    for (let j = 0; j < input; j += 1) {
+      // create empty square into each array(col)
+      gameboard[i].push('');
+    }
+  }
+
+  return gameboard;
+};
+
 // completely rebuilds the entire board every time there's a click
-const buildBoard = (board) => {
+const buildBoard = () => {
   // start with an empty container
   boardContainer.innerHTML = '';
   boardElement = document.createElement('div');
@@ -84,20 +128,20 @@ const togglePlayer = () => {
 const checkWin = () => {
   // check for win conditions in rows
   let score = 0;
-  for (let i = 0; i < 3; i += 1) {
-    for (let j = 0; j < 3; j += 1) {
+  for (let i = 0; i < input; i += 1) {
+    for (let j = 0; j < input; j += 1) {
       if (board[i][j] === currentPlayer) { score += 1; }
-      if (score === 3) {
+      if (score === input) {
         return true;
       }
     }
     score = 0;
   }
   // check for win conditions in cols
-  for (let i = 0; i < 3; i += 1) {
-    for (let j = 0; j < 3; j += 1) {
+  for (let i = 0; i < input; i += 1) {
+    for (let j = 0; j < input; j += 1) {
       if (board[j][i] === currentPlayer) { score += 1; }
-      if (score === 3) {
+      if (score === input) {
         return true;
       }
     }
@@ -105,11 +149,11 @@ const checkWin = () => {
   }
 
   // check for win conditions diagonally left to right 00 -> 11 -> 22
-  for (let i = 0; i < 3; i += 1) {
-    for (let j = 0; j < 3; j += 1) {
+  for (let i = 0; i < input; i += 1) {
+    for (let j = 0; j < input; j += 1) {
       if (board[i][j] === currentPlayer) { score += 1; }
       i += 1;
-      if (score === 3) {
+      if (score === input) {
         return true;
       }
     }
@@ -117,23 +161,23 @@ const checkWin = () => {
   }
 
   // check for win conditions diagonally right to left 02 -> 11 -> 20
-  for (let i = 0; i < 3; i += 1) {
-    for (let j = 2; j >= 0; j -= 1) {
+  for (let i = 0; i < input; i += 1) {
+    for (let j = (input - 1); j >= 0; j -= 1) {
       if (board[i][j] === currentPlayer) { score += 1; }
       i += 1;
-      if (score === 3) {
+      if (score === input) {
         return true;
       }
     }
     score = 0;
-  }
+  } return false;
 };
 
 const squareClick = (row, column) => {
   console.log('coordinates', row, column);
-
   // see if the clicked square has been clicked on before
   if (board[row][column] === '') {
+    console.log('1');
     // alter the data array, set it to the current player
     board[row][column] = currentPlayer;
     buildBoard(board);
@@ -147,6 +191,7 @@ const squareClick = (row, column) => {
       canClick = true;
       // change the player
       togglePlayer();
+      console.log('2');
     }
   }
 };
@@ -156,23 +201,21 @@ const initGame = () => {
   boardContainer = document.createElement('div');
   boardContainer.id = 'boardContainer';
   document.body.appendChild(boardContainer);
-
-  // build the board - right now it's empty
+  input = Number(inputBoardSize.value);
+  board = createBoardSize(input);
   buildBoard(board);
+  gameInfo.innerText = `Player ${currentPlayer}, check a box!`;
+
+  startButton.disabled = true;
 };
 
 const resetGame = () => {
   canClick = true;
-  gameInfo.innerHTML = `Player ${currentPlayer}\'s turn`;
+  gameInfo.innerHTML = `Player ${currentPlayer}'s turn`;
   const ele = document.getElementById('boardContainer');
   ele.remove();
-  board = [
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', ''],
-  ];
   initGame();
 };
-initGame();
 
 resetButton.addEventListener('click', resetGame);
+startButton.addEventListener('click', initGame);

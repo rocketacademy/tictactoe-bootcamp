@@ -12,3 +12,12 @@ body {
   width: 10px;
   vertical-align: top;
 }
+
+.boardSizeMessage {
+  display: inline-block;
+  color: blue;
+}
+
+.gameInfo {
+  color: red;
+}
