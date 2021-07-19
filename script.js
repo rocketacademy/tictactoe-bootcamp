@@ -106,6 +106,8 @@ const resetRound = () => {
   for (let i = 0; i < PARAGRAPHS.length; i++) {
     PARAGRAPHS[i].remove();
   }
+  // reset current player
+  currentPlayer = 'X';
   // init board
   board = initBoard(boardSize, board);
   // init game
@@ -180,12 +182,18 @@ const getOccurrences = (array, item) => {
 }
 
 // boolean check if win condition can be found on the line 
+const closestUsableSquareExists = (line, size) => {
+  const NEARLY_ALL_X = (getOccurrences(line, 'X') === size - 1);
+  const ONE_EMPTY_SQUARE = (getOccurrences(line, '') === 1);
+
+  return (NEARLY_ALL_X && ONE_EMPTY_SQUARE);
+}
+
 const closestWinningSquareExists = (line, size) => {
-  const NEARLY_ALL_X = ((getOccurrences(line, 'X') === size - 1));
   const NEARLY_ALL_O = (getOccurrences(line, 'O') === size - 1);
   const ONE_EMPTY_SQUARE = (getOccurrences(line, '') === 1);
 
-  return ((NEARLY_ALL_X || NEARLY_ALL_O) && ONE_EMPTY_SQUARE);
+  return (NEARLY_ALL_O && ONE_EMPTY_SQUARE);
 }
 
 /**
@@ -291,8 +299,7 @@ const setBoardAndCheckWin = (column, row) => {
 
   nextComputerRow = getClosestWinningSquare().row;
   nextComputerCol = getClosestWinningSquare().col;
-
-  if (checkWin(board) === true) {
+  if (checkWin(board) === "win" || checkWin(board) === "draw") {
     // game over
     canClick = false;
     // remove 'turn' paragraph
@@ -301,7 +308,11 @@ const setBoardAndCheckWin = (column, row) => {
     // add 'winner' paragraph
     const WINNER_PARAGRAPH = document.createElement('p');
     WINNER_PARAGRAPH.classList.add("winnerParagraph");
-    WINNER_PARAGRAPH.innerText = `${currentPlayer} is the winner!`;
+    if (checkWin(board) === "draw") {
+      WINNER_PARAGRAPH.innerText = "It is a tie!";
+    } else {
+      WINNER_PARAGRAPH.innerText = `${currentPlayer} is the winner!`;
+    }
     document.body.appendChild(WINNER_PARAGRAPH);
     // add 'reset' button
     const RESET_BUTTON = document.createElement('button');
@@ -328,6 +339,8 @@ const squareClick = function (column, row) {
 // if the (n - 1) tokens belong to the player, computer will defend
 // if the (n - 1) tokens belong to the computer, computer goes for the kill
 const getClosestWinningSquare = () => {
+  let rowCoord = -1;
+  let colCoord = -1;
   for (let i = 0; i < board.length; i += 1) {
     // retrieve all values in row and column
     const ROW = [];
@@ -337,19 +350,25 @@ const getClosestWinningSquare = () => {
       COLUMN.push(board[j][i])
     }
 
-    // checking row for closest winning square
     if (closestWinningSquareExists(ROW, boardSize)) {
       return {
         row: i,
         col: ROW.indexOf('')
       }
+    } else if (closestUsableSquareExists(ROW, boardSize)) {
+      rowCoord = i;
+      colCoord = ROW.indexOf('');
     }
+
     // checking col for closest winning square
     if (closestWinningSquareExists(COLUMN, boardSize)) {
       return {
         row: COLUMN.indexOf(''),
         col: i
       }
+    } else if (closestUsableSquareExists(COLUMN, boardSize)) {
+      rowCoord = COLUMN.indexOf('');
+      colCoord = i;
     }
   }
 
@@ -365,6 +384,9 @@ const getClosestWinningSquare = () => {
       row: boardSize - BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('') - 1,
       col: BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('')
     }
+  } else if (closestUsableSquareExists(BOTTOM_LEFT_TO_TOP_RIGHT, boardSize)) {
+    rowCoord = boardSize - BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('') - 1;
+    colCoord = BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('');
   }
 
   // top-left to bottom-right match
@@ -379,11 +401,14 @@ const getClosestWinningSquare = () => {
       row: BOTTOM_LEFT_TO_TOP_RIGHT.indexOf(''),
       col: BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('')
     }
+  } else if (closestUsableSquareExists(TOP_LEFT_TO_BOTTOM_RIGHT, boardSize)) {
+    rowCoord = BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('');
+    colCoord = BOTTOM_LEFT_TO_TOP_RIGHT.indexOf('');
   }
 
   return {
-    row: -1,
-    col: -1
+    row: rowCoord,
+    col: colCoord
   };
 }
 
@@ -411,7 +436,7 @@ const checkWin = (board) => {
     const COLUMN_MATCHED = (COLUMN[0] !== "" && COLUMN.every(checkLine))
     
     if (ROW_MATCHED || COLUMN_MATCHED) {
-      return true;
+      return "win";
     }
   }
 
@@ -425,7 +450,7 @@ const checkWin = (board) => {
   const BOTTOM_LEFT_TO_TOP_RIGHT_MATCHED = (BOTTOM_LEFT_TO_TOP_RIGHT[0] !== "" && BOTTOM_LEFT_TO_TOP_RIGHT.every(checkLine));
 
   if (BOTTOM_LEFT_TO_TOP_RIGHT_MATCHED) {
-    return true;
+    return "win";
   }
 
   // top-left to bottom-right match
@@ -437,10 +462,22 @@ const checkWin = (board) => {
 
   const TOP_LEFT_TO_BOTTOM_RIGHT_MATCHED = (TOP_LEFT_TO_BOTTOM_RIGHT[0] !== "" && TOP_LEFT_TO_BOTTOM_RIGHT.every(checkLine));
   if (TOP_LEFT_TO_BOTTOM_RIGHT_MATCHED) {
-    return true;
+    return "win";
   }
 
+  let drawCondition = true;
   // draw condition: every space is filled
+  for (let i = 0; i < board.length; i++) {
+    // empty space exists
+    if (board[i].indexOf("") !== -1) {
+      drawCondition = false;
+    }
+  }
+
+  if (drawCondition) {
+    return "draw";
+  }
+  
 
   return false;
 };
