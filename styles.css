@@ -1,3 +1,27 @@
 body {
   background-color: pink;
 }
+
+.color-red {
+  color: red;
+}
+
+.square {
+  padding: 20px;
+  margin: 0;
+  background-color: white;
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  vertical-align: top;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.square:first-child {
+  border-left: 1px solid black;
+}
+
+.row:first-child .square {
+  border-top: 1px solid black;
+}
