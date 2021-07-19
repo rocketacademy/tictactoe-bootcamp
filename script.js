@@ -242,7 +242,8 @@ const togglePlayer = () => {
       computerCol = Math.floor(Math.random() * boardSize);
     }
 
-    setTimeout(() => {
+    clearTimeout(computerSetSquareTimeout);
+    computerSetSquareTimeout = setTimeout(() => {
       setBoardAndCheckWin(computerCol, computerRow);
       canClick = true;
     }, 2000)
