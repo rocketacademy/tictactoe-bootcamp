@@ -1,5 +1,3 @@
-// ###################### GLOBAL VARIABLES ########################
-
 const board = [
   ['', '', ''],
   ['', '', ''],
@@ -10,7 +8,6 @@ let boardContainer;
 let boardElement;
 let currentPlayer = 'X';
 const textDiv = document.createElement('div');
-let hasWinner = false;
 
 // ###################### HELPER FUNCTIONS ########################
 
@@ -53,38 +50,69 @@ const togglePlayer = () => {
   }
 };
 
+const checkWin = () => {
+  let rowSum = 0;
+  let columnSum = 0;
+  let diagLeftSum = 0;
+  let diagRightSum = 0;
+
+  // check rows
+  for (let i = 0; i < board.length; i += 1) {
+    rowSum = 0;
+    columnSum = 0;
+    for (let j = 0; j < board[i].length; j += 1) {
+      // check rows
+      if (board[i][j] === 'X') {
+        rowSum += 1;
+      } else if (board[i][j] === 'O') {
+        rowSum -= 1;
+      }
+
+      // check columns
+      if (board[j][i] === 'X') {
+        columnSum += 1;
+      } else if (board[j][i] === 'O') {
+        columnSum -= 1;
+      }
+    }
+    // check diagonal left
+    if (board[i][i] === 'X') {
+      diagLeftSum += 1;
+    } else if (board[i][i] === 'O') {
+      diagLeftSum -= 1;
+    }
+
+    // check diagonal right
+    const k = board.length - 1 - i;
+    if (board[i][k] === 'X') {
+      diagRightSum += 1;
+    } else if (board[i][k] === 'O') {
+      diagRightSum -= 1;
+    }
+
+    // return true if sum = length or -length
+    if (rowSum === board.length
+      || rowSum === board.length * -1
+      || columnSum === board.length
+      || columnSum === board.length * -1
+      || diagLeftSum === board.length
+      || diagLeftSum === board.length * -1
+      || diagRightSum === board.length
+      || diagRightSum === board.length * -1) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 const squareClick = (column, row) => {
-  if (board[column][row] === '' && hasWinner === false) {
+  if (board[column][row] === '') {
     board[column][row] = currentPlayer;
     buildBoard(board);
   }
 
-  // check if there is a winner, else change to next player
-  let rowSum = 0;
-  let columnSum = 0;
-  for (let i = 0; i < board.length; i += 1) {
-    // check row
-    if (board[column][i] === currentPlayer) {
-      rowSum += 1;
-    }
-    // check column
-    if (board[i][row] === currentPlayer) {
-      columnSum += 1;
-    }
-  }
-  if (rowSum === 3 || columnSum === 3) {
-    hasWinner = true;
-  }
-
-  // check diagonal
-  if (board[1][1] === currentPlayer) {
-    // eslint-disable-next-line
-      if ((board[0][0] === currentPlayer && board[2][2] === currentPlayer) || (board[0][2] === currentPlayer && board[2][0] === currentPlayer)) {
-      hasWinner = true;
-    }
-  }
-
-  if (hasWinner === true) {
+  if (checkWin() === true) {
     textDiv.innerText = `Player ${currentPlayer} wins!`;
   } else {
     togglePlayer();
