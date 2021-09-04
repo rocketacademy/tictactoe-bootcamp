@@ -1,4 +1,4 @@
-const board = [
+let board = [
   ['', '', ''],
   ['', '', ''],
   ['', '', ''],
@@ -7,7 +7,9 @@ const board = [
 let boardContainer;
 let boardElement;
 let currentPlayer = 'X';
+let isPlaying = false;
 const textDiv = document.createElement('div');
+const buttonDiv = document.createElement('div');
 
 // ###################### HELPER FUNCTIONS ########################
 
@@ -37,6 +39,19 @@ const buildBoard = (board) => {
 
     boardContainer.appendChild(rowElement);
   }
+};
+
+const resetBoard = () => {
+  isPlaying = true;
+  currentPlayer = 'X';
+  textDiv.innerText = "New game started! Player X's turn!";
+  board = [
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ];
+  buildBoard(board);
+  buttonDiv.innerHTML = '';
 };
 
 // ###################### GAMEPLAY LOGIC ########################
@@ -107,22 +122,34 @@ const checkWin = () => {
 };
 
 const squareClick = (column, row) => {
-  if (board[column][row] === '') {
-    board[column][row] = currentPlayer;
-    buildBoard(board);
-  }
+  if (isPlaying === true) {
+    if (board[column][row] === '') {
+      board[column][row] = currentPlayer;
+      buildBoard(board);
+    }
 
-  if (checkWin() === true) {
-    textDiv.innerText = `Player ${currentPlayer} wins!`;
-  } else {
-    togglePlayer();
+    if (checkWin() === true) {
+      textDiv.innerText = `Player ${currentPlayer} wins!`;
+      isPlaying = false;
+      const resetButton = document.createElement('button');
+      resetButton.innerText = 'Reset';
+      resetButton.classList.add('reset-button');
+      resetButton.addEventListener('click', resetBoard);
+      buttonDiv.appendChild(resetButton);
+    } else {
+      togglePlayer();
+    }
   }
 };
 
 // ###################### INITIALIZATION ########################
 const initGame = () => {
+  isPlaying = true;
+
+  textDiv.classList.add('message');
   textDiv.innerText = "Welcome! Player X's turn!";
   document.body.appendChild(textDiv);
+  document.body.appendChild(buttonDiv);
 
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
