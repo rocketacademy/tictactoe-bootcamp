@@ -131,11 +131,15 @@ const squareClick = (column, row) => {
 
       //display the message to restart
       setTimeout(() => {
-        board = [
-          ["", "", ""],
-          ["", "", ""],
-          ["", "", ""],
-        ];
+        board = [];
+        for (let i = 0; i < boardSize; i += 1) {
+          let rowArr = [];
+          for (let j = 0; j < boardSize; j += 1) {
+            rowArr.push("");
+          }
+
+          board.push(rowArr);
+        }
         buildBoard(board);
         message.innerHTML = `Restarting the game... click a square to start!`;
       }, 2000);
