@@ -1,6 +1,14 @@
-// Please implement exercise logic here
-// Please implement exercise logic here
 // GLOBAL VARIABLES
+
+//board size
+let boardSize;
+
+//input for board size
+let boardSizeInput;
+
+//submit button for board size
+let submit;
+
 // keep data about the game in a 2-D array
 let board = [
   ["", "", ""],
@@ -70,6 +78,18 @@ const initGame = () => {
   message = document.createElement("p");
   document.body.appendChild(message);
 
+  boardSizeInput = document.createElement("input");
+  document.body.appendChild(boardSizeInput);
+
+  submit = document.createElement("button");
+  document.body.appendChild(submit);
+  submit.innerHTML = "Submit the board size";
+
+  submit.addEventListener("click", () => {
+    boardSize = Number(boardSizeInput.value);
+    console.log(boardSize);
+  });
+
   // build the board - right now it's empty
   buildBoard(board);
 };
@@ -102,16 +122,16 @@ const squareClick = (column, row) => {
       //display the result
       message.innerHTML = `The game have ended, the winner is Player ${currentPlayer}!!`;
 
-      //display the meesage to restart
-      // setTimeout(() => {
-      //   board = [
-      //     ["", "", ""],
-      //     ["", "", ""],
-      //     ["", "", ""],
-      //   ];
-      //   buildBoard(board);
-      //   message.innerHTML = `Restarting the game... click a square to start!`;
-      // }, 2000);
+      //display the message to restart
+      setTimeout(() => {
+        board = [
+          ["", "", ""],
+          ["", "", ""],
+          ["", "", ""],
+        ];
+        buildBoard(board);
+        message.innerHTML = `Restarting the game... click a square to start!`;
+      }, 2000);
     } else {
       togglePlayer();
     }
@@ -122,162 +142,69 @@ const checkWin = (board) => {
   // check every position
   // there is a conditional for all 15 win conditions
 
-  let row1Count = 0;
-  let column1Count = 0;
-  let row2Count = 0;
-  let column2Count = 0;
-  let row3Count = 0;
-  let column3Count = 0;
-  let diagonalDownCount = 0;
-  let diagonalUpCount = 0;
+  let rowCountX = 0;
+  let rowCountO = 0;
+  let columnCountX = 0;
+  let columnCountO = 0;
+  let diagonalUpCountX = 0;
+  let diagonalUpCountO = 0;
+  let diagonalDownCountX = 0;
+  let diagonalDownCountO = 0;
 
-  for (let i = 0; i < 3; i += 1) {
-    for (let j = 0; j < 3; j += 1) {
-      //need to make sure the board element is not empty
-      if (i === 0 && board[0][0] != "") {
-        //first row
-        if (board[i][j] === currentPlayer) {
-          row1Count += 1;
-          console.log("first row->" + row1Count);
-        }
-        //first column
-        if (board[j][i] === currentPlayer) {
-          column1Count += 1;
-          console.log("first column->" + column1Count);
-        }
+  for (let i = 0; i < board.length; i += 1) {
+    rowCountX = 0;
+    rowCountO = 0;
+    columnCountX = 0;
+    columnCountO = 0;
+    for (let j = 0; j < board.length; j += 1) {
+      //rows
+      if (board[i][j] === "X") {
+        rowCountX += 1;
+      } else if (board[i][j] === "O") {
+        rowCountO += 1;
       }
 
-      if (i === 1 && board[1][0] != "") {
-        //second row
-        if (board[i][j] === currentPlayer) {
-          row2Count += 1;
-          console.log("second row->" + row2Count);
-        }
-        //second column
-        if (board[j][i] === currentPlayer) {
-          column2Count += 1;
-          console.log("second column->" + column2Count);
-        }
+      //columns
+      if (board[j][i] === "X") {
+        columnCountX += 1;
+      } else if (board[j][i] === "O") {
+        columnCountO += 1;
       }
-
-      if (i === 2 && board[2][0] != "") {
-        //third row
-        if (board[i][j] === currentPlayer) {
-          row3Count += 1;
-          console.log("third row->" + row3Count);
-        }
-        //third column
-        if (board[j][i] === currentPlayer) {
-          column3Count += 1;
-          console.log("third column->" + column3Count);
-        }
-      }
-
-      //diagonal down from left to right
-      if (i === j && board[0][0] != "") {
-        if (board[i][j] === currentPlayer) {
-          diagonalDownCount += 1;
-          console.log("diagonal down->" + diagonalDownCount);
-        }
-      }
-
-      //diagonal up from left to right
       if (
-        (i === j + 2 || i + 2 === j || (i == 1 && j == 1)) &&
-        board[1][1] != ""
+        rowCountX === board.length ||
+        rowCountO === board.length ||
+        columnCountX === board.length ||
+        columnCountO === board.length
       ) {
-        if (board[i][j] === currentPlayer) {
-          diagonalUpCount += 1;
-          console.log("diagonal up->" + diagonalUpCount);
-        }
+        return true;
       }
+    }
+
+    //diagonal up
+    if (board[i][i] === "X") {
+      diagonalUpCountX += 1;
+    } else if (board[i][i] === "O") {
+      diagonalUpCountO += 1;
+    }
+
+    //diagonal down
+    if (board[i][board.length - 1 - i] === "X") {
+      diagonalDownCountX += 1;
+    } else if (board[i][board.length - 1 - i] === "O") {
+      diagonalDownCountO += 1;
     }
   }
 
   if (
-    row1Count === 3 ||
-    column1Count === 3 ||
-    row2Count === 3 ||
-    column2Count === 3 ||
-    row3Count === 3 ||
-    column3Count === 3 ||
-    diagonalDownCount === 3 ||
-    diagonalUpCount === 3
+    diagonalUpCountX === board.length ||
+    diagonalUpCountO === board.length ||
+    diagonalDownCountX === board.length ||
+    diagonalDownCountO === board.length
   ) {
     return true;
   }
 
   return false;
-  // //first row
-  // if (
-  //   board[0][0] != "" &&
-  //   board[0][0] === board[0][1] &&
-  //   board[0][1] === board[0][2]
-  // ) {
-  //   return true;
-  // }
-
-  // //second row
-  // if (
-  //   board[1][0] != "" &&
-  //   board[1][0] === board[1][1] &&
-  //   board[1][1] === board[1][2]
-  // ) {
-  //   return true;
-  // }
-
-  // //third row
-  // if (
-  //   board[2][0] != "" &&
-  //   board[2][0] === board[2][1] &&
-  //   board[2][1] === board[2][2]
-  // ) {
-  //   return true;
-  // }
-
-  // //first column
-  // if (
-  //   board[0][0] != "" &&
-  //   board[0][0] === board[1][0] &&
-  //   board[1][0] === board[2][0]
-  // ) {
-  //   return true;
-  // }
-
-  // //second column
-  // if (
-  //   board[0][1] != "" &&
-  //   board[0][1] === board[1][1] &&
-  //   board[1][1] === board[2][1]
-  // ) {
-  //   return true;
-  // }
-
-  // //third column
-  // if (
-  //   board[0][2] != "" &&
-  //   board[0][2] === board[1][2] &&
-  //   board[1][2] === board[2][2]
-  // ) {
-  //   return true;
-  // }
-
-  // //diagonal down from left to right
-  // if (
-  //   board[0][0] != "" &&
-  //   board[0][0] === board[1][1] &&
-  //   board[1][1] === board[2][2]
-  // ) {
-  //   return true;
-  // }
-
-  // //diagonal up from left to right
-  // if (
-  //   board[2][0] != "" &&
-  //   board[2][0] === board[1][1] &&
-  //   board[1][1] === board[0][2]
-  // ) {
-  //   return true;
 };
 
 initGame();
