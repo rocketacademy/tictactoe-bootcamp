@@ -103,15 +103,15 @@ const squareClick = (column, row) => {
       message.innerHTML = `The game have ended, the winner is Player ${currentPlayer}!!`;
 
       //display the meesage to restart
-      setTimeout(() => {
-        board = [
-          ["", "", ""],
-          ["", "", ""],
-          ["", "", ""],
-        ];
-        buildBoard(board);
-        message.innerHTML = `Restarting the game... click a square to start!`;
-      }, 2000);
+      // setTimeout(() => {
+      //   board = [
+      //     ["", "", ""],
+      //     ["", "", ""],
+      //     ["", "", ""],
+      //   ];
+      //   buildBoard(board);
+      //   message.innerHTML = `Restarting the game... click a square to start!`;
+      // }, 2000);
     } else {
       togglePlayer();
     }
@@ -122,81 +122,162 @@ const checkWin = (board) => {
   // check every position
   // there is a conditional for all 15 win conditions
 
-  //need to make sure the board element is not empty
+  let row1Count = 0;
+  let column1Count = 0;
+  let row2Count = 0;
+  let column2Count = 0;
+  let row3Count = 0;
+  let column3Count = 0;
+  let diagonalDownCount = 0;
+  let diagonalUpCount = 0;
 
-  //first row
-  if (
-    board[0][0] != "" &&
-    board[0][0] === board[0][1] &&
-    board[0][1] === board[0][2]
-  ) {
-    return true;
+  for (let i = 0; i < 3; i += 1) {
+    for (let j = 0; j < 3; j += 1) {
+      //need to make sure the board element is not empty
+      if (i === 0 && board[0][0] != "") {
+        //first row
+        if (board[i][j] === currentPlayer) {
+          row1Count += 1;
+          console.log("first row->" + row1Count);
+        }
+        //first column
+        if (board[j][i] === currentPlayer) {
+          column1Count += 1;
+          console.log("first column->" + column1Count);
+        }
+      }
+
+      if (i === 1 && board[1][0] != "") {
+        //second row
+        if (board[i][j] === currentPlayer) {
+          row2Count += 1;
+          console.log("second row->" + row2Count);
+        }
+        //second column
+        if (board[j][i] === currentPlayer) {
+          column2Count += 1;
+          console.log("second column->" + column2Count);
+        }
+      }
+
+      if (i === 2 && board[2][0] != "") {
+        //third row
+        if (board[i][j] === currentPlayer) {
+          row3Count += 1;
+          console.log("third row->" + row3Count);
+        }
+        //third column
+        if (board[j][i] === currentPlayer) {
+          column3Count += 1;
+          console.log("third column->" + column3Count);
+        }
+      }
+
+      //diagonal down from left to right
+      if (i === j && board[0][0] != "") {
+        if (board[i][j] === currentPlayer) {
+          diagonalDownCount += 1;
+          console.log("diagonal down->" + diagonalDownCount);
+        }
+      }
+
+      //diagonal up from left to right
+      if (
+        (i === j + 2 || i + 2 === j || (i == 1 && j == 1)) &&
+        board[1][1] != ""
+      ) {
+        if (board[i][j] === currentPlayer) {
+          diagonalUpCount += 1;
+          console.log("diagonal up->" + diagonalUpCount);
+        }
+      }
+    }
   }
 
-  //second row
   if (
-    board[1][0] != "" &&
-    board[1][0] === board[1][1] &&
-    board[1][1] === board[1][2]
-  ) {
-    return true;
-  }
-
-  //third row
-  if (
-    board[2][0] != "" &&
-    board[2][0] === board[2][1] &&
-    board[2][1] === board[2][2]
-  ) {
-    return true;
-  }
-
-  //first column
-  if (
-    board[0][0] != "" &&
-    board[0][0] === board[1][0] &&
-    board[1][0] === board[2][0]
-  ) {
-    return true;
-  }
-
-  //second column
-  if (
-    board[0][1] != "" &&
-    board[0][1] === board[1][1] &&
-    board[1][1] === board[2][1]
-  ) {
-    return true;
-  }
-
-  //third column
-  if (
-    board[0][2] != "" &&
-    board[0][2] === board[1][2] &&
-    board[1][2] === board[2][2]
-  ) {
-    return true;
-  }
-
-  //diagonal down from left to right
-  if (
-    board[0][0] != "" &&
-    board[0][0] === board[1][1] &&
-    board[1][1] === board[2][2]
-  ) {
-    return true;
-  }
-
-  //diagonal up from left to right
-  if (
-    board[2][0] != "" &&
-    board[2][0] === board[1][1] &&
-    board[1][1] === board[0][2]
+    row1Count === 3 ||
+    column1Count === 3 ||
+    row2Count === 3 ||
+    column2Count === 3 ||
+    row3Count === 3 ||
+    column3Count === 3 ||
+    diagonalDownCount === 3 ||
+    diagonalUpCount === 3
   ) {
     return true;
   }
 
   return false;
+  // //first row
+  // if (
+  //   board[0][0] != "" &&
+  //   board[0][0] === board[0][1] &&
+  //   board[0][1] === board[0][2]
+  // ) {
+  //   return true;
+  // }
+
+  // //second row
+  // if (
+  //   board[1][0] != "" &&
+  //   board[1][0] === board[1][1] &&
+  //   board[1][1] === board[1][2]
+  // ) {
+  //   return true;
+  // }
+
+  // //third row
+  // if (
+  //   board[2][0] != "" &&
+  //   board[2][0] === board[2][1] &&
+  //   board[2][1] === board[2][2]
+  // ) {
+  //   return true;
+  // }
+
+  // //first column
+  // if (
+  //   board[0][0] != "" &&
+  //   board[0][0] === board[1][0] &&
+  //   board[1][0] === board[2][0]
+  // ) {
+  //   return true;
+  // }
+
+  // //second column
+  // if (
+  //   board[0][1] != "" &&
+  //   board[0][1] === board[1][1] &&
+  //   board[1][1] === board[2][1]
+  // ) {
+  //   return true;
+  // }
+
+  // //third column
+  // if (
+  //   board[0][2] != "" &&
+  //   board[0][2] === board[1][2] &&
+  //   board[1][2] === board[2][2]
+  // ) {
+  //   return true;
+  // }
+
+  // //diagonal down from left to right
+  // if (
+  //   board[0][0] != "" &&
+  //   board[0][0] === board[1][1] &&
+  //   board[1][1] === board[2][2]
+  // ) {
+  //   return true;
+  // }
+
+  // //diagonal up from left to right
+  // if (
+  //   board[2][0] != "" &&
+  //   board[2][0] === board[1][1] &&
+  //   board[1][1] === board[0][2]
+  // ) {
+  //   return true;
 };
 
 initGame();
