@@ -10,11 +10,12 @@ let boardSizeInput;
 let submit;
 
 // keep data about the game in a 2-D array
-let board = [
-  ["", "", ""],
-  ["", "", ""],
-  ["", "", ""],
-];
+let board = [];
+// let board = [
+//   ["", "", ""],
+//   ["", "", ""],
+//   ["", "", ""],
+// ];
 
 // the element that contains the rows and squares
 let boardElement;
@@ -88,10 +89,16 @@ const initGame = () => {
   submit.addEventListener("click", () => {
     boardSize = Number(boardSizeInput.value);
     console.log(boardSize);
+    for (let i = 0; i < boardSize; i += 1) {
+      let rowArr = [];
+      for (let j = 0; j < boardSize; j += 1) {
+        rowArr.push("");
+      }
+      board.push(rowArr);
+      // build the board - right now it's empty
+      buildBoard(board);
+    }
   });
-
-  // build the board - right now it's empty
-  buildBoard(board);
 };
 
 //GAMEPLAY LOGIC
