@@ -1,17 +1,31 @@
-let board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
+const PLAYER_MODE = 'player mode';
+const COMPUTER_MODE = 'computer mode';
 
+let board = [];
+let boardSize = 0;
+let winLength = 0;
+let gameMode = PLAYER_MODE;
 let boardContainer;
 let boardElement;
 let currentPlayer = 'X';
 let isPlaying = false;
+let goingToWin = false;
 const textDiv = document.createElement('div');
-const buttonDiv = document.createElement('div');
+const selectDiv = document.createElement('div');
+const winList = document.createElement('select');
 
 // ###################### HELPER FUNCTIONS ########################
+
+const createEmptyArray = (size) => {
+  const boardArray = [];
+  for (let i = 0; i < size; i += 1) {
+    boardArray.push([]);
+    for (let j = 0; j < size; j += 1) {
+      boardArray[i].push('');
+    }
+  }
+  return boardArray;
+};
 
 // eslint-disable-next-line
 const buildBoard = (board) => {
@@ -42,19 +56,125 @@ const buildBoard = (board) => {
 };
 
 const resetBoard = () => {
-  isPlaying = true;
+  if (boardSize <= 2 || winLength <= 2) {
+    isPlaying = false;
+  } else {
+    isPlaying = true;
+  }
   currentPlayer = 'X';
+  goingToWin = false;
   textDiv.innerText = "New game started! Player X's turn!";
-  board = [
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', ''],
-  ];
+  board = createEmptyArray(boardSize);
   buildBoard(board);
-  buttonDiv.innerHTML = '';
+};
+
+// eslint-disable-next-line
+const setSize = () => {
+  boardSize = document.querySelector('#size').value;
+  boardSize = Number(boardSize) + 2;
+  resetBoard();
+
+  winList.innerHTML = '';
+  for (let i = 0; i < boardSize - 1; i += 1) {
+    const winOption = document.createElement('option');
+    winOption.value = String(i);
+    if (i === 0) {
+      winOption.innerText = 'To Win:';
+    } else {
+      winOption.innerText = String(i + 2);
+    }
+    winList.appendChild(winOption);
+  }
+};
+
+// eslint-disable-next-line
+const setWinLength = () => {
+  winLength = document.querySelector('#win').value;
+  winLength = Number(winLength) + 2;
+  resetBoard();
+};
+
+// eslint-disable-next-line
+const setMode = () => {
+  const mode = document.querySelector('#mode').value;
+  if (mode === '0') {
+    gameMode = PLAYER_MODE;
+  } else if (mode === '1') {
+    gameMode = COMPUTER_MODE;
+  }
 };
 
 // ###################### GAMEPLAY LOGIC ########################
+
+const checkWin = () => {
+  let result = false;
+  let diagRightCheck = 0;
+  let diagLeftCheck = 0;
+
+  // check rows
+  for (let i = 0; i < board.length; i += 1) {
+    let rowCheck = 0;
+    let columnCheck = 0;
+
+    for (let j = 0; j < board[i].length; j += 1) {
+      if (board[i][j] === currentPlayer) {
+        // check rows
+        rowCheck += 1;
+        if (rowCheck === winLength) {
+          result = true;
+        } else if (rowCheck === winLength - 1) {
+          goingToWin = true;
+        }
+
+        for (let k = 0; k < winLength; k += 1) {
+          if (j - k >= 0) {
+            // check diagright
+            if (i - k >= 0) {
+              if (board[i - k][j - k] === currentPlayer) {
+                diagRightCheck += 1;
+                if (diagRightCheck === winLength) {
+                  result = true;
+                } else if (diagRightCheck === winLength - 1) {
+                  goingToWin = true;
+                }
+              }
+            }
+
+            // check diagleft
+            if (i + k < winLength) {
+              if (board[i + k][j - k] === currentPlayer) {
+                diagLeftCheck += 1;
+                if (diagLeftCheck === winLength) {
+                  result = true;
+                } else if (diagLeftCheck === winLength - 1) {
+                  goingToWin = true;
+                }
+              }
+            }
+          }
+        }
+      } else {
+        rowCheck = 0;
+        diagRightCheck = 0;
+        diagLeftCheck = 0;
+      }
+
+      // check columns
+      if (board[j][i] === currentPlayer) {
+        columnCheck += 1;
+        if (columnCheck === winLength) {
+          result = true;
+        } else if (columnCheck === winLength - 1) {
+          goingToWin = true;
+        }
+      } else {
+        columnCheck = 0;
+      }
+    }
+  }
+  return result;
+};
+
 const togglePlayer = () => {
   if (currentPlayer === 'X') {
     currentPlayer = 'O';
@@ -65,60 +185,26 @@ const togglePlayer = () => {
   }
 };
 
-const checkWin = () => {
-  let rowSum = 0;
-  let columnSum = 0;
-  let diagLeftSum = 0;
-  let diagRightSum = 0;
-
-  // check rows
-  for (let i = 0; i < board.length; i += 1) {
-    rowSum = 0;
-    columnSum = 0;
-    for (let j = 0; j < board[i].length; j += 1) {
-      // check rows
-      if (board[i][j] === 'X') {
-        rowSum += 1;
-      } else if (board[i][j] === 'O') {
-        rowSum -= 1;
-      }
-
-      // check columns
-      if (board[j][i] === 'X') {
-        columnSum += 1;
-      } else if (board[j][i] === 'O') {
-        columnSum -= 1;
-      }
-    }
-    // check diagonal left
-    if (board[i][i] === 'X') {
-      diagLeftSum += 1;
-    } else if (board[i][i] === 'O') {
-      diagLeftSum -= 1;
-    }
-
-    // check diagonal right
-    const k = board.length - 1 - i;
-    if (board[i][k] === 'X') {
-      diagRightSum += 1;
-    } else if (board[i][k] === 'O') {
-      diagRightSum -= 1;
-    }
-
-    // return true if sum = length or -length
-    if (rowSum === board.length
-      || rowSum === board.length * -1
-      || columnSum === board.length
-      || columnSum === board.length * -1
-      || diagLeftSum === board.length
-      || diagLeftSum === board.length * -1
-      || diagRightSum === board.length
-      || diagRightSum === board.length * -1) {
-      return true;
+const randomClick = () => {
+  if (goingToWin === true) {
+    // block move
+  }
+  let playedMove = false;
+  while (playedMove === false) {
+    const randomColumn = Math.floor(Math.random() * boardSize);
+    const randomRow = Math.floor(Math.random() * boardSize);
+    if (board[randomColumn][randomRow] === '') {
+      board[randomColumn][randomRow] = currentPlayer;
+      buildBoard(board);
+      playedMove = true;
     }
   }
-
-  return false;
+  if (checkWin() === true) {
+    textDiv.innerText = 'Computer wins!';
+    isPlaying = false;
+  } else {
+    togglePlayer();
+  }
 };
 
 const squareClick = (column, row) => {
@@ -131,13 +217,17 @@ const squareClick = (column, row) => {
     if (checkWin() === true) {
       textDiv.innerText = `Player ${currentPlayer} wins!`;
       isPlaying = false;
-      const resetButton = document.createElement('button');
-      resetButton.innerText = 'Reset';
-      resetButton.classList.add('reset-button');
-      resetButton.addEventListener('click', resetBoard);
-      buttonDiv.appendChild(resetButton);
     } else {
       togglePlayer();
+      if (gameMode === COMPUTER_MODE) {
+        textDiv.innerText = 'Computer is thinking.';
+        // eslint-disable-next-line
+        const addDot = setTimeout(() => { textDiv.innerText += '.'; }, 200);
+        // eslint-disable-next-line
+        const addAnotherDot = setTimeout(() => { textDiv.innerText += '.'; }, 400);
+        // eslint-disable-next-line
+        const delayMove = setTimeout(randomClick, 500);
+      }
     }
   }
 };
@@ -149,11 +239,59 @@ const initGame = () => {
   textDiv.classList.add('message');
   textDiv.innerText = "Welcome! Player X's turn!";
   document.body.appendChild(textDiv);
-  document.body.appendChild(buttonDiv);
+
+  selectDiv.classList.add('container');
+  const sizeList = document.createElement('select');
+  sizeList.classList.add('list');
+  sizeList.setAttribute('id', 'size');
+  sizeList.setAttribute('onchange', 'setSize();');
+  for (let i = 0; i < 8; i += 1) {
+    const sizeOption = document.createElement('option');
+    sizeOption.value = String(i);
+    if (i === 0) {
+      sizeOption.innerText = 'Board Size:';
+    } else {
+      sizeOption.innerText = String(i + 2);
+    }
+    sizeList.appendChild(sizeOption);
+  }
+  selectDiv.appendChild(sizeList);
+
+  winList.classList.add('list');
+  winList.setAttribute('id', 'win');
+  winList.setAttribute('onchange', 'setWinLength();');
+  const winOption = document.createElement('option');
+  winOption.value = '0';
+  winOption.innerText = 'To Win:';
+  winList.appendChild(winOption);
+  selectDiv.appendChild(winList);
+
+  const modeList = document.createElement('select');
+  modeList.classList.add('list');
+  modeList.setAttribute('id', 'mode');
+  modeList.setAttribute('onchange', 'setMode();');
+  const modeOption0 = document.createElement('option');
+  const modeOption1 = document.createElement('option');
+  modeOption0.value = '0';
+  modeOption1.value = '1';
+  modeOption0.innerText = 'Player vs. Player';
+  modeOption1.innerText = 'Player vs. Computer';
+  modeList.appendChild(modeOption0);
+  modeList.appendChild(modeOption1);
+  selectDiv.appendChild(modeList);
+
+  const resetButton = document.createElement('button');
+  resetButton.innerText = 'Reset';
+  resetButton.classList.add('reset-button');
+  resetButton.addEventListener('click', resetBoard);
+  selectDiv.appendChild(resetButton);
+  document.body.appendChild(selectDiv);
 
   boardContainer = document.createElement('div');
+  boardContainer.classList.add('container');
   document.body.appendChild(boardContainer);
 
+  board = createEmptyArray(boardSize);
   buildBoard(board);
 };
 
