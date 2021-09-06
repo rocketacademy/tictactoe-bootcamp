@@ -164,41 +164,66 @@ const togglePlayer = () => {
 
 // check win conditions and generate output message
 const checkWin = () => {
-  let diagonalRightValue = '';
-  let diagonalLeftValue = '';
-
-  for (let j = 0; j < 3; j += 1) {
-    let rowValue = '';
-    let colValue = '';
-
-    for (let i = 0; i < 3; i += 1) {
-      rowValue += board[j][i];
-      colValue += board[i][j];
-      console.log(colValue);
-
-      if (i === j) {
-        console.log(i, j);
-        diagonalRightValue += board[j][i];
-        console.log(diagonalRightValue, i, j);
-      }
-      console.log(diagonalRightValue);
-
-      if (i === 0 && j === 2) {
-        diagonalLeftValue += board[i][j];
-      }
-      if (i === 1 && j === 1) {
-        diagonalLeftValue += board[i][j];
-      }
-      if (i === 2 && j === 0) {
-        diagonalLeftValue += board[i][j];
-      }
+  let rowCheck = 0;
+  let colCheck = 0;
+  // let diagRightCheck = 0;
+  for (let j = 0; j < board.length; j += 1) {
+    for (let i = 0; i < board.length; i += 1) {
+      if (board[j][i] === currentPlayer) {
+        rowCheck += 1;
+      } else { rowCheck = 0; }
+      if (board[i][j] === currentPlayer) {
+        colCheck += 1; }
+      else { colCheck = 0; }
+      //     if (i === j) {
+      //       if (board[i][j] === currentPlayer && j === diagRightCheck) {
+      //         diagRightCheck += 1; }
+      //       console.log(diagRightCheck);
+      //     }
+      // else { diagRightCheck = 0; }
     }
-    if (rowValue === 'XXX' || colValue === 'XXX' || diagonalRightValue === 'XXX' || diagonalLeftValue === 'XXX') {
-      output('X wins!');
-    } else if (rowValue === 'OOO' || colValue === 'OOO' || diagonalRightValue === 'OOO' || diagonalLeftValue === 'OOO') {
-      output('O wins!');
+    if (rowCheck === board.length || colCheck === board.length) {
+      output(`${currentPlayer} wins!`);
+      console.log(messageCont.innerHTML);
     } }
 };
+
+// const checkWin = () => {
+//   let diagonalRightValue = '';
+//   let diagonalLeftValue = '';
+
+//   for (let j = 0; j < board.length; j += 1) {
+//     let rowValue = '';
+//     let colValue = '';
+
+//     for (let i = 0; i < board.length; i += 1) {
+//       rowValue += board[j][i];
+//       colValue += board[i][j];
+//       console.log(colValue);
+
+//       if (i === j) {
+//         console.log(i, j);
+//         diagonalRightValue += board[j][i];
+//         console.log(diagonalRightValue, i, j);
+//       }
+//       console.log(diagonalRightValue);
+
+//       if (i === 0 && j === 2) {
+//         diagonalLeftValue += board[i][j];
+//       }
+//       if (i === 1 && j === 1) {
+//         diagonalLeftValue += board[i][j];
+//       }
+//       if (i === 2 && j === 0) {
+//         diagonalLeftValue += board[i][j];
+//       }
+//     }
+//     if (rowValue === 'XXX' || colValue === 'XXX' || diagonalRightValue === 'XXX' || diagonalLeftValue === 'XXX') {
+//       output('X wins!');
+//     } else if (rowValue === 'OOO' || colValue === 'OOO' || diagonalRightValue === 'OOO' || diagonalLeftValue === 'OOO') {
+//       output('O wins!');
+//     } }
+// };
 
 // things that happen when a square is clicked
 const squareClick = (column, row) => {
@@ -222,12 +247,10 @@ const squareClick = (column, row) => {
 
 // things that happen when playAgain button is clicked
 const playAgainClick = () => {
+  // reset board size
+  boardSizeInput.value = 3;
   // empty the board
-  board = [
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', ''],
-  ];
+  buildEmptyBoard(boardSizeInput.value);
   // build back empty board
   buildBoard(board);
   // append default message in message container
