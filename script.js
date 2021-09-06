@@ -174,16 +174,17 @@ const checkWin = (board, row, column) => {
   }
   numMatch = 0;
 
-  // Check diagonal combination
+  // Check left to right diagonal combination
   for (let j = 1; j < numMatchRequired; j += 1) {
-    if ((row - j) >= 0 && board[row - j][column] === currentPlayer) {
+    if ((row - j) >= 0 && (column - j) >= 0 && board[row - j][column - j] === currentPlayer) {
       numMatch += 1;
       if (numMatch === numMatchRequired - 1) {
         return true;
       }
     }
 
-    if ((row + j) <= (boardSize - 1) && board[row + j][column] === currentPlayer) {
+    // eslint-disable-next-line max-len
+    if ((row + j) <= (boardSize - 1) && (column + j) <= (boardSize - 1) && board[row + j][column + j] === currentPlayer) {
       numMatch += 1;
       if (numMatch === numMatchRequired - 1) {
         return true;
@@ -192,6 +193,25 @@ const checkWin = (board, row, column) => {
   }
   numMatch = 0;
 
+  // Check right to left diagonal combination
+  for (let j = 1; j < numMatchRequired; j += 1) {
+    // eslint-disable-next-line max-len
+    if ((row - j) >= 0 && (column + j) <= (boardSize - 1) && board[row - j][column + j] === currentPlayer) {
+      numMatch += 1;
+      if (numMatch === numMatchRequired - 1) {
+        return true;
+      }
+    }
+
+    // eslint-disable-next-line max-len
+    if ((row + j) <= (boardSize - 1) && (column - j) >= 0 && board[row + j][column - j] === currentPlayer) {
+      numMatch += 1;
+      if (numMatch === numMatchRequired - 1) {
+        return true;
+      }
+    }
+  }
+  numMatch = 0;
   return false;
 };
 
