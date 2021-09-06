@@ -1,10 +1,15 @@
 // =========================== GLOBAL VARIABLES ===========================
+// Variable to determine board size
+const boardSize = 3;
+
 // keep data about the game in a 2-D array
-let board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
+let board = [[]];
+for (let i = 0; i < boardSize; i += 1) {
+  board.push([]);
+  for (let j = 0; j < boardSize; j += 1) {
+    board[i][j] = '';
+  }
+}
 
 // the element that contains the rows and squares
 let boardElement;
@@ -24,6 +29,9 @@ gameInfo.classList.add('gameinfo-display');
 
 // Variable to help disable clicks when game ends
 let canClick = true;
+
+// Number of match to win the game
+const numMatchRequired = 3;
 
 // =========================== HELPER FUNCTIONS ===========================
 // completely rebuilds the entire board every time there's a click
@@ -95,57 +103,75 @@ const togglePlayer = () => {
   }
 };
 
-const checkWin = (board) => {
-  // check every position
-  // there is a conditional for all 8 win conditions
-  // First row
-  if (board[0][0] !== '' && board[0][0] === board[0][1] && board[0][1] === board[0][2]) {
-    return true;
-  }
+const checkWin = (board, row, column) => {
+  let numMatch = 0;
+  // Check all horizontal combinations
+  // Check if left and right 2 index in board array are the same icon
+  for (let j = 1; j < numMatchRequired; j += 1) {
+    if (board[row][column - j] === currentPlayer) {
+      numMatch += 1;
+      if (numMatch === numMatchRequired - 1) {
+        return true;
+      }
+    }
 
-  // Second row
-  if (board[1][0] !== '' && board[1][0] === board[1][1] && board[1][1] === board[1][2]) {
-    return true;
+    if (board[row][column + j] === currentPlayer) {
+      numMatch += 1;
+      if (numMatch === numMatchRequired - 1) {
+        return true;
+      }
+    }
   }
+  numMatch = 0;
 
-  // Third row
-  if (board[2][0] !== '' && board[2][0] === board[2][1] && board[2][1] === board[2][2]) {
-    return true;
-  }
+  // Check all vertical combinations
+  // j represents row here
+  // Check if top and bottom 2 index in board array are the same icon
+  for (let j = 1; j < numMatchRequired; j += 1) {
+    if ((row - j) >= 0 && board[row - j][column] === currentPlayer) {
+      numMatch += 1;
+      if (numMatch === numMatchRequired - 1) {
+        return true;
+      }
+    }
 
-  // First column
-  if (board[0][0] !== '' && board[0][0] === board[1][0] && board[1][0] === board[2][0]) {
-    return true;
+    if ((row + j) <= (boardSize - 1) && board[row + j][column] === currentPlayer) {
+      numMatch += 1;
+      if (numMatch === numMatchRequired - 1) {
+        return true;
+      }
+    }
   }
+  numMatch = 0;
 
-  // Second column
-  if (board[0][1] !== '' && board[0][1] === board[1][1] && board[1][1] === board[2][1]) {
-    return true;
-  }
+  // Check diagonal combination
+  for (let j = 1; j < numMatchRequired; j += 1) {
+    if ((row - j) >= 0 && board[row - j][column] === currentPlayer) {
+      numMatch += 1;
+      if (numMatch === numMatchRequired - 1) {
+        return true;
+      }
+    }
 
-  // Third column
-  if (board[0][2] !== '' && board[0][2] === board[1][2] && board[1][2] === board[2][2]) {
-    return true;
+    if ((row + j) <= (boardSize - 1) && board[row + j][column] === currentPlayer) {
+      numMatch += 1;
+      if (numMatch === numMatchRequired - 1) {
+        return true;
+      }
+    }
   }
-
-  // Left to right diagonal
-  if (board[0][0] !== '' && board[0][0] === board[1][1] && board[1][1] === board[2][2]) {
-    return true;
-  }
-
-  // Right to left diagonal
-  if (board[0][2] !== '' && board[0][2] === board[1][1] && board[1][1] === board[2][0]) {
-    return true;
-  }
+  numMatch = 0;
 
   return false;
 };
 
-const squareClick = (column, row) => {
-  if (board[column][row] === '' && canClick === true) {
-    board[column][row] = currentPlayer;
+const squareClick = (row, column) => {
+  if (board[row][column] === '' && canClick === true) {
+    board[row][column] = currentPlayer;
     buildBoard(board);
-    if (checkWin(board) === true) {
+    console.log('board printed');
+    console.log('checking win');
+    if (checkWin(board, row, column) === true) {
       // Disable further clicks
       canClick = false;
       // game over
