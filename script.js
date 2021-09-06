@@ -16,6 +16,7 @@ const winList = document.createElement('select');
 
 // ###################### HELPER FUNCTIONS ########################
 
+// builds empty array for the board eg. size 3: [['','',''],['','',''],['','','']]
 const createEmptyArray = (size) => {
   const boardArray = [];
   for (let i = 0; i < size; i += 1) {
@@ -27,6 +28,7 @@ const createEmptyArray = (size) => {
   return boardArray;
 };
 
+// GIVEN FUNCTION - create dom board
 // eslint-disable-next-line
 const buildBoard = (board) => {
   boardContainer.innerHTML = '';
@@ -55,7 +57,9 @@ const buildBoard = (board) => {
   }
 };
 
+// reset global variables and empties array/board
 const resetBoard = () => {
+  // checks that boardSize/winLength have been selected
   if (boardSize <= 2 || winLength <= 2) {
     isPlaying = false;
   } else {
@@ -68,6 +72,7 @@ const resetBoard = () => {
   buildBoard(board);
 };
 
+// sets board size from option list, creates winlength list accordingly (3~boardSize)
 // eslint-disable-next-line
 const setSize = () => {
   boardSize = document.querySelector('#size').value;
@@ -87,6 +92,7 @@ const setSize = () => {
   }
 };
 
+// sets win length from option list
 // eslint-disable-next-line
 const setWinLength = () => {
   winLength = document.querySelector('#win').value;
@@ -94,6 +100,7 @@ const setWinLength = () => {
   resetBoard();
 };
 
+// sets game mode from option list (default is pvp)
 // eslint-disable-next-line
 const setMode = () => {
   const mode = document.querySelector('#mode').value;
@@ -106,19 +113,19 @@ const setMode = () => {
 
 // ###################### GAMEPLAY LOGIC ########################
 
+// checks for winning configurations, returns true if found
 const checkWin = () => {
   let result = false;
   let diagRightCheck = 0;
   let diagLeftCheck = 0;
 
-  // check rows
   for (let i = 0; i < board.length; i += 1) {
     let rowCheck = 0;
     let columnCheck = 0;
 
     for (let j = 0; j < board[i].length; j += 1) {
+      // check rows
       if (board[i][j] === currentPlayer) {
-        // check rows
         rowCheck += 1;
         if (rowCheck === winLength) {
           result = true;
@@ -175,6 +182,7 @@ const checkWin = () => {
   return result;
 };
 
+// GIVEN FUNCTION - X -> O; O -> X
 const togglePlayer = () => {
   if (currentPlayer === 'X') {
     currentPlayer = 'O';
@@ -185,6 +193,7 @@ const togglePlayer = () => {
   }
 };
 
+// plays computer's move
 const randomClick = () => {
   if (goingToWin === true) {
     // block move
@@ -207,6 +216,7 @@ const randomClick = () => {
   }
 };
 
+// GIVEN FUNCTION ++ check for wins and computer move
 const squareClick = (column, row) => {
   if (isPlaying === true) {
     if (board[column][row] === '') {
@@ -219,6 +229,7 @@ const squareClick = (column, row) => {
       isPlaying = false;
     } else {
       togglePlayer();
+      // gives some delay before computer makes move
       if (gameMode === COMPUTER_MODE) {
         textDiv.innerText = 'Computer is thinking.';
         // eslint-disable-next-line
@@ -236,11 +247,16 @@ const squareClick = (column, row) => {
 const initGame = () => {
   isPlaying = true;
 
+  // message box
   textDiv.classList.add('message');
   textDiv.innerText = "Welcome! Player X's turn!";
   document.body.appendChild(textDiv);
 
+  // container for option lists/reset button
   selectDiv.classList.add('container');
+  document.body.appendChild(selectDiv);
+
+  // board size
   const sizeList = document.createElement('select');
   sizeList.classList.add('list');
   sizeList.setAttribute('id', 'size');
@@ -257,6 +273,7 @@ const initGame = () => {
   }
   selectDiv.appendChild(sizeList);
 
+  // win length
   winList.classList.add('list');
   winList.setAttribute('id', 'win');
   winList.setAttribute('onchange', 'setWinLength();');
@@ -266,6 +283,7 @@ const initGame = () => {
   winList.appendChild(winOption);
   selectDiv.appendChild(winList);
 
+  // game mode
   const modeList = document.createElement('select');
   modeList.classList.add('list');
   modeList.setAttribute('id', 'mode');
@@ -280,19 +298,19 @@ const initGame = () => {
   modeList.appendChild(modeOption1);
   selectDiv.appendChild(modeList);
 
+  // reset button
   const resetButton = document.createElement('button');
   resetButton.innerText = 'Reset';
   resetButton.classList.add('reset-button');
   resetButton.addEventListener('click', resetBoard);
   selectDiv.appendChild(resetButton);
-  document.body.appendChild(selectDiv);
 
+  // GIVEN - game board
   boardContainer = document.createElement('div');
   boardContainer.classList.add('container');
   document.body.appendChild(boardContainer);
 
-  board = createEmptyArray(boardSize);
-  buildBoard(board);
+  resetBoard();
 };
 
 initGame();
