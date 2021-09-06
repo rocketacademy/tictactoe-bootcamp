@@ -1,15 +1,17 @@
 // =========================== GLOBAL VARIABLES ===========================
 // Variable to determine board size
-const boardSize = 3;
+let boardSize = 0;
 
 // keep data about the game in a 2-D array
 let board = [[]];
-for (let i = 0; i < boardSize; i += 1) {
-  board.push([]);
-  for (let j = 0; j < boardSize; j += 1) {
-    board[i][j] = '';
+const buildInitialBoard = () => {
+  for (let i = 0; i < boardSize; i += 1) {
+    board.push([]);
+    for (let j = 0; j < boardSize; j += 1) {
+      board[i][j] = '';
+    }
   }
-}
+};
 
 // the element that contains the rows and squares
 let boardElement;
@@ -34,6 +36,29 @@ let canClick = true;
 const numMatchRequired = 3;
 
 // =========================== HELPER FUNCTIONS ===========================
+// Get user input for board size
+const getBoardSize = () => {
+  // DOM user input element for board size
+  const initialParameterInput = document.createElement('div');
+  initialParameterInput.setAttribute('id', 'initial-input');
+
+  const boardSizeInput = document.createElement('input');
+  boardSizeInput.setAttribute('placeholder', 'Input Board Size', 'id', 'boardsize-input');
+
+  const submitButton = document.createElement('button');
+  submitButton.innerText = 'Submit';
+  submitButton.addEventListener('click', () => {
+    boardSize = boardSizeInput.value;
+    buildInitialBoard();
+    initialParameterInput.remove();
+    initGame();
+  });
+  initialParameterInput.appendChild(boardSizeInput);
+  initialParameterInput.appendChild(submitButton);
+
+  document.body.appendChild(initialParameterInput);
+};
+
 // completely rebuilds the entire board every time there's a click
 const buildBoard = (board) => {
   // start with an empty container
@@ -185,13 +210,18 @@ const squareClick = (row, column) => {
 // =========================== GAME INITIALISATION LOGIC ===========================
 // create the board container element and put it on the screen
 const initGame = () => {
-  boardContainer = document.createElement('div');
-  document.body.appendChild(boardContainer);
-  document.body.appendChild(gameInfo);
-  document.body.appendChild(resetButton);
+  if (boardSize === 0) {
+    getBoardSize();
+  }
+  else {
+    boardContainer = document.createElement('div');
+    document.body.appendChild(boardContainer);
+    document.body.appendChild(gameInfo);
+    document.body.appendChild(resetButton);
 
-  // build the board - right now it's empty
-  buildBoard(board);
+    // build the board - right now it's empty
+    buildBoard(board);
+  }
 };
 
 initGame();
