@@ -17,10 +17,14 @@ let boardContainer;
 // current player global starts at X
 let currentPlayer = 'X';
 
+// global for square box on board
 let square;
 
-let messageCont;
+// global for message container
+const messageCont = document.createElement('div');
+messageCont.classList.add('message');
 
+// global for playAgain button
 const playAgainButton = document.createElement('button');
 playAgainButton.classList.add('button');
 playAgainButton.innerText = 'Play Again';
@@ -68,6 +72,7 @@ const buildBoard = (board) => {
   }
 };
 
+// function to append text to message container
 const output = (message) => {
   messageCont.innerHTML = message;
 };
@@ -75,15 +80,19 @@ const output = (message) => {
 // =============== GAME INITIALISATION LOGIC =================
 // create the board container element and put it on the screen
 const initGame = () => {
-  messageCont = document.createElement('div');
-  messageCont.classList.add('message');
+  // append message Container with defaulty message
   output('Win by plotting your Xs or Os in a<br>diagonal, horizontal or vertical manner');
   document.body.appendChild(messageCont);
 
+  // create and append board container
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
 
-  // build the board - right now it's empty
+  // append playAgain button
+  playAgainButton.addEventListener('click', playAgainClick);
+  document.body.appendChild(playAgainButton);
+
+  // build the board - empty at first initialisation
   buildBoard(board);
 };
 
@@ -97,6 +106,7 @@ const togglePlayer = () => {
   }
 };
 
+// check win conditions and generate output message
 const checkWin = () => {
   let diagonalRightValue = '';
   let diagonalLeftValue = '';
@@ -129,21 +139,19 @@ const checkWin = () => {
     }
     if (rowValue === 'XXX' || colValue === 'XXX' || diagonalRightValue === 'XXX' || diagonalLeftValue === 'XXX') {
       output('X wins!');
-      document.body.appendChild(playAgainButton);
-      playAgainButton.addEventListener('click', playAgainClick);
     } else if (rowValue === 'OOO' || colValue === 'OOO' || diagonalRightValue === 'OOO' || diagonalLeftValue === 'OOO') {
       output('O wins!');
-      document.body.appendChild(playAgainButton);
-      playAgainButton.addEventListener('click', playAgainClick);
     } }
 };
 
+// things that happen when a square is clicked
 const squareClick = (column, row) => {
   // see if the clicked square has been clicked on before
   if (board[column][row] === '') {
     // alter the data array, set it to the current player
     board[column][row] = currentPlayer;
 
+    // call the checkwin function at every click to check for wins
     checkWin();
 
     // refresh the creen with a new board
@@ -156,16 +164,18 @@ const squareClick = (column, row) => {
   }
 };
 
+// things that happen when playAgain button is clicked
 const playAgainClick = () => {
+  // empty the board
   board = [
     ['', '', ''],
     ['', '', ''],
     ['', '', ''],
   ];
-  output('');
+  // build back empty board
   buildBoard(board);
+  // append default message in message container
   output('Win by plotting your Xs or Os in a<br>diagonal, horizontal or vertical manner');
-  // playAgainButton.innerHTML = '';
 };
 
 initGame();
