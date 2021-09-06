@@ -75,6 +75,7 @@ const initGame = () => {
   document.body.appendChild(boardContainer);
 
   messageCont = document.createElement('div');
+  messageCont.classList.add('message');
   document.body.appendChild(messageCont);
 
   // build the board - right now it's empty
