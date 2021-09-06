@@ -6,6 +6,8 @@ const board = [
   ['', '', ''],
 ];
 
+// const boardCopy = [];
+
 // the element that contains the rows and squares
 let boardElement;
 
@@ -14,6 +16,10 @@ let boardElement;
 let boardContainer;
 
 // current player global starts at X
+const playerState = document.createElement('div');
+playerState.setAttribute('class', 'player-info');
+document.body.appendChild(playerState);
+
 let currentPlayer = 'X';
 
 // completely rebuilds the entire board every time there's a click
@@ -21,6 +27,7 @@ const buildBoard = (board) => {
   // start with an empty container
   boardContainer.innerHTML = '';
   boardElement = document.createElement('div');
+  boardElement.setAttribute('class', 'board-space');
   boardElement.classList.add('board');
 
   // move through the board data array and create the
@@ -59,7 +66,6 @@ const buildBoard = (board) => {
 const initGame = () => {
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
-
   // build the board - right now it's empty
   buildBoard(board);
 };
@@ -68,10 +74,49 @@ const initGame = () => {
 const togglePlayer = () => {
   if (currentPlayer === 'X') {
     currentPlayer = 'O';
+    playerState.innerHTML = "it's player 0's turn!";
   } else {
     currentPlayer = 'X';
+    playerState.innerHTML = "it's player X's turn!";
   }
+  // const headerFind = document.getElementById('header');
 };
+
+// found a function on stack overflow that checks out whether everything in an array is identical.
+// const everythingsEqual = (array) => array.every((thing) => thing === array[0]);
+
+function checkWin() {
+  // horizontal winning condition check
+  let rowCheck = '';
+
+  for (const row in board) {
+    for (const index in board[row]) {
+      console.log(`printing index ${index} in row ${row} - ${board[row][index]}`);
+      rowCheck += board[row][index];
+
+      if (rowCheck.includes('XXX')) {
+        playerState.innerHTML = 'Player X WINS!';
+      } else if (rowCheck.includes('OOO')) {
+        playerState.innerHTML = 'Player O WINS!';
+      }
+    }
+  }
+  let firstColumn = '';
+  let secondColumn = '';
+  let thirdColumn = '';
+  // horizontal winning condition check
+  for (const row in board) {
+    firstColumn += board[row][0];
+    secondColumn += board[row][1];
+    thirdColumn += board[row][2];
+
+    if (firstColumn.includes('XXX') || secondColumn.includes('XXX') || thirdColumn.includes('XXX')) {
+      playerState.innerHTML = 'Player X WINS!';
+    } else if (firstColumn.includes('OOO') || secondColumn.includes('OOO') || thirdColumn.includes('OOO')) {
+      playerState.innerHTML = 'Player 0 WINS!';
+    }
+  }
+}
 
 const squareClick = (column, row) => {
   console.log('coordinates', column, row);
@@ -81,12 +126,14 @@ const squareClick = (column, row) => {
     // alter the data array, set it to the current player
     board[column][row] = currentPlayer;
 
-    // refresh the creen with a new board
+    // refresh the screen with a new board
     // according to the array that was just changed
     buildBoard(board);
 
     // change the player
     togglePlayer();
+
+    checkWin();
   }
 };
 
