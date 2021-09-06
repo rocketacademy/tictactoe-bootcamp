@@ -62,25 +62,67 @@ const togglePlayer = () => {
     currentPlayer = 'X';
   }
 };
+const checkWin = (board) => {
+  // check every position
+  // we need to check that board[0][0] is not '' because if all 3 positions are empty, checkWin
+  // will return true
+  if ((board[0][0] !== '') && (board[0][0] === board[0][1] && board[0][1] === board[0][2])) {
+    return true;
+  }
+  if ((board[1][0] !== '') && (board[1][0] === board[1][1] && board[1][1] === board[1][2])) {
+    return true;
+  }
+  if ((board[2][0] !== '') && (board[2][0] === board[2][1] && board[2][1] === board[2][2])) {
+    return true;
+  }
+  if ((board[0][0] !== '') && (board[0][0] === board[1][0] && board[1][0] === board[2][0])) {
+    return true;
+  }
+  if ((board[0][1] !== '') && (board[0][1] === board[1][1] && board[1][1] === board[2][1])) {
+    return true;
+  }
+  if ((board[0][2] !== '') && (board[0][2] === board[1][2] && board[1][2] === board[2][2])) {
+    return true;
+  }
+  if ((board[0][0] !== '') && (board[0][0] === board[1][1] && board[1][1] === board[2][2])) {
+    return true;
+  }
+  if ((board[2][0] !== '') && (board[2][0] === board[1][1] && board[1][1] === board[0][2])) {
+    return true;
+  }
+  return false;
+};
 
+//Player Actions
 const squareClick = (column, row) => {
-  console.log('coordinates', column, row);
-
-  // see if the clicked square has been clicked on before
   if (board[column][row] === '') {
-    // alter the data array, set it to the current player
     board[column][row] = currentPlayer;
-
-    // refresh the creen with a new board
-    // according to the array that was just changed
     buildBoard(board);
-
-    // change the player
-    togglePlayer();
+    if (checkWin(board) === true) {
+      // game over
+      // message to tell user who has won
+      messageContainer.innerText = `${currentPlayer} wins! Refresh page to reset game`;
+      // set message to disappear and reset the game after 3 seconds
+      setTimeout(() => {
+        board = [
+          ['', '', ''],
+          ['', '', ''],
+          ['', '', ''],
+        ];
+        buildBoard(board);
+        messageContainer.innerText = 'click on a square to start';
+      }, 3000);
+    } else {
+      togglePlayer();
+    }
   }
 };
 // create the board container element and put it on the screen
 const initGame = () => {
+  messageContainer = document.createElement('div');
+  messageContainer.classList.add('message');
+  document.body.appendChild(messageContainer);
+
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
 
