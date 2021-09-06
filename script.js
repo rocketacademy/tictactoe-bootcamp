@@ -82,29 +82,32 @@ const togglePlayer = () => {
   // const headerFind = document.getElementById('header');
 };
 
-// found a function on stack overflow that checks out whether everything in an array is identical.
-// const everythingsEqual = (array) => array.every((thing) => thing === array[0]);
-
 function checkWin() {
   // horizontal winning condition check
   let rowCheck = '';
-
+  // nested loop to check horizontal winning condition
   for (const row in board) {
-    for (const index in board[row]) {
-      console.log(`printing index ${index} in row ${row} - ${board[row][index]}`);
-      rowCheck += board[row][index];
-
-      if (rowCheck.includes('XXX')) {
-        playerState.innerHTML = 'Player X WINS!';
-      } else if (rowCheck.includes('OOO')) {
-        playerState.innerHTML = 'Player O WINS!';
-      }
+    for (let i = 0; i < 3; i++) {
+      console.log(`printing square - ${board[row][i]}`);
+      rowCheck += board[row][i];
+      console.log(`row check is  ${rowCheck}`); }
+    if (rowCheck.includes('XXX')) { // the include keyword helps is literally check strings for what's inside them.
+      playerState.innerHTML = 'Player X WINS!';
+    } else if (rowCheck.includes('OOO')) {
+      playerState.innerHTML = 'Player O WINS!';
     }
   }
+
+  // if (rowCheck.includes('XXX')) { // the include keyword helps is literally check strings for what's inside them.
+  //   playerState.innerHTML = 'Player X WINS!';
+  // } else if (rowCheck.includes('OOO')) {
+  //   playerState.innerHTML = 'Player O WINS!';
+  console.log('checking all rows');
+
   let firstColumn = '';
   let secondColumn = '';
   let thirdColumn = '';
-  // horizontal winning condition check
+  // vertical winning condition check has single for loop
   for (const row in board) {
     firstColumn += board[row][0];
     secondColumn += board[row][1];
@@ -115,6 +118,19 @@ function checkWin() {
     } else if (firstColumn.includes('OOO') || secondColumn.includes('OOO') || thirdColumn.includes('OOO')) {
       playerState.innerHTML = 'Player 0 WINS!';
     }
+  }
+
+  // simpler string logic for diagonals
+  const firstDiagonal = board[0][0] + board[1][1] + board[2][2]; // top left down to bottom right
+  const secondDiagonal = board[0][2] + board[1][1] + board[2][0]; // top right down to bottom left
+
+  console.log(`first diagonal is ${firstDiagonal}`);
+  console.log(`second diagonal is ${secondDiagonal}`);
+
+  if (firstDiagonal === 'XXX' || secondDiagonal === 'XXX') {
+    playerState.innerHTML = 'Player X WINS!';
+  } else if (firstDiagonal === 'OOO' || secondDiagonal === 'OOO') {
+    playerState.innerHTML = 'Player 0 WINS!';
   }
 }
 
@@ -133,6 +149,7 @@ const squareClick = (column, row) => {
     // change the player
     togglePlayer();
 
+    // check the win conditions
     checkWin();
   }
 };
