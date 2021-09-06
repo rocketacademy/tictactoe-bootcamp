@@ -21,6 +21,10 @@ let square;
 
 let messageCont;
 
+const playAgainButton = document.createElement('button');
+playAgainButton.classList.add('button');
+playAgainButton.innerText = 'Play Again';
+
 // let squareElement;
 
 // ============== HELPER FUNCTIONS =================
@@ -65,18 +69,19 @@ const buildBoard = (board) => {
 };
 
 const output = (message) => {
-  messageCont.innerText = message;
+  messageCont.innerHTML = message;
 };
 
 // =============== GAME INITIALISATION LOGIC =================
 // create the board container element and put it on the screen
 const initGame = () => {
-  boardContainer = document.createElement('div');
-  document.body.appendChild(boardContainer);
-
   messageCont = document.createElement('div');
   messageCont.classList.add('message');
+  output('Win by plotting your Xs or Os in a<br>diagonal, horizontal or vertical manner');
   document.body.appendChild(messageCont);
+
+  boardContainer = document.createElement('div');
+  document.body.appendChild(boardContainer);
 
   // build the board - right now it's empty
   buildBoard(board);
@@ -124,18 +129,12 @@ const checkWin = () => {
     }
     if (rowValue === 'XXX' || colValue === 'XXX' || diagonalRightValue === 'XXX' || diagonalLeftValue === 'XXX') {
       output('X wins!');
-      board = [
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', ''],
-      ];
+      document.body.appendChild(playAgainButton);
+      playAgainButton.addEventListener('click', playAgainClick);
     } else if (rowValue === 'OOO' || colValue === 'OOO' || diagonalRightValue === 'OOO' || diagonalLeftValue === 'OOO') {
       output('O wins!');
-      board = [
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', ''],
-      ];
+      document.body.appendChild(playAgainButton);
+      playAgainButton.addEventListener('click', playAgainClick);
     } }
 };
 
@@ -157,6 +156,16 @@ const squareClick = (column, row) => {
   }
 };
 
-initGame();
+const playAgainClick = () => {
+  board = [
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ];
+  output('');
+  buildBoard(board);
+  output('Win by plotting your Xs or Os in a<br>diagonal, horizontal or vertical manner');
+  // playAgainButton.innerHTML = '';
+};
 
-// win conditions
+initGame();
