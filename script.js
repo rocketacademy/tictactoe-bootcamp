@@ -1,11 +1,17 @@
 // ============= GLOBAL VARIABLES ===================
 
 // keep data about the game in a 2-D array
-let board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
+let board = [];
+
+const buildEmptyBoard = (size) => {
+  board = [];
+  for (let i = 0; i < size; i += 1) {
+    board.push([]);
+    for (let j = 0; j < size; j += 1) {
+      board[i].push('');
+    }
+  }
+};
 
 // the element that contains the rows and squares
 let boardElement;
@@ -28,6 +34,30 @@ messageCont.classList.add('message');
 const playAgainButton = document.createElement('button');
 playAgainButton.classList.add('button');
 playAgainButton.innerText = 'Play Again';
+
+// global for selectors container
+const selectorCont = document.createElement('div');
+selectorCont.classList.add('message');
+
+const boardSizeSelector = document.createElement('div');
+boardSizeSelector.classList.add('selector');
+boardSizeSelector.innerHTML = 'Board Size<br>';
+
+// global for input field: board size
+const boardSizeInput = document.createElement('input');
+boardSizeInput.setAttribute('type', 'number');
+boardSizeInput.value = 3;
+boardSizeInput.classList.add('input');
+
+console.log(typeof boardSizeInput.value);
+
+// global for input + button
+const boardSizePlusButton = document.createElement('button');
+boardSizePlusButton.innerText = '+';
+
+// global for input - button
+const boardSizeMinusButton = document.createElement('button');
+boardSizeMinusButton.innerText = '-';
 
 // let squareElement;
 
@@ -59,9 +89,8 @@ const buildBoard = (board) => {
 
       // set the click all over again
       // eslint-disable-next-line
-      square.addEventListener('click', (event) => {
+      square.addEventListener('click', () => {
         squareClick(i, j);
-        console.log(event.currentTarget);
       });
 
       rowElement.appendChild(square);
@@ -77,12 +106,38 @@ const output = (message) => {
   messageCont.innerHTML = message;
 };
 
+const plusButtonClick = (target) => {
+  const currentValue = Number(target.value);
+  target.value = currentValue + 1;
+  buildEmptyBoard(target.value);
+  buildBoard(board);
+};
+
+const minusButtonClick = (target) => {
+  const currentValue = Number(target.value);
+  if (currentValue >= 4) {
+    target.value = currentValue - 1; }
+  buildEmptyBoard(target.value);
+  buildBoard(board);
+};
+
 // =============== GAME INITIALISATION LOGIC =================
 // create the board container element and put it on the screen
 const initGame = () => {
   // append message Container with defaulty message
   output('Win by plotting your Xs or Os in a<br>diagonal, horizontal or vertical manner');
   document.body.appendChild(messageCont);
+
+  // append selector container
+  document.body.appendChild(selectorCont);
+  // append board size input field
+  selectorCont.appendChild(boardSizeSelector);
+  boardSizeSelector.appendChild(boardSizeInput);
+
+  boardSizePlusButton.addEventListener('click', (event) => { plusButtonClick(boardSizeInput); });
+  boardSizeMinusButton.addEventListener('click', (event) => { minusButtonClick(boardSizeInput); });
+  boardSizeSelector.appendChild(boardSizePlusButton);
+  boardSizeSelector.appendChild(boardSizeMinusButton);
 
   // create and append board container
   boardContainer = document.createElement('div');
@@ -93,6 +148,7 @@ const initGame = () => {
   document.body.appendChild(playAgainButton);
 
   // build the board - empty at first initialisation
+  buildEmptyBoard(boardSizeInput.value);
   buildBoard(board);
 };
 

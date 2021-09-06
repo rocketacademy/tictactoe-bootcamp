@@ -31,7 +31,7 @@ body {
 
 .message {
   margin: 20px;
-  width: ;
+  /* width: ; */
 }
 
 .button {
@@ -41,9 +41,11 @@ body {
 }
 
 .input {
-  height: 22px;
-  border-radius: 4px;
-  margin: 20px;
+  width: 40px;
+}
+
+.selector {
+  display: inline-block;
 }
 
 *,
