@@ -1,6 +1,9 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 // =========================== GLOBAL VARIABLES ===========================
+// Variable to determine game type: 2 player or 1 player vs computer
+let numPlayer = 1;
+
 // Variable to determine board size
 let boardSize = 0;
 
@@ -52,17 +55,23 @@ const getParameters = () => {
   choiceWinInput.setAttribute('placeholder', 'Consecutive Placements Required?');
   choiceWinInput.classList.add('input-field');
 
+  const playerNumberInput = document.createElement('input');
+  playerNumberInput.setAttribute('placeholder', 'How many players? 1 or 2 only.');
+  playerNumberInput.classList.add('input-field');
+
   const submitButton = document.createElement('button');
   submitButton.innerText = 'Submit';
   submitButton.addEventListener('click', () => {
     boardSize = boardSizeInput.value;
     numMatchRequired = choiceWinInput.value;
+    numPlayer = playerNumberInput.value;
     buildInitialBoard();
     initialParameterInput.remove();
     initGame();
   });
   initialParameterInput.appendChild(boardSizeInput);
   initialParameterInput.appendChild(choiceWinInput);
+  initialParameterInput.appendChild(playerNumberInput);
   initialParameterInput.appendChild(submitButton);
 
   document.body.appendChild(initialParameterInput);
@@ -98,7 +107,11 @@ const buildBoard = (board) => {
       // set the click all over again
       // eslint-disable-next-line
       square.addEventListener('click', () => {
-        squareClick(i, j);
+        if (numPlayer === 1) {
+          squareClick(i, j);
+        } else {
+          computerSquareClick(i, j);
+        }
       });
     }
 
@@ -226,6 +239,47 @@ const squareClick = (row, column) => {
       message(`Player ${currentPlayer} won!`);
     } else {
       togglePlayer();
+    }
+  }
+};
+
+const computerSelect = () => {
+  // eslint-disable-next-line prefer-const
+  let randomRow = Math.floor(Math.random() * boardSize);
+  // eslint-disable-next-line prefer-const
+  let randomColumn = Math.floor(Math.random() * boardSize);
+
+  while (board[randomRow][randomColumn] !== '') {
+    randomRow = Math.floor(Math.random() * boardSize);
+    randomColumn = Math.floor(Math.random() * boardSize);
+  }
+
+  if (board[randomRow][randomColumn] === '') {
+    board[randomRow][randomColumn] = currentPlayer;
+    buildBoard(board);
+    if (checkWin(board, randomRow, randomColumn) === true) {
+      // Disable further clicks
+      canClick = false;
+      // game over
+      message(`Player ${currentPlayer} won!`);
+    } else {
+      togglePlayer();
+    }
+  } };
+
+const computerSquareClick = (row, column) => {
+  if (board[row][column] === '' && canClick === true) {
+    board[row][column] = currentPlayer;
+    buildBoard(board);
+    if (checkWin(board, row, column) === true) {
+      // Disable further clicks
+      canClick = false;
+      // game over
+      message(`Player ${currentPlayer} won!`);
+    } else {
+      togglePlayer();
+      // Computer random select
+      computerSelect();
     }
   }
 };
