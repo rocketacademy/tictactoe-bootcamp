@@ -1,3 +1,29 @@
 body {
-  background-color: pink;
+  /* background-color: pink; */
+  text-align: center;
+}
+
+.square {
+  padding: 10px;
+  margin: -2px;
+  background-color: white;
+  border-style: solid;
+  /* border-top-style: none; */
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  vertical-align: top;
+  text-align: center;
+}
+
+.X {
+  background-color: darkgoldenrod;
+}
+
+.O {
+  background-color: cadetblue;
+}
+
+.row {
+  text-align: center;
 }
