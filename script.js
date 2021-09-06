@@ -62,12 +62,13 @@ const resetBoard = () => {
   // checks that boardSize/winLength have been selected
   if (boardSize <= 2 || winLength <= 2) {
     isPlaying = false;
+    textDiv.innerText = 'Please choose the settings!';
   } else {
     isPlaying = true;
+    textDiv.innerText = "New game started! Player X's turn!";
   }
   currentPlayer = 'X';
   goingToWin = false;
-  textDiv.innerText = "New game started! Player X's turn!";
   board = createEmptyArray(boardSize);
   buildBoard(board);
 };
