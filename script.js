@@ -1,9 +1,11 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-use-before-define */
 // =========================== GLOBAL VARIABLES ===========================
 // Variable to determine board size
 let boardSize = 0;
 
 // keep data about the game in a 2-D array
-let board = [[]];
+const board = [[]];
 const buildInitialBoard = () => {
   for (let i = 0; i < boardSize; i += 1) {
     board.push([]);
@@ -33,27 +35,34 @@ gameInfo.classList.add('gameinfo-display');
 let canClick = true;
 
 // Number of match to win the game
-const numMatchRequired = 3;
+let numMatchRequired = 0;
 
 // =========================== HELPER FUNCTIONS ===========================
-// Get user input for board size
-const getBoardSize = () => {
+// Get user input for board size and choice win.
+const getParameters = () => {
   // DOM user input element for board size
   const initialParameterInput = document.createElement('div');
   initialParameterInput.setAttribute('id', 'initial-input');
 
   const boardSizeInput = document.createElement('input');
-  boardSizeInput.setAttribute('placeholder', 'Input Board Size', 'id', 'boardsize-input');
+  boardSizeInput.setAttribute('placeholder', 'Input Board Size');
+  boardSizeInput.classList.add('input-field');
+
+  const choiceWinInput = document.createElement('input');
+  choiceWinInput.setAttribute('placeholder', 'Consecutive Placements Required?');
+  choiceWinInput.classList.add('input-field');
 
   const submitButton = document.createElement('button');
   submitButton.innerText = 'Submit';
   submitButton.addEventListener('click', () => {
     boardSize = boardSizeInput.value;
+    numMatchRequired = choiceWinInput.value;
     buildInitialBoard();
     initialParameterInput.remove();
     initGame();
   });
   initialParameterInput.appendChild(boardSizeInput);
+  initialParameterInput.appendChild(choiceWinInput);
   initialParameterInput.appendChild(submitButton);
 
   document.body.appendChild(initialParameterInput);
@@ -101,11 +110,7 @@ const buildBoard = (board) => {
 const resetButton = document.createElement('button');
 resetButton.innerText = 'Reset the Game.';
 resetButton.addEventListener('click', () => {
-  board = [
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', ''],
-  ];
+  buildInitialBoard();
   currentPlayer = 'X';
   message(`Player ${currentPlayer}, click to begin.`);
   canClick = true;
@@ -194,8 +199,6 @@ const squareClick = (row, column) => {
   if (board[row][column] === '' && canClick === true) {
     board[row][column] = currentPlayer;
     buildBoard(board);
-    console.log('board printed');
-    console.log('checking win');
     if (checkWin(board, row, column) === true) {
       // Disable further clicks
       canClick = false;
@@ -211,7 +214,7 @@ const squareClick = (row, column) => {
 // create the board container element and put it on the screen
 const initGame = () => {
   if (boardSize === 0) {
-    getBoardSize();
+    getParameters();
   }
   else {
     boardContainer = document.createElement('div');
