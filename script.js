@@ -1,10 +1,5 @@
 // Please implement exercise logic here
 // keep data about the game in a 2-D array
-const board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
 
 // const boardCopy = [];
 
@@ -82,15 +77,24 @@ const togglePlayer = () => {
   // const headerFind = document.getElementById('header');
 };
 
+const board = [
+  ['', '', ''],
+  ['', '', ''],
+  ['', '', ''],
+];
+
 function checkWin() {
   // horizontal winning condition check
-  let rowCheck = '';
   // nested loop to check horizontal winning condition
-  for (const row in board) {
-    for (let i = 0; i < 3; i++) {
-      console.log(`printing square - ${board[row][i]}`);
-      rowCheck += board[row][i];
-      console.log(`row check is  ${rowCheck}`); }
+  for (let i = 0; i < board.length; i += 1) {
+    let rowCheck = '';
+    const row = board[i];
+    for (let j = 0; j < row.length; j += 1) {
+      console.log(`printing square - ${row[j]}`);
+      rowCheck += row[j];
+      // console.log(`row check is  ${rowCheck}`);
+    }
+    console.log('long long string =============================');
     if (rowCheck.includes('XXX')) { // the include keyword helps is literally check strings for what's inside them.
       playerState.innerHTML = 'Player X WINS!';
     } else if (rowCheck.includes('OOO')) {
@@ -98,10 +102,13 @@ function checkWin() {
     }
   }
 
-  // if (rowCheck.includes('XXX')) { // the include keyword helps is literally check strings for what's inside them.
-  //   playerState.innerHTML = 'Player X WINS!';
-  // } else if (rowCheck.includes('OOO')) {
-  //   playerState.innerHTML = 'Player O WINS!';
+  // for (const row in board) {
+  //   let rowCheck = row[0] + row[1] + row[2];
+  //   if (rowCheck = "XXX" || rowCheck = "OOO"){
+  //     console.log(rowCheck)
+  //   }
+  // }
+
   console.log('checking all rows');
 
   let firstColumn = '';
