@@ -1,3 +1,42 @@
 body {
-  background-color: pink;
+  background-color: rgb(192, 215, 255);
+}
+
+p {
+  font-size: 15px;
+  margin: 10px 5px 10px 5px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+div {
+  align-content: center;
+}
+
+.square {
+  padding: 10px;
+  margin: 2px;
+  background-color: white;
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  vertical-align: top;
+  text-align: center;
+  line-height: 30px;
+}
+
+#submit {
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 2px 4px 2px 4px;
+  font-size: 15px;
+}
+#userInput {
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 2px 4px 2px 4px;
+  font-size: 15px;
+}
+
+#userInput2 {
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 2px 4px 2px 4px;
+  font-size: 15px;
 }
