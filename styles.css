@@ -1,3 +1,55 @@
 body {
-  background-color: pink;
+  /* background-color: pink; */
+  text-align: center;
+}
+
+.square {
+  padding: 10px;
+  margin: -2px;
+  background-color: white;
+  border-style: solid;
+  /* border-top-style: none; */
+  display: inline-block;
+  height: 50px;
+  width: 50px;
+  vertical-align: top;
+  text-align: center;
+  font-size: 20px;
+}
+
+.X {
+  background-color: darkgoldenrod;
+}
+
+.O {
+  background-color: cadetblue;
+}
+
+.row {
+  text-align: center;
+}
+
+.message {
+  margin: 20px;
+  /* width: ; */
+}
+
+.button {
+  height: 22px;
+  border-radius: 4px;
+  margin: 20px;
+}
+
+.input {
+  width: 40px;
+}
+
+.selector {
+  display: inline-block;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
 }
