@@ -8,6 +8,10 @@ p {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+div {
+  align-content: center;
+}
+
 .square {
   padding: 10px;
   margin: 2px;
