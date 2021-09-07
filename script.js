@@ -29,7 +29,7 @@ const error = document.createElement('p');
 // function to get the element by id
 const getElement = (a) => document.getElementById(`${a}`);
 
-// function to
+// function to record the inputs of users
 const capture = () => {
   // capture user input into board size to be built
   boardSizeToBuild = Number(field.value);
