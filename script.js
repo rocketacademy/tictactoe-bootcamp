@@ -1,10 +1,11 @@
 // Please implement exercise logic here
 // keep data about the game in a 2-D array
-let board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
+// let board = [
+//   ['', '', ''],
+//   ['', '', ''],
+//   ['', '', ''],
+// ];
+let board = [];
 
 // the element that contains the rows and squares
 let boardElement;
@@ -56,16 +57,46 @@ const buildBoard = (board) => {
   }
 };
 
+let enterArrayDiv;
+let arrayNumber;
+let arrayBtn;
+
+let winSize;
 // create the board container element and put it on the screen
 const initGame = () => {
+  enterArrayDiv = document.createElement('div');
+  arrayNumber = document.createElement('input');
+  arrayNumber.classList.add('arrayNumber', 'input');
+  arrayNumber.placeholder = 'enter board size ';
+
+  arrayBtn = document.createElement('button');
+  arrayBtn.textContent = 'submit';
+
+  winSize = document.createElement('input');
+  winSize.placeholder = 'enter win choice';
+  winSize.classList.add('input', 'winSize');
+
+  document.body.appendChild(enterArrayDiv).appendChild(arrayNumber);
+  document.body.appendChild(enterArrayDiv).appendChild(winSize);
+  document.body.appendChild(enterArrayDiv).appendChild(arrayBtn);
+
   messageContainer = document.createElement('div');
   messageContainer.classList.add('message');
   document.body.appendChild(messageContainer);
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
 
+  arrayBtn.addEventListener('click', () => {
+    let Arraynum = document.querySelector('.arrayNumber').value;
+    Arraynum = parseInt(Arraynum, 10);
+    let winChoice = document.querySelector('.winSize').value;
+    winChoice = parseInt(winChoice, 10);
+    console.log(`winChoice = ${winChoice}`);
+    board = Array(Arraynum).fill(Array(Arraynum).fill(' '));
+    buildBoard(board);
+  });
+
   // build the board - right now it's empty
-  buildBoard(board);
 };
 
 // switch the global values from one player to the next
@@ -136,15 +167,21 @@ const checkWin = (board) => {
   return false;
 };
 
-const winConditions = [];
 const checkWin2 = (board) => {
   let count = 0;
-  // rpw check
+  // row check
   for (let i = 0; i < board.length; i++) {
     count = 0;
     for (let j = 0; j < board[i].length; j++) {
       // check row index
       count += (board[i][j] === 'X') ? 1 : (board[i][j] === 'O') ? -1 : 0;
+      // if ((board[i][j] === 'X')) {
+      //   count += 1;
+      // } else if ((board[i][j] === 'O')) {
+      //   count += -1;
+      // } else {
+      //   count += 0;
+      // }
     }
     if (count === 3 || count === -3)
     {
