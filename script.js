@@ -1,6 +1,6 @@
 // Please implement exercise logic here
 // keep data about the game in a 2-D array
-const board = [
+let board = [
   ['', '', ''],
   ['', '', ''],
   ['', '', ''],
