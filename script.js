@@ -1,15 +1,49 @@
 // keep data about the game in a 2-D array
-const board = [['', '', ''], ['', '', ''], ['', '', '']];
+let board = [];
+let boardSize = 0;
+let gameInProgress = false;
+let clickedSquares = 0;
 
 // the element that contains the rows and squares
 let boardElement;
 
-// the element that contains the entire board
-// we can empty it out for convenience
-let boardContainer;
-
 // current player global starts at X
 let currentPlayer = 'X';
+
+// Initialise UI, DOM elements
+const boardSizeInput = document.createElement('input');
+const startButton = document.createElement('button');
+startButton.innerText = 'Start Game';
+
+boardSizeInput.type = 'number';
+boardSizeInput.min = '3';
+boardSizeInput.max = '5';
+boardSizeInput.value = '3';
+boardSizeInput.addEventListener('input', () => {
+  if (boardSizeInput.value >= 3 && boardSizeInput.value <= 5) startButton.disabled = false;
+  else startButton.disabled = true;
+});
+document.body.appendChild(boardSizeInput);
+document.body.appendChild(startButton);
+
+// the element that contains the entire board
+// we can empty it out for convenience
+const boardContainer = document.createElement('div');
+document.body.appendChild(boardContainer);
+
+const output = document.createElement('p');
+output.innerHTML = 'Please input the board size.';
+document.body.appendChild(output);
+
+const resetGame = () => {
+  board = [];
+  gameInProgress = false;
+  boardSize = 0;
+  currentPlayer = 'X';
+  clickedSquares = 0;
+  boardSizeInput.disabled = false;
+  startButton.disabled = false;
+};
 
 // switch the global values from one player to the next
 const togglePlayer = () => {
@@ -61,13 +95,13 @@ const buildBoard = () => {
 const checkWin = (row, column) => {
   let columnWin = true;
   let rowWin = true;
-  let diagonal1Win = true;
-  let diagonal2Win = true;
+  let diagonal1Win = true; // diagonal 1 is from top left to bottom right
+  let diagonal2Win = true; // diagonal 2 is from bottom left to top right
 
   if (row !== column) diagonal1Win = false;
-  if (row + column !== 2) diagonal2Win = false;
+  if (row + column !== boardSize - 1) diagonal2Win = false;
 
-  for (let i = 0; i < 3; i += 1) {
+  for (let i = 0; i < boardSize; i += 1) {
     if (columnWin && board[i][column] !== currentPlayer) {
       columnWin = false;
     }
@@ -77,7 +111,7 @@ const checkWin = (row, column) => {
     if (diagonal1Win && board[i][i] !== currentPlayer) {
       diagonal1Win = false;
     }
-    if (diagonal2Win && board[2 - i][i] !== currentPlayer) {
+    if (diagonal2Win && board[boardSize - 1 - i][i] !== currentPlayer) {
       diagonal2Win = false;
     }
   }
@@ -87,8 +121,9 @@ const checkWin = (row, column) => {
 
 const squareClick = (row, column) => {
   // see if the clicked square has been clicked on before
-  if (board[row][column] === '') {
+  if (gameInProgress && board[row][column] === '') {
     // alter the data array, set it to the current player
+    clickedSquares += 1;
     board[row][column] = currentPlayer;
 
     // refresh the creen with a new board
@@ -96,21 +131,36 @@ const squareClick = (row, column) => {
     buildBoard();
 
     if (checkWin(row, column)) {
-      console.log(`${currentPlayer} won`);
+      output.innerText = `${currentPlayer} won! Input board size to play again.`;
+      resetGame();
+    } else if (clickedSquares === boardSize * boardSize) {
+      output.innerText = "It's a tie! Input board size to play again.";
+      resetGame();
     } else {
     // change the player
       togglePlayer();
+      output.innerText = `Player ${currentPlayer}'s turn`;
     }
   }
 };
 
 // create the board container element and put it on the screen
 const initGame = () => {
-  boardContainer = document.createElement('div');
-  document.body.appendChild(boardContainer);
+  boardSize = Number(boardSizeInput.value);
+  gameInProgress = true;
 
+  for (let i = 0; i < boardSize; i += 1) {
+    board.push([]);
+    for (let j = 0; j < boardSize; j += 1) {
+      board[i].push('');
+    }
+  }
   // build the board - right now it's empty
   buildBoard();
+
+  boardSizeInput.disabled = true;
+  startButton.disabled = true;
+  output.innerText = `Player ${currentPlayer}'s turn`;
 };
 
-initGame();
+startButton.addEventListener('click', initGame);
