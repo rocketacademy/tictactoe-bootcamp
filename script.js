@@ -1,13 +1,8 @@
-// keep data about the game in a 2-D array
+// Global variables
 let board = [];
 let boardSize = 0;
 let gameInProgress = false;
-let clickedSquares = 0;
-
-// the element that contains the rows and squares
-let boardElement;
-
-// current player global starts at X
+let round = 0;
 let currentPlayer = 'X';
 
 // Initialise UI, DOM elements
@@ -26,26 +21,25 @@ boardSizeInput.addEventListener('input', () => {
 document.body.appendChild(boardSizeInput);
 document.body.appendChild(startButton);
 
-// the element that contains the entire board
-// we can empty it out for convenience
 const boardContainer = document.createElement('div');
 document.body.appendChild(boardContainer);
 
 const output = document.createElement('p');
-output.innerHTML = 'Please input the board size.';
+output.innerText = 'Please input the board size.';
 document.body.appendChild(output);
 
+// Reset globals and UI
 const resetGame = () => {
   board = [];
   gameInProgress = false;
   boardSize = 0;
   currentPlayer = 'X';
-  clickedSquares = 0;
+  round = 0;
   boardSizeInput.disabled = false;
   startButton.disabled = false;
 };
 
-// switch the global values from one player to the next
+// Switch from one player to the next
 const togglePlayer = () => {
   if (currentPlayer === 'X') {
     currentPlayer = 'O';
@@ -54,11 +48,10 @@ const togglePlayer = () => {
   }
 };
 
+// Create row and square elements in the board container
 const buildBoard = () => {
   // start with an empty container
   boardContainer.innerHTML = '';
-  boardElement = document.createElement('div');
-  boardElement.classList.add('board');
 
   // move through the board data array and create the
   // current state of the board
@@ -80,19 +73,18 @@ const buildBoard = () => {
 
       rowElement.appendChild(square);
 
-      // set the click all over again
-      // eslint-disable-next-line
       square.addEventListener('click', () => {
         // eslint-disable-next-line no-use-before-define
         squareClick(i, j);
       });
     }
-    // add a single row to the board
     boardContainer.appendChild(rowElement);
   }
 };
 
-const checkWin = (row, column) => {
+// Check for win conditions given the row and column last filled in
+const checkWin = (row, column, tempBoard, player) => {
+  // Assume its a win first
   let columnWin = true;
   let rowWin = true;
   let diagonal1Win = true; // diagonal 1 is from top left to bottom right
@@ -102,44 +94,137 @@ const checkWin = (row, column) => {
   if (row + column !== boardSize - 1) diagonal2Win = false;
 
   for (let i = 0; i < boardSize; i += 1) {
-    if (columnWin && board[i][column] !== currentPlayer) {
+    if (columnWin && tempBoard[i][column] !== player) {
       columnWin = false;
     }
-    if (rowWin && board[row][i] !== currentPlayer) {
+    if (rowWin && tempBoard[row][i] !== player) {
       rowWin = false;
     }
-    if (diagonal1Win && board[i][i] !== currentPlayer) {
+    if (diagonal1Win && tempBoard[i][i] !== player) {
       diagonal1Win = false;
     }
-    if (diagonal2Win && board[boardSize - 1 - i][i] !== currentPlayer) {
+    if (diagonal2Win && tempBoard[boardSize - 1 - i][i] !== player) {
       diagonal2Win = false;
     }
   }
 
-  return columnWin || rowWin || diagonal1Win || diagonal2Win;
+  // special return values used in minimax function
+  if (columnWin || rowWin || diagonal1Win || diagonal2Win) {
+    if (player === 'X') return 10;
+    return -10;
+  }
+  return 0;
 };
 
+/* **************************************************************
+minimax and findBestMove functions adapted from:
+https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/
+ **************************************************************** */
+
+// Considers all possibilities in the game tree given a board and a move
+const minimax = (tempBoard, row, col, player, roundNum, depth, isMax) => {
+  const score = checkWin(row, col, tempBoard, player);
+
+  // Computer is minimiser, player is maximiser
+  if (score === 10) return score - depth; // player won
+  if (score === -10) return score + depth; // computer won
+  if (roundNum === boardSize * boardSize) return 0; // tie
+
+  let best;
+
+  if (isMax) {
+    // Maximiser's turn i.e. player
+    best = -1000;
+    for (let i = 0; i < boardSize; i += 1) {
+      for (let j = 0; j < boardSize; j += 1) {
+        if (tempBoard[i][j] === '') {
+          tempBoard[i][j] = 'X';
+          best = Math.max(best, minimax(tempBoard, i, j, 'X', roundNum + 1, depth + 1, !isMax));
+          tempBoard[i][j] = '';
+        }
+      }
+    }
+  } else {
+    // Minimiser's turn i.e. computer
+    best = 1000;
+    for (let i = 0; i < boardSize; i += 1) {
+      for (let j = 0; j < boardSize; j += 1) {
+        if (tempBoard[i][j] === '') {
+          tempBoard[i][j] = 'O';
+          best = Math.min(best, minimax(tempBoard, i, j, 'O', roundNum + 1, depth + 1, !isMax));
+          tempBoard[i][j] = '';
+        }
+      }
+    }
+  }
+  return best;
+};
+
+// Considers all empty squares left on the board and calls the minimax function
+// to calculate a score for the move
+const findBestMove = () => {
+  let bestVal = 1000;
+  let bestMove = [-1, -1];
+
+  for (let i = 0; i < boardSize; i += 1) {
+    for (let j = 0; j < boardSize; j += 1) {
+      if (board[i][j] === '') {
+        board[i][j] = currentPlayer;
+        const moveVal = minimax(board, i, j, currentPlayer, round + 1, 0, true);
+        board[i][j] = '';
+        if (moveVal < bestVal) {
+          bestMove = [i, j];
+          bestVal = moveVal;
+        }
+      }
+    }
+  }
+  return bestMove;
+};
+
+// Computer to auto decide move
+const computerMove = () => {
+  const [row, column] = findBestMove();
+  round += 1;
+  board[row][column] = currentPlayer;
+
+  buildBoard();
+
+  if (checkWin(row, column, board, currentPlayer) === -10) {
+    output.innerText = 'Computer won! Input board size to play again.';
+    resetGame();
+  } else if (round === boardSize * boardSize) {
+    output.innerText = "It's a tie! Input board size to play again.";
+    resetGame();
+  } else {
+    togglePlayer();
+  }
+};
+
+// Called on a square click
 const squareClick = (row, column) => {
   // see if the clicked square has been clicked on before
   if (gameInProgress && board[row][column] === '') {
-    // alter the data array, set it to the current player
-    clickedSquares += 1;
+    round += 1;
     board[row][column] = currentPlayer;
 
-    // refresh the creen with a new board
-    // according to the array that was just changed
     buildBoard();
 
-    if (checkWin(row, column)) {
+    const score = checkWin(row, column, board, currentPlayer);
+    if (score === 10 || score === -10) {
       output.innerText = `${currentPlayer} won! Input board size to play again.`;
       resetGame();
-    } else if (clickedSquares === boardSize * boardSize) {
+    } else if (round === boardSize * boardSize) {
       output.innerText = "It's a tie! Input board size to play again.";
       resetGame();
     } else {
-    // change the player
       togglePlayer();
-      output.innerText = `Player ${currentPlayer}'s turn`;
+      if (boardSize === 3) {
+        // only do computer move for board size of 3, algorithm is too slow otherwise
+        computerMove();
+      } else {
+        output.innerText = `Player ${currentPlayer}'s turn`;
+      }
     }
   }
 };
@@ -160,7 +245,8 @@ const initGame = () => {
 
   boardSizeInput.disabled = true;
   startButton.disabled = true;
-  output.innerText = `Player ${currentPlayer}'s turn`;
+  if (boardSize === 3) output.innerText = '';
+  else output.innerText = `Player ${currentPlayer}'s turn`;
 };
 
 startButton.addEventListener('click', initGame);
