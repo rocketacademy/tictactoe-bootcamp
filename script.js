@@ -149,7 +149,7 @@ const minimax = (tempBoard, row, col, player, roundNum, depth, isMax) => {
     for (let i = 0; i < boardSize; i += 1) {
       for (let j = 0; j < boardSize; j += 1) {
         if (tempBoard[i][j] === '') {
-          tempBoard[i][j] = 'COMPUTER';
+          tempBoard[i][j] = COMPUTER;
           best = Math.min(best,
             minimax(tempBoard, i, j, COMPUTER, roundNum + 1, depth + 1, !isMax));
           tempBoard[i][j] = '';
