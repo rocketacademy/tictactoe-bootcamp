@@ -3,7 +3,9 @@ let board = [];
 let boardSize = 0;
 let gameInProgress = false;
 let round = 0;
-let currentPlayer = 'X';
+const PLAYER = 'X';
+const COMPUTER = 'O';
+let currentPlayer = PLAYER;
 
 // Initialise UI, DOM elements
 const boardSizeInput = document.createElement('input');
@@ -33,7 +35,7 @@ const resetGame = () => {
   board = [];
   gameInProgress = false;
   boardSize = 0;
-  currentPlayer = 'X';
+  currentPlayer = PLAYER;
   round = 0;
   boardSizeInput.disabled = false;
   startButton.disabled = false;
@@ -41,11 +43,8 @@ const resetGame = () => {
 
 // Switch from one player to the next
 const togglePlayer = () => {
-  if (currentPlayer === 'X') {
-    currentPlayer = 'O';
-  } else {
-    currentPlayer = 'X';
-  }
+  if (currentPlayer === PLAYER) { currentPlayer = COMPUTER; }
+  else { currentPlayer = PLAYER; }
 };
 
 // Create row and square elements in the board container
@@ -110,7 +109,7 @@ const checkWin = (row, column, tempBoard, player) => {
 
   // special return values used in minimax function
   if (columnWin || rowWin || diagonal1Win || diagonal2Win) {
-    if (player === 'X') return 10;
+    if (player === PLAYER) return 10;
     return -10;
   }
   return 0;
@@ -138,8 +137,8 @@ const minimax = (tempBoard, row, col, player, roundNum, depth, isMax) => {
     for (let i = 0; i < boardSize; i += 1) {
       for (let j = 0; j < boardSize; j += 1) {
         if (tempBoard[i][j] === '') {
-          tempBoard[i][j] = 'X';
-          best = Math.max(best, minimax(tempBoard, i, j, 'X', roundNum + 1, depth + 1, !isMax));
+          tempBoard[i][j] = PLAYER;
+          best = Math.max(best, minimax(tempBoard, i, j, PLAYER, roundNum + 1, depth + 1, !isMax));
           tempBoard[i][j] = '';
         }
       }
@@ -150,8 +149,9 @@ const minimax = (tempBoard, row, col, player, roundNum, depth, isMax) => {
     for (let i = 0; i < boardSize; i += 1) {
       for (let j = 0; j < boardSize; j += 1) {
         if (tempBoard[i][j] === '') {
-          tempBoard[i][j] = 'O';
-          best = Math.min(best, minimax(tempBoard, i, j, 'O', roundNum + 1, depth + 1, !isMax));
+          tempBoard[i][j] = 'COMPUTER';
+          best = Math.min(best,
+            minimax(tempBoard, i, j, COMPUTER, roundNum + 1, depth + 1, !isMax));
           tempBoard[i][j] = '';
         }
       }
@@ -182,9 +182,42 @@ const findBestMove = () => {
   return bestMove;
 };
 
+const getBlockUserWin = () => {
+  let move = [-1, -1];
+  for (let i = 0; i < boardSize; i += 1) {
+    for (let j = 0; j < boardSize; j += 1) {
+      if (board[i][j] === '') {
+        board[i][j] = PLAYER;
+        if (checkWin(i, j, board, PLAYER) === 10) {
+          move = [i, j];
+        }
+        board[i][j] = '';
+      }
+    }
+  }
+  return move;
+};
+
 // Computer to auto decide move
 const computerMove = () => {
-  const [row, column] = findBestMove();
+  let row;
+  let column;
+
+  // for board size of 3, find the optimal move
+  // this doesn't work for bigger board sizes as its too slow lmao
+  if (boardSize === 3) {
+    [row, column] = findBestMove();
+  } else {
+    // find if we need to block the user from winning
+    [row, column] = getBlockUserWin();
+    if (row === -1 && column === -1) {
+      // if not, then select a square at random
+      do {
+        row = Math.floor(Math.random() * boardSize);
+        column = Math.floor(Math.random() * boardSize);
+      } while (board[row][column] !== '');
+    }
+  }
   round += 1;
   board[row][column] = currentPlayer;
 
@@ -219,12 +252,7 @@ const squareClick = (row, column) => {
       resetGame();
     } else {
       togglePlayer();
-      if (boardSize === 3) {
-        // only do computer move for board size of 3, algorithm is too slow otherwise
-        computerMove();
-      } else {
-        output.innerText = `Player ${currentPlayer}'s turn`;
-      }
+      computerMove();
     }
   }
 };
@@ -245,8 +273,7 @@ const initGame = () => {
 
   boardSizeInput.disabled = true;
   startButton.disabled = true;
-  if (boardSize === 3) output.innerText = '';
-  else output.innerText = `Player ${currentPlayer}'s turn`;
+  output.innerText = '';
 };
 
 startButton.addEventListener('click', initGame);
