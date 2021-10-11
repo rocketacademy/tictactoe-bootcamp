@@ -32,7 +32,7 @@ const buildBoard = (board) => {
       // set the click all over again
       // eslint-disable-next-line
       square.addEventListener("click", () => {
-        squareClick(i, j);
+        checkWin() === false ? squareClick(i, j) : "";
       });
     }
 
@@ -53,19 +53,77 @@ const togglePlayer = () => {
   }
 };
 
-const squareClick = (column, row) => {
+const checkWin = () => {
+  let gameOver = false;
+  // Loop through horizontals and check conditions
+  for (let i = 0; i < rowNum; i += 1) {
+    board[i].every((e) => e !== "" && e === board[i][0])
+      ? (gameOver = true)
+      : gameOver;
+    // console.log(`Row ${[i]}: game over is ${gameOver}`);
+  }
+  // Loop through verticals and check conditions
+  for (let colCounter = 0; colCounter < colNum; colCounter += 1) {
+    let verticalValues = [];
+    for (let i = 0; i < rowNum; i += 1) {
+      verticalValues.push(board[i][colCounter]);
+      // console.log(
+      //   `Value pushed into array for cell ${i},${colCounter}: ${board[i][colCounter]}`
+      // );
+    }
+    // console.log(verticalValues);
+    verticalValues.every((e) => e !== "" && e === verticalValues[0])
+      ? (gameOver = true)
+      : gameOver;
+    // console.log(`Col ${[colCounter]}: game over is ${gameOver}`);
+  }
+
+  // Loop through backward diagonal and check conditions
+  let bckDiagValues = [];
+  for (let i = 0; i < colNum; i += 1) {
+    bckDiagValues.push(board[i][i]);
+  }
+  bckDiagValues.every((e) => e !== "" && e === bckDiagValues[0])
+    ? (gameOver = true)
+    : gameOver;
+
+  // Loop through backward diagonal and check conditions
+  let fwdDiagValues = [];
+  for (let i = 0; i < colNum; i += 1) {
+    fwdDiagValues.push(board[i][colNum - 1 - i]);
+  }
+  fwdDiagValues.every((e) => e !== "" && e === fwdDiagValues[0])
+    ? (gameOver = true)
+    : gameOver;
+
+  return gameOver;
+  //end curly  bracket for checkWin()
+};
+
+const squareClick = function (column, row) {
   console.log("coordinates", column, row);
 
-  // see if the clicked square has been clicked on before
   if (board[column][row] === "") {
-    // alter the data array, set it to the current player
     board[column][row] = currentPlayer;
-
-    // refresh the creen with a new board
-    // according to the array that was just changed
     buildBoard(board);
-
-    // change the player
     togglePlayer();
+  }
+
+  for (let i = 0; i < board[0].length; i += 1) {
+    // console.log(
+    //   `Row ${i + 1} contains: ${board[i][0]}, ${board[i][1]}, ${board[i][2]}`
+    // );
+  }
+
+  if (checkWin() === true) {
+    let textContainer = document.createElement("div");
+    boardContainer.append(textContainer);
+    textContainer.innerHTML = "<p>Game over.</p>";
+    let replayBtn = document.createElement("button");
+    boardContainer.append(replayBtn)
+    replayBtn.innerText="Play again!"
+    replayBtn.addEventListener("click", ()=>{
+      initGame();
+    })
   }
 };

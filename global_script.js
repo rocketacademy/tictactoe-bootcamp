@@ -2,11 +2,12 @@
 //Global Variables
 ////////////////////////////////////////////////
 // keep data about the game in a 2-D array
-const board = [
-  ["", "", ""],
-  ["", "", ""],
-  ["", "", ""],
-];
+let  board = [];
+
+let rowNum;
+let colNum;
+
+let sizeSelected
 
 // the element that contains the rows and squares
 let boardElement;
