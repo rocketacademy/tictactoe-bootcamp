@@ -1,8 +1,16 @@
 /*#############
 GLOBAL VARIABLES
 ##############*/
-const boardSize = 3;
-//let origBoard;
+// keep data about the game in a 2-D array
+/*const boardSize = 3;
+let board = Array(boardSize).fill(Array(boardSize).fill(""));*/
+
+const board = [
+  ["", "", ""],
+  ["", "", ""],
+  ["", "", ""],
+];
+
 // the element that contains the rows and squares
 let boardElement;
 // the element that contains the entire board
@@ -10,10 +18,6 @@ let boardElement;
 let boardContainer;
 // current player global starts at X
 let currentPlayer = "X";
-// this element contains game text
-let gameInfo;
-//this element contains all the squares
-let cells;
 
 /*#############
 HELPER FUNCTIONS
@@ -27,18 +31,18 @@ const buildBoard = (board) => {
   boardElement.classList.add("board");
   // move through the board data array and create the
   // current state of the board
-  for (let i = 0; i < 3; i += 1) {
+  for (let i = 0; i < board.length; i += 1) {
     // separate var for one row / row element
-    //const row = board[i];
+    const row = board[i];
     const rowElement = document.createElement("div");
     rowElement.classList.add("row");
     // set each square
     // j is the column number
-    for (let j = 0; j < board; j += 1) {
+    for (let j = 0; j < row.length; j += 1) {
       // one square element
       const square = document.createElement("div");
       square.classList.add("square");
-      if (j === board - 1) {
+      if (j === row.length - 1) {
         square.classList.add("right");
       }
       if (j === 0) {
@@ -47,22 +51,20 @@ const buildBoard = (board) => {
       if (i === 0) {
         square.classList.add("top");
       }
-      if (i === board - 1) {
+      if (i === board.length - 1) {
         square.classList.add("bottom");
       }
+      // set the text of the square according to the array
+      square.innerText = board[i][j];
       rowElement.appendChild(square);
+      // set the click all over again
+      // eslint-disable-next-line
+      square.addEventListener("click", () => {
+        squareClick(i, j);
+      });
     }
     // add a single row to the board
     boardContainer.appendChild(rowElement);
-  }
-
-  //give each cell a position using id for reference
-  cells = document.querySelectorAll(".square");
-  for (let cell = 0; cell < cells.length; cell++) {
-    cells[cell].setAttribute("id", cell + 1);
-    cells[cell].addEventListener("click", () => {
-      squareClick(cell);
-    });
   }
 };
 
@@ -79,15 +81,17 @@ const togglePlayer = () => {
   }
 };
 
-const squareClick = (cellIndex) => {
-  console.log(cellIndex);
+const squareClick = (column, row) => {
+  console.log("coordinates", column, row);
 
   // see if the clicked square has been clicked on before
-  if (cells[cellIndex].innerText === "") {
-    console.log(cellIndex);
-    console.log("this happens");
+  if (board[column][row] === "") {
     // alter the data array, set it to the current player
-    cells[cellIndex].innerHTML = currentPlayer;
+    board[column][row] = currentPlayer;
+
+    // refresh the creen with a new board
+    // according to the array that was just changed
+    buildBoard(board);
 
     // change the player
     togglePlayer();
@@ -102,12 +106,7 @@ const initGame = () => {
   boardContainer = document.createElement("div");
   document.body.appendChild(boardContainer);
   // build the board - right now it's empty
-  buildBoard(boardSize);
-  //origBoard = Array.from(Array(boardSize * boardSize).keys());
-  gameInfo = document.createElement("div");
-  gameInfo.classList.add("game-info");
-  gameInfo.innerText = "Start";
-  document.body.appendChild(gameInfo);
+  buildBoard(board);
 };
 
 initGame();
