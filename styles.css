@@ -1,3 +1,41 @@
 body {
-  background-color: pink;
+  background-color: black;
+  text-align: center;
+  color: white;
+  font-family: "Outfit", sans-serif;
+}
+
+.row {
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.square {
+  font-size: 300%;
+  padding: 10px;
+  background-color: inherit;
+  height: 50px;
+  width: 50px;
+  border-style: solid;
+  border-width: thick;
+  border-color: #fff;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.top {
+  border-top-width: 0px;
+}
+
+.bottom {
+  border-bottom-width: 0px;
+}
+
+.left {
+  border-left-width: 0px;
+}
+
+.right {
+  border-right-width: 0px;
 }
