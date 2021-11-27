@@ -2,14 +2,9 @@
 GLOBAL VARIABLES
 ##############*/
 // keep data about the game in a 2-D array
-/*const boardSize = 3;
-let board = Array(boardSize).fill(Array(boardSize).fill(""));*/
+const boardSize = 3;
+const board = Array(boardSize).fill(null).map(() => Array(boardSize).fill(""));
 
-const board = [
-  ["", "", ""],
-  ["", "", ""],
-  ["", "", ""],
-];
 
 // the element that contains the rows and squares
 let boardElement;
@@ -83,7 +78,7 @@ const togglePlayer = () => {
 
 const squareClick = (column, row) => {
   console.log("coordinates", column, row);
-
+  
   // see if the clicked square has been clicked on before
   if (board[column][row] === "") {
     // alter the data array, set it to the current player
@@ -103,6 +98,7 @@ GAME INITIALIZATION
 ##############*/
 // create the board container element and put it on the screen
 const initGame = () => {
+
   boardContainer = document.createElement("div");
   document.body.appendChild(boardContainer);
   // build the board - right now it's empty
