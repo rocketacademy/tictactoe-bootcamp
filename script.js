@@ -1,11 +1,6 @@
 /*#############
 GLOBAL VARIABLES
 ##############*/
-// keep data about the game in a 2-D array
-let boardSize = 3;
-const board = Array(boardSize).fill(null).map(() => Array(boardSize).fill(""));
-
-
 // the element that contains the rows and squares
 let boardElement;
 // the element that contains the entire board
@@ -14,13 +9,19 @@ let boardContainer;
 // current player global starts at X
 let currentPlayer = "X";
 let gameInfo;
+let userBoard;
+let overlay;
+// keep data about the game in a 2-D array
+let boardSize = 3;
+let board = Array(boardSize).fill(null).map(() => Array(boardSize).fill(""));
+
 
 /*#############
 HELPER FUNCTIONS
 ##############*/
 
 // completely rebuilds the entire board every time there's a click
-const buildBoard = (board) => {
+const buildBoard = () => {
   // start with an empty container
   boardContainer.innerHTML = "";
   boardElement = document.createElement("div");
@@ -87,7 +88,7 @@ const squareClick = (column, row) => {
 
     // refresh the creen with a new board
     // according to the array that was just changed
-    buildBoard(board);
+    buildBoard();
     if (checkWin()===true) {
       gameInfo.innerText = `${currentPlayer} is winner`;
     } else {
@@ -138,13 +139,36 @@ const checkWin = () => {
 /*#############
 GAME INITIALIZATION
 ##############*/
-// create the board container element and put it on the screen
-const initGame = () => {
+/*
+// create user board choice
+const userBoardChoice = () => {
+  //create overlay
+  overlay = document.createElement("div");
+  overlay.classList.add("overlay-text", "visible");
+  overlay.innerHTML = "Enter matrix size (for example 3)";
+  document.body.appendChild(overlay);
 
+  userBoard = document.createElement("input");
+  userBoard.classList.add("input");
+  userBoard.autofocus = true;
+  overlay.appendChild(userBoard);
+  userBoard.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !isNaN(userBoard.value)) {
+      boardSize = userBoard.value;
+      initGame();
+      overlay.classList.remove("visible");
+      gameInfo.innerText = `${boardSize} x ${boardSize} game`
+    } else return null;
+  });
+}
+userBoardChoice();*/
+
+// create the board container element and put it on the screen
+const initGame = () => {  
   boardContainer = document.createElement("div");
   document.body.appendChild(boardContainer);
   // build the board - right now it's empty
-  buildBoard(board);
+  buildBoard();
 
   gameInfo = document.createElement("div");
   gameInfo.classList.add("game-info");
