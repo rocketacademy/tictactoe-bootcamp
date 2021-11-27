@@ -2,7 +2,7 @@
 GLOBAL VARIABLES
 ##############*/
 // keep data about the game in a 2-D array
-const boardSize = 3;
+let boardSize = 3;
 const board = Array(boardSize).fill(null).map(() => Array(boardSize).fill(""));
 
 
@@ -13,6 +13,7 @@ let boardElement;
 let boardContainer;
 // current player global starts at X
 let currentPlayer = "X";
+let gameInfo;
 
 /*#############
 HELPER FUNCTIONS
@@ -87,9 +88,50 @@ const squareClick = (column, row) => {
     // refresh the creen with a new board
     // according to the array that was just changed
     buildBoard(board);
-
+    if (checkWin()===true) {
+      gameInfo.innerText = `${currentPlayer} is winner`;
+    } else {
     // change the player
     togglePlayer();
+    }
+
+  }
+};
+
+//check vertical horizontal diagonal
+let score = 0;
+
+const checkVH = (isCol) => {
+  for (let j=0; j<board.length; j+=1) {
+    for (let i=0; i<board.length; i+=1) {
+      if ((isCol? board[i][j] : board[j][i]) === currentPlayer) {
+        score += 1;
+      }
+      if (score === boardSize) {
+        return true;
+      }
+    }
+    score = 0;
+  }
+}
+
+const checkDiagonal = (isReversed) => {
+  for (let i=0; i<board.length; i+=1) {
+    if ((isReversed ?board[i][board.length-1-i] : board[i][i]) === currentPlayer) {
+      score += 1;
+    }
+    if (score === boardSize) {
+      return true;
+    }
+}
+  score = 0;
+};
+
+
+// checkWinner
+const checkWin = () => {
+  if (checkVH(true) || checkVH(false) || checkDiagonal(true) || checkDiagonal(false)) {
+    return true;
   }
 };
 
@@ -103,6 +145,11 @@ const initGame = () => {
   document.body.appendChild(boardContainer);
   // build the board - right now it's empty
   buildBoard(board);
+
+  gameInfo = document.createElement("div");
+  gameInfo.classList.add("game-info");
+  gameInfo.innerText = "";
+  document.body.appendChild(gameInfo);
 };
 
 initGame();
