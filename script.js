@@ -8,9 +8,9 @@ let boardElement;
 let boardContainer;
 // current player global starts at X
 let currentPlayer = "X";
+let gameMode = "2 player";
 let gameInfo;
-let userBoard;
-let overlay;
+let userGame;
 // keep data about the game in a 2-D array
 let boardSize;
 let board;
@@ -84,19 +84,19 @@ const emptyCellCheck = () => {
 }}
 return emptyCells;
 }
-//check gameTie to show message
-const gameTie = () => {
-  if (emptyCells.length ===0 && checkWin() === false) {
-    return true
-  } else return !!(emptyCells.length ===0 && checkWin() === false)
-}
+
+
+// Get a random index ranging from 0 (inclusive) to max (exclusive).
+const getRandomIndex = (max) => {
+  return Math.floor(Math.random() * max);
+};
 
 /*#############
 GAMEPLAY LOGIC
 ##############*/
 
 // switch the global values from one player to the next
-const togglePlayer = () => {
+const togglePlayer = (isComp) => {
   gameInfo.innerText = "";
   emptyCellCheck();
   if (checkWin()===true) {
@@ -106,6 +106,7 @@ const togglePlayer = () => {
   if (gameTie() === false) {
     if (currentPlayer === "X") {
     currentPlayer = "O";
+    isComp ? computerPlay() : null;
   } else {
     currentPlayer = "X";
   }
@@ -115,6 +116,12 @@ const togglePlayer = () => {
     lockBoard = true;
   } 
 };
+
+// computer choose randomly
+const computerPlay = () => {
+  let randomIndex = getRandomIndex(emptyCells.length);
+  setTimeout (function () {squareClick(emptyCells[randomIndex][0],emptyCells[randomIndex][1])},1000);
+}
 
 const squareClick = (column, row) => {
   console.log("coordinates", column, row);
@@ -128,8 +135,15 @@ const squareClick = (column, row) => {
     // according to the array that was just changed
     buildBoard();
     // change the player
-    togglePlayer();
+    togglePlayer(gameMode === "AI");
   }
+};
+
+//check gameTie to show message
+const gameTie = () => {
+  if (emptyCells.length ===0 && checkWin() === false) {
+    return true
+  } else return !!(emptyCells.length ===0 && checkWin() === false)
 };
 
 //check vertical horizontal diagonal
@@ -180,15 +194,33 @@ GAME INITIALIZATION
 // create user board choice
 const userBoardChoice = () => {
   //create overlay
-  overlay = document.createElement("div");
+  const overlay = document.createElement("div");
   overlay.classList.add("overlay-text", "visible");
-  overlay.innerHTML = "Enter matrix size (for example 3)";
+  overlay.innerHTML = "Choose matrix size and game mode";
   document.body.appendChild(overlay);
 
-  userBoard = document.createElement("input");
+  //user choose game mode
+  const options = ["2 player","AI"]
+  userGame = document.createElement("select");
+  userGame.classList.add("input");
+  userGame.autofocus = false;
+  overlay.appendChild(userGame);
+
+  //Create and append the options
+  for (let list of options) {
+    const option = document.createElement("option");
+    option.value = list;
+    option.text = list;
+    userGame.appendChild(option);
+  }
+
+  //user choose matrix (boardSize)
+  const userBoard = document.createElement("input");
   userBoard.classList.add("input");
+  userBoard.setAttribute("placeholder","Matrix   size")
   userBoard.autofocus = true;
   overlay.appendChild(userBoard);
+
   userBoard.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !isNaN(userBoard.value)) {
       boardSize = userBoard.value;
@@ -198,7 +230,13 @@ const userBoardChoice = () => {
       gameInfo.innerText = `${boardSize} x ${boardSize} game`;
     } else return null;
   });
-}
+
+  userGame.addEventListener("change", () => {
+    if(userGame.value == "AI") {
+    gameMode = "AI";
+    }},false);
+  };
+
 userBoardChoice();
 
 // create the board container element and put it on the screen
