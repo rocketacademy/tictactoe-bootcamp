@@ -82,13 +82,13 @@ const emptyCellCheck = () => {
         emptyCells.push([i,j]);
     }
 }}
-return emptyCells.length;
+return emptyCells;
 }
 //check gameTie to show message
 const gameTie = () => {
-  if (emptyCellCheck() ===0 && checkWin() === false) {
+  if (emptyCells.length ===0 && checkWin() === false) {
     return true
-  } else return !!(emptyCellCheck() ===0 && checkWin() === false)
+  } else return !!(emptyCells.length ===0 && checkWin() === false)
 }
 
 /*#############
@@ -98,6 +98,7 @@ GAMEPLAY LOGIC
 // switch the global values from one player to the next
 const togglePlayer = () => {
   gameInfo.innerText = "";
+  emptyCellCheck();
   if (checkWin()===true) {
       gameInfo.innerText = `${currentPlayer} is winner`;
       lockBoard = true;
