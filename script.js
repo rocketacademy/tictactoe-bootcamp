@@ -120,7 +120,9 @@ const togglePlayer = (isComp) => {
 // computer choose randomly
 const computerPlay = () => {
   let randomIndex = getRandomIndex(emptyCells.length);
-  setTimeout (function () {squareClick(emptyCells[randomIndex][0],emptyCells[randomIndex][1])},1000);
+  setTimeout (function () {
+    squareClick(emptyCells[randomIndex][0],emptyCells[randomIndex][1]);
+  },500);
 }
 
 const squareClick = (column, row) => {
@@ -196,7 +198,7 @@ const userBoardChoice = () => {
   //create overlay
   const overlay = document.createElement("div");
   overlay.classList.add("overlay-text", "visible");
-  overlay.innerHTML = "Choose matrix size and game mode";
+  overlay.innerHTML = "Choose game mode & matrix size then hit Enter";
   document.body.appendChild(overlay);
 
   //user choose game mode
@@ -217,24 +219,31 @@ const userBoardChoice = () => {
   //user choose matrix (boardSize)
   const userBoard = document.createElement("input");
   userBoard.classList.add("input");
-  userBoard.setAttribute("placeholder","Matrix   size")
+  userBoard.setAttribute("placeholder","Matrix size");
+  userBoard.setAttribute("type","number");
+  userBoard.setAttribute("min","2");
   userBoard.autofocus = true;
   overlay.appendChild(userBoard);
 
   userBoard.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !isNaN(userBoard.value)) {
+     if ( 
+      e.key === "Enter" && !isNaN(userBoard.value)) {
       boardSize = userBoard.value;
       Matrix(Number(boardSize));
       initGame();
       overlay.classList.remove("visible");
       gameInfo.innerText = `${boardSize} x ${boardSize} game`;
-    } else return null;
+    } else {
+      return null
+    }
   });
 
   userGame.addEventListener("change", () => {
     if(userGame.value == "AI") {
     gameMode = "AI";
-    }},false);
+    } else {
+    gameMode = "2 player"}
+  },false);
   };
 
 userBoardChoice();
