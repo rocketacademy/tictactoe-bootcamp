@@ -14,6 +14,7 @@ let overlay;
 // keep data about the game in a 2-D array
 let boardSize;
 let board;
+let lockBoard = false;
 
 /*#############
 HELPER FUNCTIONS
@@ -71,6 +72,23 @@ const buildBoard = () => {
     boardContainer.appendChild(rowElement);
   }
 };
+// check empty cells
+const emptyCellCheck = () => {
+  let emptyCells = [];
+  for (let i = 0; i < board.length; i++) {
+  for (let j = 0; j <board.length; j++) {
+    if (board[i][j] === "") {
+        emptyCells.push(board[i][j]);
+    }
+}}
+return emptyCells.length;
+}
+//check gameTie to show message
+const gameTie = () => {
+  if (emptyCellCheck() ===0 && checkWin() === false) {
+    return true
+  } else return !!(emptyCellCheck() ===0 && checkWin() === false)
+}
 
 /*#############
 GAMEPLAY LOGIC
@@ -78,31 +96,37 @@ GAMEPLAY LOGIC
 
 // switch the global values from one player to the next
 const togglePlayer = () => {
-  if (currentPlayer === "X") {
+  gameInfo.innerText = "";
+  if (checkWin()===true) {
+      gameInfo.innerText = `${currentPlayer} is winner`;
+      lockBoard = true;
+    }
+  if (gameTie() === false) {
+    if (currentPlayer === "X") {
     currentPlayer = "O";
   } else {
     currentPlayer = "X";
   }
+  }
+  else {
+    gameInfo.innerText = "It's a tie";
+    lockBoard = true;
+  } 
 };
 
 const squareClick = (column, row) => {
   console.log("coordinates", column, row);
-  
+  if (lockBoard === true) return;
   // see if the clicked square has been clicked on before
   if (board[column][row] === "") {
     // alter the data array, set it to the current player
     board[column][row] = currentPlayer;
 
-    // refresh the creen with a new board
+    // refresh the screen with a new board
     // according to the array that was just changed
     buildBoard();
-    if (checkWin()===true) {
-      gameInfo.innerText = `${currentPlayer} is winner`;
-    } else {
     // change the player
     togglePlayer();
-    }
-
   }
 };
 
@@ -144,7 +168,7 @@ const checkDiagonal = (isReversed) => {
 const checkWin = () => {
   if (checkVH(true) || checkVH(false) || checkDiagonal(true) || checkDiagonal(false)) {
     return true;
-  }
+  } else return !!(checkVH(true) || checkVH(false) || checkDiagonal(true) || checkDiagonal(false));
 };
 
 /*#############
