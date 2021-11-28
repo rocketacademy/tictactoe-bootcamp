@@ -15,6 +15,7 @@ let overlay;
 let boardSize;
 let board;
 let lockBoard = false;
+let emptyCells = [];
 
 /*#############
 HELPER FUNCTIONS
@@ -74,11 +75,11 @@ const buildBoard = () => {
 };
 // check empty cells
 const emptyCellCheck = () => {
-  let emptyCells = [];
+  emptyCells = [];
   for (let i = 0; i < board.length; i++) {
   for (let j = 0; j <board.length; j++) {
     if (board[i][j] === "") {
-        emptyCells.push(board[i][j]);
+        emptyCells.push([i,j]);
     }
 }}
 return emptyCells.length;
