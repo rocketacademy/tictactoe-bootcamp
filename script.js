@@ -7,7 +7,9 @@ let boardElement;
 // we can empty it out for convenience
 let boardContainer;
 // current player global starts at X
-let currentPlayer = "X";
+const huPlayer = "X";
+const aiPlayer = "O";
+let currentPlayer = huPlayer;
 let gameMode = "2 player";
 let gameInfo;
 let userGame;
@@ -20,6 +22,7 @@ let emptyCells = [];
 //let xCells = [];
 //let oCells = [];
 let blockMove = [];
+let winMove = [];
 
 /*#############
 HELPER FUNCTIONS
@@ -123,11 +126,11 @@ const togglePlayer = (isComp) => {
       lockBoard = true;
     }
   if (gameTie() === false) {
-    if (currentPlayer === "X") {
-    currentPlayer = "O";
-    isComp ? blockX() : null;
+    if (currentPlayer === huPlayer) {
+    currentPlayer = aiPlayer;
+    isComp ? aiPlay() : null;
   } else {
-    currentPlayer = "X";
+    currentPlayer = huPlayer;
   }
   }
   else {
@@ -144,43 +147,53 @@ const computerPlay = (anArray) => {
   },500);
 }
 
-// computer block X
-const blockX = () => {
-  //empty block move
-  blockMove = [];
-  
-  // make a copy of the board
-  simulatedBoard = JSON.parse(JSON.stringify(board));
-  
-  // simulate X click
-  for (let i = 0; i < emptyCells.length; i++) {
+const computerPick = () => {
+  //computer pick the coordinate that will either win the game or block X
+  if (winMove.length > 0) {
+    computerPlay(winMove);
+  }
+  if (blockMove.length > 0) {
+    computerPlay(blockMove);
+  } else {
+  computerPlay(emptyCells);}
+}
+
+const simulateClick = (player, moveArray) => {
+    // simulate player click
+  for (let i in emptyCells) {
     let possibleRow = emptyCells[i][0]
     let possibleCol = emptyCells[i][1]
-    simulatedBoard[possibleRow][possibleCol] = "X";
-    console.log(`coordinates ${possibleRow} ${possibleCol}`);
-    //check the best coordinate for X to win
-    if (checkVH(true,simulatedBoard,"X")
-    || checkVH(false,simulatedBoard,"X")
-    || checkDiagonal(true,simulatedBoard,"X")
-    || checkDiagonal(false,simulatedBoard,"X")) {
-      console.log("Found best move to block");
-      console.log(blockMove);
-      blockMove.push([possibleRow,possibleCol]);
-    };
-    console.log("simulatedBoard is reset");
+    simulatedBoard[possibleRow][possibleCol] = player;
+    //console.log(`coordinates ${possibleRow} ${possibleCol}`);
+    //check the best coordinate for player to win
+    if (checkVH(true,simulatedBoard,player)
+    || checkVH(false,simulatedBoard,player)
+    || checkDiagonal(true,simulatedBoard,player)
+    || checkDiagonal(false,simulatedBoard,player)) {
+      moveArray.push([possibleRow,possibleCol]);
+    }
+    //console.log("simulatedBoard is reset");
     simulatedBoard = JSON.parse(JSON.stringify(board));
-    console.log(simulatedBoard);
-  };
-  
-  //computer pick that coordinate
-  if (blockMove.length === 0) {
-    computerPlay(emptyCells);
-  } else {
-  computerPlay(blockMove);}
+    //console.log(simulatedBoard);
+  }
+}
+
+// computer attempts to win game or block huPlayer from winning (based on last step only)
+const aiPlay = () => {
+  //empty block move & win move
+  blockMove = [];
+  winMove = [];
+  // make a copy of the board
+  simulatedBoard = JSON.parse(JSON.stringify(board));
+  //simulate X click that will win the game
+  simulateClick(huPlayer, blockMove);
+  //simulate O click that will win the game
+  simulateClick(aiPlayer, winMove);
+  computerPick();
 } 
 
 const squareClick = (column, row) => {
-  console.log("coordinates", column, row);
+  //console.log("coordinates", column, row);
   if (lockBoard === true) return;
   // see if the clicked square has been clicked on before
   if (board[column][row] === "") {
@@ -209,11 +222,11 @@ const checkVH = (isCol, anArray, player) => {
   for (let j=0; j<anArray.length; j+=1) {
     for (let i=0; i<anArray.length; i+=1) {
       if ((isCol? anArray[i][j] : anArray[j][i]) === player) {
-        console.log("VH");
+        //console.log("VH");
         score += 1;
       }
       if (score === anArray.length) {
-        console.log("VH is true");
+        //console.log("wins");
         return true;
       }
     }
@@ -225,11 +238,11 @@ const checkDiagonal = (isReversed,anArray,player) => {
   let score = 0;
   for (let i=0; i<anArray.length; i+=1) {
     if ((isReversed ?anArray[i][anArray.length-1-i] : anArray[i][i]) === player) {
-      console.log("Diagonal");
+      //console.log("Diagonal");
       score += 1;
     }
     if (score === anArray.length) {
-      console.log("Diagonal is true");
+      //console.log("wins");
       return true;
     }
 }
