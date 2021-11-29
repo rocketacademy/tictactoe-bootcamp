@@ -172,7 +172,10 @@ const blockX = () => {
   };
   
   //computer pick that coordinate
-  computerPlay(bestMove);
+  if (bestMove.length === 0) {
+    computerPlay(emptyCells);
+  } else {
+  computerPlay(bestMove);}
 } 
 
 const squareClick = (column, row) => {
