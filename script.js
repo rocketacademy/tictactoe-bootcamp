@@ -115,8 +115,8 @@ GAMEPLAY LOGIC
 
 // switch the global values from one player to the next
 const togglePlayer = (isComp) => {
-  gameInfo.innerText = "";
   emptyCellCheck();
+  gameInfo.innerText = "";
   if (checkWin()===true) {
       gameInfo.innerText = `${currentPlayer} is winner`;
       lockBoard = true;
@@ -124,7 +124,7 @@ const togglePlayer = (isComp) => {
   if (gameTie() === false) {
     if (currentPlayer === "X") {
     currentPlayer = "O";
-    isComp ? computerPlay(emptyCells) : null;
+    isComp ? blockX() : null;
   } else {
     currentPlayer = "X";
   }
@@ -149,7 +149,7 @@ const blockX = () => {
   bestMove = [];
   //check X cells and empty cells
   XOCellCheck(true);
-  emptyCellCheck();
+  //emptyCellCheck();
   // make a copy of the board
   simulatedBoard = JSON.parse(JSON.stringify(board));
   //simulatedBoard[0][0] = "X";
