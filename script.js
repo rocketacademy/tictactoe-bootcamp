@@ -17,9 +17,9 @@ let board;
 let simulatedBoard;
 let lockBoard = false;
 let emptyCells = [];
-let xCells = [];
-let oCells = [];
-let bestMove = [];
+//let xCells = [];
+//let oCells = [];
+let blockMove = [];
 
 /*#############
 HELPER FUNCTIONS
@@ -89,6 +89,7 @@ const emptyCellCheck = () => {
 return emptyCells;
 }
 
+/* ############
 //check XO cells
 const XOCellCheck = (isX) => {
   xCells = [];
@@ -101,7 +102,7 @@ const XOCellCheck = (isX) => {
 }}
 return isX ? xCells : oCells;
 }
-
+############ */
 
 
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
@@ -145,14 +146,11 @@ const computerPlay = (anArray) => {
 
 // computer block X
 const blockX = () => {
-  //empty best move
-  bestMove = [];
-  //check X cells and empty cells
-  XOCellCheck(true);
-  //emptyCellCheck();
+  //empty block move
+  blockMove = [];
+  
   // make a copy of the board
   simulatedBoard = JSON.parse(JSON.stringify(board));
-  //simulatedBoard[0][0] = "X";
   
   // simulate X click
   for (let i = 0; i < emptyCells.length; i++) {
@@ -161,10 +159,13 @@ const blockX = () => {
     simulatedBoard[possibleRow][possibleCol] = "X";
     console.log(`coordinates ${possibleRow} ${possibleCol}`);
     //check the best coordinate for X to win
-    if(checkVH(true,simulatedBoard,"X")) {
-      console.log("Found best move");
-      console.log(bestMove);
-      bestMove.push([possibleRow,possibleCol]);
+    if (checkVH(true,simulatedBoard,"X")
+    || checkVH(false,simulatedBoard,"X")
+    || checkDiagonal(true,simulatedBoard,"X")
+    || checkDiagonal(false,simulatedBoard,"X")) {
+      console.log("Found best move to block");
+      console.log(blockMove);
+      blockMove.push([possibleRow,possibleCol]);
     };
     console.log("simulatedBoard is reset");
     simulatedBoard = JSON.parse(JSON.stringify(board));
@@ -172,10 +173,10 @@ const blockX = () => {
   };
   
   //computer pick that coordinate
-  if (bestMove.length === 0) {
+  if (blockMove.length === 0) {
     computerPlay(emptyCells);
   } else {
-  computerPlay(bestMove);}
+  computerPlay(blockMove);}
 } 
 
 const squareClick = (column, row) => {
@@ -202,9 +203,9 @@ const gameTie = () => {
 };
 
 //check vertical horizontal diagonal
-let score = 0;
 
 const checkVH = (isCol, anArray, player) => {
+  let score = 0;
   for (let j=0; j<anArray.length; j+=1) {
     for (let i=0; i<anArray.length; i+=1) {
       if ((isCol? anArray[i][j] : anArray[j][i]) === player) {
@@ -221,6 +222,7 @@ const checkVH = (isCol, anArray, player) => {
 }
 
 const checkDiagonal = (isReversed,anArray,player) => {
+  let score = 0;
   for (let i=0; i<anArray.length; i+=1) {
     if ((isReversed ?anArray[i][anArray.length-1-i] : anArray[i][i]) === player) {
       console.log("Diagonal");
@@ -239,7 +241,7 @@ const checkDiagonal = (isReversed,anArray,player) => {
 const checkWin = () => {
   if (checkVH(true,board,currentPlayer) || checkVH(false,board,currentPlayer) || checkDiagonal(true,board,currentPlayer) || checkDiagonal(false,board,currentPlayer)) {
     return true;
-  } else return !!(checkVH(true,board,currentPlayer) || checkVH(false,board,currentPlayer) || checkDiagonal(true,board,currentPlayer) || checkDiagonal(false,board,currentPlayer));
+  } else return !!(checkVH(true,board,currentPlayer) && checkVH(false,board,currentPlayer) && checkDiagonal(true,board,currentPlayer) && checkDiagonal(false,board,currentPlayer));
 };
 
 /*#############
