@@ -327,4 +327,10 @@ const initGame = () => {
   gameInfo.classList.add("game-info");
   gameInfo.innerText = "";
   document.body.appendChild(gameInfo);
+
+  const resetButton = document.createElement("button");
+  resetButton.classList.add("button");
+  resetButton.innerText = "Reset";
+  resetButton.addEventListener("click", function () {location.reload()})
+  document.body.appendChild(resetButton);
 };
