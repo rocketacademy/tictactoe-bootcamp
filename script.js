@@ -14,8 +14,12 @@ let userGame;
 // keep data about the game in a 2-D array
 let boardSize;
 let board;
+let simulatedBoard;
 let lockBoard = false;
 let emptyCells = [];
+let xCells = [];
+let oCells = [];
+let bestMove = [];
 
 /*#############
 HELPER FUNCTIONS
@@ -73,7 +77,7 @@ const buildBoard = () => {
     boardContainer.appendChild(rowElement);
   }
 };
-// check empty cells
+//check empty cells
 const emptyCellCheck = () => {
   emptyCells = [];
   for (let i = 0; i < board.length; i++) {
@@ -84,6 +88,20 @@ const emptyCellCheck = () => {
 }}
 return emptyCells;
 }
+
+//check XO cells
+const XOCellCheck = (isX) => {
+  xCells = [];
+  oCells = [];
+  for (let i = 0; i < board.length; i++) {
+  for (let j = 0; j <board.length; j++) {
+    if (isX ? board[i][j] === "X" : board[i][j] === "O") {
+        isX ? xCells.push([i,j]) : oCells.push([i,j]);
+    }
+}}
+return isX ? xCells : oCells;
+}
+
 
 
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
@@ -106,7 +124,7 @@ const togglePlayer = (isComp) => {
   if (gameTie() === false) {
     if (currentPlayer === "X") {
     currentPlayer = "O";
-    isComp ? computerPlay() : null;
+    isComp ? computerPlay(emptyCells) : null;
   } else {
     currentPlayer = "X";
   }
@@ -118,12 +136,44 @@ const togglePlayer = (isComp) => {
 };
 
 // computer choose randomly
-const computerPlay = () => {
-  let randomIndex = getRandomIndex(emptyCells.length);
+const computerPlay = (anArray) => {
+  let randomIndex = getRandomIndex(anArray.length);
   setTimeout (function () {
-    squareClick(emptyCells[randomIndex][0],emptyCells[randomIndex][1]);
+    squareClick(anArray[randomIndex][0],anArray[randomIndex][1]);
   },500);
 }
+
+// computer block X
+const blockX = () => {
+  //empty best move
+  bestMove = [];
+  //check X cells and empty cells
+  XOCellCheck(true);
+  emptyCellCheck();
+  // make a copy of the board
+  simulatedBoard = JSON.parse(JSON.stringify(board));
+  //simulatedBoard[0][0] = "X";
+  
+  // simulate X click
+  for (let i = 0; i < emptyCells.length; i++) {
+    let possibleRow = emptyCells[i][0]
+    let possibleCol = emptyCells[i][1]
+    simulatedBoard[possibleRow][possibleCol] = "X";
+    console.log(`coordinates ${possibleRow} ${possibleCol}`);
+    //check the best coordinate for X to win
+    if(checkVH(true,simulatedBoard,"X")) {
+      console.log("Found best move");
+      console.log(bestMove);
+      bestMove.push([possibleRow,possibleCol]);
+    };
+    console.log("simulatedBoard is reset");
+    simulatedBoard = JSON.parse(JSON.stringify(board));
+    console.log(simulatedBoard);
+  };
+  
+  //computer pick that coordinate
+  computerPlay(bestMove);
+} 
 
 const squareClick = (column, row) => {
   console.log("coordinates", column, row);
@@ -151,14 +201,14 @@ const gameTie = () => {
 //check vertical horizontal diagonal
 let score = 0;
 
-const checkVH = (isCol) => {
-  for (let j=0; j<board.length; j+=1) {
-    for (let i=0; i<board.length; i+=1) {
-      if ((isCol? board[i][j] : board[j][i]) === currentPlayer) {
+const checkVH = (isCol, anArray, player) => {
+  for (let j=0; j<anArray.length; j+=1) {
+    for (let i=0; i<anArray.length; i+=1) {
+      if ((isCol? anArray[i][j] : anArray[j][i]) === player) {
         console.log("VH");
         score += 1;
       }
-      if (score === board.length) {
+      if (score === anArray.length) {
         console.log("VH is true");
         return true;
       }
@@ -167,13 +217,13 @@ const checkVH = (isCol) => {
   }
 }
 
-const checkDiagonal = (isReversed) => {
-  for (let i=0; i<board.length; i+=1) {
-    if ((isReversed ?board[i][board.length-1-i] : board[i][i]) === currentPlayer) {
+const checkDiagonal = (isReversed,anArray,player) => {
+  for (let i=0; i<anArray.length; i+=1) {
+    if ((isReversed ?anArray[i][anArray.length-1-i] : anArray[i][i]) === player) {
       console.log("Diagonal");
       score += 1;
     }
-    if (score === board.length) {
+    if (score === anArray.length) {
       console.log("Diagonal is true");
       return true;
     }
@@ -184,9 +234,9 @@ const checkDiagonal = (isReversed) => {
 
 // checkWinner
 const checkWin = () => {
-  if (checkVH(true) || checkVH(false) || checkDiagonal(true) || checkDiagonal(false)) {
+  if (checkVH(true,board,currentPlayer) || checkVH(false,board,currentPlayer) || checkDiagonal(true,board,currentPlayer) || checkDiagonal(false,board,currentPlayer)) {
     return true;
-  } else return !!(checkVH(true) || checkVH(false) || checkDiagonal(true) || checkDiagonal(false));
+  } else return !!(checkVH(true,board,currentPlayer) || checkVH(false,board,currentPlayer) || checkDiagonal(true,board,currentPlayer) || checkDiagonal(false,board,currentPlayer));
 };
 
 /*#############
