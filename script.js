@@ -10,7 +10,7 @@ let boardContainer;
 const huPlayer = "X";
 const aiPlayer = "O";
 let currentPlayer = huPlayer;
-let gameMode = "2 player";
+let gameMode = "AI";
 let gameInfo;
 let userGame;
 // keep data about the game in a 2-D array
@@ -270,7 +270,7 @@ const userBoardChoice = () => {
   document.body.appendChild(overlay);
 
   //user choose game mode
-  const options = ["2 player","AI"]
+  const options = ["AI","2 players"]
   userGame = document.createElement("select");
   userGame.classList.add("input");
   userGame.autofocus = false;
@@ -310,7 +310,7 @@ const userBoardChoice = () => {
     if(userGame.value == "AI") {
     gameMode = "AI";
     } else {
-    gameMode = "2 player"}
+    gameMode = "2 players"}
   },false);
   };
 
