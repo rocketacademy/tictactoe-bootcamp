@@ -1,3 +1,92 @@
 body {
-  background-color: pink;
+  background-color: black;
+  text-align: center;
+  color: white;
+  font-family: "Outfit", sans-serif;
+}
+
+.row {
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.square {
+  font-size: 200%;
+  padding: 10px;
+  background-color: inherit;
+  height: 50px;
+  width: 50px;
+  border-style: solid;
+  border-width: thick;
+  border-color: #fff;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.top {
+  border-top-width: 0px;
+}
+
+.bottom {
+  border-bottom-width: 0px;
+}
+
+.left {
+  border-left-width: 0px;
+}
+
+.right {
+  border-right-width: 0px;
+}
+
+.game-info {
+  width: 200px;
+  padding: 30px;
+  margin: auto;
+  font-size: 2em;
+}
+
+.overlay-text {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: none;
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  position: fixed;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
+  color: #2f8d55;
+  transition: background-color 500ms, font-size 500ms;
+  font-size: 200%;
+}
+
+.overlay-text.visible {
+  display: flex;
+  animation: overlay-grow 500ms forwards;
+}
+
+.input {
+  margin-top: 20px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: white;
+  font-size: 80%;
+  text-align: center;
+}
+
+.button {
+  border-style: solid;
+  background: transparent;
+  color: white;
+  border-color: white;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 100%;
 }
