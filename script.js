@@ -19,10 +19,9 @@ let board;
 let simulatedBoard;
 let lockBoard = false;
 let emptyCells = [];
-//let xCells = [];
-//let oCells = [];
 let blockMove = [];
 let winMove = [];
+let cornerMove = [];
 
 /*#############
 HELPER FUNCTIONS
@@ -92,21 +91,24 @@ const emptyCellCheck = () => {
 return emptyCells;
 }
 
-/* ############
-//check XO cells
-const XOCellCheck = (isX) => {
-  xCells = [];
-  oCells = [];
-  for (let i = 0; i < board.length; i++) {
-  for (let j = 0; j <board.length; j++) {
-    if (isX ? board[i][j] === "X" : board[i][j] === "O") {
-        isX ? xCells.push([i,j]) : oCells.push([i,j]);
-    }
-}}
-return isX ? xCells : oCells;
-}
-############ */
 
+// find available corner Moves
+const emptyCornerCheck = () => {
+  cornerMove = [];
+  if (board[0][0] ==="") {
+    cornerMove.push([0,0]);
+  }
+  if (board[0][board.length-1] ==="") {
+    cornerMove.push([0,board.length-1]);
+  }
+    if (board[board.length-1][0] ==="") {
+    cornerMove.push([board.length-1,0]);
+  }
+  if (board[board.length-1][board.length-1] ==="") {
+    cornerMove.push([board.length-1,board.length-1]);
+  }
+  return cornerMove;
+}
 
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
 const getRandomIndex = (max) => {
@@ -120,6 +122,7 @@ GAMEPLAY LOGIC
 // switch the global values from one player to the next
 const togglePlayer = (isComp) => {
   emptyCellCheck();
+  emptyCornerCheck();
   gameInfo.innerText = "";
   if (checkWin()===true) {
       gameInfo.innerText = `${currentPlayer} is winner`;
@@ -150,12 +153,20 @@ const computerPlay = (anArray) => {
 const computerPick = () => {
   //computer pick the coordinate that will either win the game or block X
   if (winMove.length > 0) {
+    //console.log("win move is played");
     computerPlay(winMove);
   }
-  if (blockMove.length > 0) {
+  if (blockMove.length > 0 && winMove.length ===0) {
+    //console.log("block move is played");
     computerPlay(blockMove);
-  } else {
-  computerPlay(emptyCells);}
+  }
+  if (cornerMove.length > 0 && blockMove.length ===0 && winMove.length ===0) {
+    //console.log("corner move is played");
+    computerPlay(cornerMove);
+  }
+  if (cornerMove.length === 0 && blockMove.length ===0 && winMove.length ===0) {
+    //console.log("empty cell is played");
+    computerPlay(emptyCells);}
 }
 
 const simulateClick = (player, moveArray) => {
@@ -177,6 +188,7 @@ const simulateClick = (player, moveArray) => {
     //console.log(simulatedBoard);
   }
 }
+
 
 // computer attempts to win game or block huPlayer from winning (based on last step only)
 const aiPlay = () => {
