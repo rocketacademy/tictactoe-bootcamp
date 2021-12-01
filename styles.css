@@ -1,3 +1,46 @@
 body {
-  background-color: pink;
+  background-color: white;
+  font-family: "Roboto";
+  width: 50%;
+  margin: auto;
+  text-align: center;
+}
+
+.square {
+  padding: 10px;
+  margin: 20px;
+  display: inline-block;
+  height: 40px;
+  width: 40px;
+  vertical-align: top;
+  color: cornflowerblue;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 25px;
+}
+
+.square:hover {
+  background-color: rgb(167, 191, 236);
+  border-radius: 6px;
+}
+
+.container {
+  background-image: url("board.png");
+  background-size: cover;
+  background-position: center;
+  display: inline-block;
+  height: 300px;
+  width: 300px;
+  vertical-align: top;
+}
+
+#output {
+  background-color: rgb(167, 191, 236);
+  border-radius: 5px;
+  display: inline-block;
+  height: 40px;
+  width: 350px;
+  padding: 8px;
+  text-align: center;
+  margin-bottom: 20px;
 }
