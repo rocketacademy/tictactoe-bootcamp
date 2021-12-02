@@ -1,3 +1,17 @@
 body {
   background-color: pink;
+  font-size: 50px;
+}
+.square {
+  padding: 20px;
+  margin: 20px;
+  background-color: white;
+  display: inline-block;
+  height: 60px;
+  width: 60px;
+  vertical-align: top;
+  border-radius: 10px;
+  border: 1px solid black;
+  text-align: center;
+  padding-top: 15px;
 }
