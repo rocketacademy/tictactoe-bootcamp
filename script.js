@@ -61,20 +61,7 @@ const squareClick = (i, j) => {
     // change player
     changePlayer();
   }
-};
-
-// init game elements and containers
-const initGame = () => {
-  // build board container
-  boardContainer = document.createElement('div');
-  boardContainer.classList.add('board-container');
-  document.body.appendChild(boardContainer);
-  buildBoard(board);
-  // build output container
-  outputContainer = document.createElement('div');
-  outputContainer.classList.add('output-container');
-  document.body.appendChild(outputContainer);
-  buildOutput();
+  determineWinner();
 };
 
 // change player everytime function is called
@@ -89,6 +76,33 @@ const buildOutput = () => {
   outputContainer.appendChild(outputEL);
 };
 
-const determineWinner = () => {};
+const determineWinner = () => {
+  /* there are limited possible winning conditions 
+  a) 3 horizonally, b) 3 vertically, c) 3 diagonally
+  */
+  // check horizontal
 
-initGame();
+  // TODO don't check if squares are blank strings
+  if (
+    (board[0][0] === board[0][1] && board[0][0] === board[0][2]) ||
+    (board[1][0] === board[1][1] && board[1][0] === board[1][2]) ||
+    (board[2][0] === board[2][1] && board[2][0] === board[2][2])
+  ) {
+    console.log('win horizontal');
+  }
+  // check vertical
+  if (
+    (board[0][0] === board[1][0] && board[0][0] === board[2][0]) ||
+    (board[0][1] === board[1][1] && board[0][1] === board[2][1]) ||
+    (board[0][2] === board[1][2] && board[0][2] === board[2][2])
+  ) {
+    console.log('win vertical');
+  }
+  // check diagonal
+  if (
+    (board[0][0] === board[1][1] && board[0][0] === board[2][2]) ||
+    (board[2][0] === board[1][1] && board[2][0] === board[0][2])
+  ) {
+    console.log('win diagonally');
+  }
+};
