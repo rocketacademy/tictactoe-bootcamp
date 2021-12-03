@@ -36,6 +36,80 @@ const togglePlayer = () => {
 };
 
 // create the winning logic for this game
+// check if there is a win in a row
+const checkRowWin = (board) => {
+// [x][y] run a loop to check through these coordinates
+// run another loop inside to check all the rows
+// [0][0],[1][0],[2][0]
+// [0][1],[1][1],[2][1]
+// [0][2],[1][2],[2][2]
+  for (let i = 0; i < board.length; i += 1) {
+    let count = 0;
+    for (let j = 0; j < board[i].length; j += 1) {
+      if (board[i][j] === 'X') {
+        count += 1;
+      }
+      if (board[i][j] === 'O') {
+        count -= 1;
+      }
+      if (count === 3 || count === -3) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+const checkColWin = (board) => {
+// [0][0],[0][1],[0][2]
+// [1][0],[1][1],[1][2]
+// [2][0],[2][1],[2][2]
+  let count = 0;
+  for (let i = 0; i < board.length; i += 1) {
+    count = 0;
+    for (let j = 0; j < board[i].length; j += 1) {
+      if (board[j][i] === 'X') {
+        count += 1;
+      }
+      if (board[j][i] === 'O') {
+        count -= 1;
+      }
+      if (count === 3 || count === -3) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+const checkDiagWin = (board) => {
+  const s0 = board[0][0];
+  const s1 = board[1][1];
+  const s2 = board[2][2];
+  const s3 = board[0][2];
+  const s4 = board[2][0];
+  if ((s0 !== '') && (s0 === s1 && s1 === s2)) {
+    return true;
+  }
+  if ((s3 !== '') && (s3 === s1 && s1 === s4)) {
+    return true;
+  }
+  return false;
+};
+
+const checkWin2 = () => {
+  if (checkRowWin(board) === true) {
+    return true;
+  }
+  if (checkColWin(board) === true) {
+    return true;
+  }
+  if (checkDiagWin(board) === true) {
+    return true;
+  }
+  return false;
+};
+
 // to win the player has get x or o in a line
 const checkWin = (board) => {
   // check every position
@@ -56,7 +130,6 @@ const checkWin = (board) => {
     return true;
   }
   if ((board[0][2] !== '') && (board[0][2] === board[1][2] && board[1][2] === board[2][2])) {
-    console.log('Row 3');
     return true;
   }
   if ((board[2][0] !== '') && (board[2][0] === board[2][1]) && board[2][1] === board[2][2]) {
@@ -69,10 +142,6 @@ const checkWin = (board) => {
   if ((board[0][2] !== '') && (board[0][2] === board[1][1] && board[1][1] === board[2][0])) {
     return true;
   }
-  console.log('row 3 column 1');
-  console.log(board[0][2]);
-  console.log(board[1][2]);
-  console.log(board[2][2]);
   return false;
 };
 
@@ -123,7 +192,7 @@ const squareClick = (column, row) => {
     board[column][row] = currentPlayer;
     buildBoard(board);
 
-    if (checkWin(board) === true) {
+    if (checkWin2(board) === true) {
       output(`Player ${currentPlayer} wins!`);
       // empty the board after a set time
       setTimeout(() => {
