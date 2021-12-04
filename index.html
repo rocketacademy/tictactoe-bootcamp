@@ -3,13 +3,47 @@
   <head>
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&family=Dongle:wght@300&family=Zen+Kaku+Gothic+Antique:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
-    <h1 id="header">Tic Tac Toe!</h1>
-    <h4 id="message"></h4>
+    <img class="d-block mx-auto" src="./images/logo.png" />
+    <!-- <div id="userInput">
+      <h2 class="bangers">Enter board length</h2>
+      <input
+        type="number"
+        id="boardLengthInput"
+        class="input"
+        min="3"
+        max="10"
+      />
+
+      <h2 class="bangers">Enter number of squares to win</h2>
+      <input
+        type="number"
+        id="noOfSquaresInput"
+        class="input"
+        min="3"
+        max="10"
+      />
+
+      <button
+        class="btn btn-dark bangers btn-lg"
+        type="button"
+        id="start"
+        disabled
+      >
+        Start
+      </button>
+    </div> -->
+    <div id="ticTacToe"></div>
     <!-- Import program logic -->
     <script src="script.js"></script>
-    <script src="checkWinner.js"></script>
+    <script src="script2.js"></script>
   </body>
 </html>
