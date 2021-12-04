@@ -12,4 +12,10 @@ module.exports = {
   },
   rules: {
   },
+  options: {
+    'prefer-const': ['error', {
+      destructuring: 'any',
+      ignoreReadBeforeAssign: false,
+    }],
+  },
 };

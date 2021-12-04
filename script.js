@@ -1,19 +1,15 @@
-// keep data about the game in a 2-D array
-const board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
+// Create a helper function for output to abstract complexity
+// of DOM manipulation away from game logic
+const output = (message) => {
+  document.querySelector('.game-info').innerText = message;
+};
 
-// the element that contains the rows and squares
-let boardElement;
-
-// the element that contains the entire board
-// we can empty it out for convenience
-let boardContainer;
-
-// current player global starts at X
-let currentPlayer = 'X';
+const buildGameInfo = (board) => {
+  // add area for game information
+  gameInfoElement = document.createElement('div');
+  gameInfoElement.classList.add('game-info');
+  document.body.appendChild(gameInfoElement);
+};
 
 // completely rebuilds the entire board every time there's a click
 const buildBoard = (board) => {
@@ -54,6 +50,81 @@ const buildBoard = (board) => {
   }
 };
 
+const getLongestInARow = (depth) => {
+  const longest = 0;
+  return longest;
+};
+
+const checkWin = (board, row, column) => {
+  const depth = [];
+
+  for (let directionIndex = 0; directionIndex < 8; directionIndex += 1) {
+    depth.push(traverseSquares(board, directionIndex, row, column, 0));
+  }
+  console.log(`checkwin depth ${depth}`);
+
+  return (depth.find(element => element >= 2)
+    || ((depth[TOP] + depth[BOTTOM]) >= 2)
+    || ((depth[TOP_RIGHT] + depth[BOTTOM_LEFT]) >= 2)
+    || ((depth[RIGHT] + depth[LEFT]) >= 2)
+    || ((depth[TOP_LEFT] + depth[BOTTOM_RIGHT]) >= 2)    
+    );
+};
+
+const traverseSquares = (board, direction, row, column, depth) => {
+  console.log(`before (${row},${column}) direction ${direction}`);
+
+  let newRow = row;
+  let newColumn = column;
+  switch (direction) {
+    case TOP:
+      newRow = row - 1;
+      break;
+    case TOP_RIGHT:
+      newRow = row - 1;
+      newColumn = column + 1;
+      break;
+    case RIGHT:
+      newColumn = column + 1;
+      break;
+    case BOTTOM_RIGHT:
+      newRow = row + 1;
+      newColumn = column + 1;
+      break;
+    case BOTTOM:
+      newRow = row + 1;
+      break;
+    case BOTTOM_LEFT:
+      newRow = row + 1;
+      newColumn = column - 1;
+      break;
+    case LEFT:
+      newColumn = column - 1;
+      break;
+    case TOP_LEFT:
+      newRow = row - 1;
+      newColumn = column - 1;
+      break;
+    default:
+      newRow = row;
+      newColumn = column;
+  }
+  console.log(`after (${newRow},${newColumn}) direction ${direction}`);
+
+  // if the new row / column indexes are out of bounds
+  if ((newRow < 0) || (newColumn < 0) 
+    || (newRow >= board.length) || (newColumn >= board.length)) {
+    return depth;
+  }
+
+  // if the next square has a different value
+  if (board[row][column] !== board[newRow][newColumn]) {
+    return depth;
+  }
+
+  return traverseSquares(board, direction, newRow, newColumn, depth += 1);
+};
+
 // switch the global values from one player to the next
 const togglePlayer = () => {
   if (currentPlayer === 'X') {
@@ -63,20 +134,28 @@ const togglePlayer = () => {
   }
 };
 
-const squareClick = (column, row) => {
-  console.log('coordinates', column, row);
-
-  // see if the clicked square has been clicked on before
-  if (board[column][row] === '') {
-    // alter the data array, set it to the current player
-    board[column][row] = currentPlayer;
-
-    // refresh the creen with a new board
-    // according to the array that was just changed
+const squareClick = (row, column) => {
+  if (board[row][column] === '') {
+    board[row][column] = currentPlayer;
     buildBoard(board);
 
-    // change the player
-    togglePlayer();
+    if (checkWin(board, row, column)) {
+      // game over, print message
+      output(`Game over! ${currentPlayer} won!`);
+
+      // reset board after a few seconds
+      setTimeout(() => {
+        board = [
+          ['', '', ''],
+          ['', '', ''],
+          ['', '', ''],
+        ];        
+        buildBoard(board);
+        output('');
+      }, 3000);
+    } else {
+      togglePlayer();
+    }
   }
 };
 
@@ -87,5 +166,7 @@ const initGame = () => {
 
   // build the board - right now it's empty
   buildBoard(board);
+
+  buildGameInfo(board);
 };
 initGame();
