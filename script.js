@@ -1,11 +1,29 @@
 // Please implement exercise logic here
 // global variables
 // keep data about the game in a 2-D array
-let board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
+let board = [];
+
+let sizeOfBoard;
+
+// create the array in board using nested loops
+const pushBoard = () => {
+  for (let k = 0; k < sizeOfBoard; k += 1) {
+    board.push([]);
+    for (let l = 0; l < sizeOfBoard; l += 1) {
+      board[k].push('');
+    }
+  }
+};
+
+const playThumpEffect = () => {
+  const audio = new Audio('https://notification-sounds.com/soundsfiles/Thump-sound-effect.mp3');
+  audio.play();
+};
+
+const playApplause = () => {
+  const audio = new Audio('https://notification-sounds.com/soundsfiles/Quiz-correct-sound-with-applause.mp3');
+  audio.play();
+};
 
 // the element that contains the rows and squares
 let boardElement;
@@ -20,11 +38,21 @@ let currentPlayer = 'X';
 // create a div element to display a message
 const messageDiv = document.createElement('div');
 messageDiv.classList.add('outputBox');
+// insert the output div
+document.body.appendChild(messageDiv);
 
 // helper function to display message
 const output = (message) => {
   messageDiv.innerText = message;
 };
+
+// create a input and submit button
+const userDiv = document.createElement('div');
+const userInput = document.createElement('input');
+const submitBtn = document.createElement('button');
+submitBtn.innerText = 'Submit';
+userDiv.appendChild(userInput);
+userDiv.appendChild(submitBtn);
 
 // switch the global values from one player to the next
 const togglePlayer = () => {
@@ -111,39 +139,39 @@ const checkWin2 = () => {
 };
 
 // to win the player has get x or o in a line
-const checkWin = (board) => {
-  // check every position
-  // there is a conditional for all 15 win conditions
-  if ((board[0][0] !== '') && (board[0][0] === board[0][1] && board[0][1] === board[0][2])) {
-    return true;
-  }
-  if ((board[1][0] !== '') && (board[1][0] === board[1][1] && board[1][1] === board[1][2])) {
-    return true;
-  }
-  if ((board[2][0] !== '') && (board[2][0] === board[1][2] && board[1][2] === board[2][2])) {
-    return true;
-  }
-  if ((board[0][0] !== '') && (board[0][0] === board[1][0] && board[1][0] === board[2][0])) {
-    return true;
-  }
-  if ((board[0][1] !== '') && (board[0][1] === board[1][1] && board[1][1] === board[2][1])) {
-    return true;
-  }
-  if ((board[0][2] !== '') && (board[0][2] === board[1][2] && board[1][2] === board[2][2])) {
-    return true;
-  }
-  if ((board[2][0] !== '') && (board[2][0] === board[2][1]) && board[2][1] === board[2][2]) {
-    return true;
-  }
+// const checkWin = (board) => {
+//   // check every position
+//   // there is a conditional for all 15 win conditions
+//   if ((board[0][0] !== '') && (board[0][0] === board[0][1] && board[0][1] === board[0][2])) {
+//     return true;
+//   }
+//   if ((board[1][0] !== '') && (board[1][0] === board[1][1] && board[1][1] === board[1][2])) {
+//     return true;
+//   }
+//   if ((board[2][0] !== '') && (board[2][0] === board[1][2] && board[1][2] === board[2][2])) {
+//     return true;
+//   }
+//   if ((board[0][0] !== '') && (board[0][0] === board[1][0] && board[1][0] === board[2][0])) {
+//     return true;
+//   }
+//   if ((board[0][1] !== '') && (board[0][1] === board[1][1] && board[1][1] === board[2][1])) {
+//     return true;
+//   }
+//   if ((board[0][2] !== '') && (board[0][2] === board[1][2] && board[1][2] === board[2][2])) {
+//     return true;
+//   }
+//   if ((board[2][0] !== '') && (board[2][0] === board[2][1]) && board[2][1] === board[2][2]) {
+//     return true;
+//   }
 
-  if ((board[0][0] !== '') && (board[0][0] === board[1][1] && board[1][1] === board[2][2])) {
-    return true;
-  }
-  if ((board[0][2] !== '') && (board[0][2] === board[1][1] && board[1][1] === board[2][0])) {
-    return true;
-  }
-  return false;
-};
+//   if ((board[0][0] !== '') && (board[0][0] === board[1][1] && board[1][1] === board[2][2])) {
+//     return true;
+//   }
+//   if ((board[0][2] !== '') && (board[0][2] === board[1][1] && board[1][1] === board[2][0])) {
+//     return true;
+//   }
+//   return false;
+// };
 
 // completely rebuilds the entire board every time there's a click
 const buildBoard = () => {
@@ -151,7 +179,6 @@ const buildBoard = () => {
   boardContainer.innerHTML = '';
   boardElement = document.createElement('div');
   boardElement.classList.add('board');
-
   // move through the board data array and create the
   // current state of the board
   for (let i = 0; i < board.length; i += 1) {
@@ -189,10 +216,12 @@ const squareClick = (column, row) => {
   // if the square user clicks is blank, check if the user wins the
   // game, if not toggle next player.
   if (board[column][row] === '') {
+    playThumpEffect();
     board[column][row] = currentPlayer;
     buildBoard(board);
 
     if (checkWin2(board) === true) {
+      playApplause();
       output(`Player ${currentPlayer} wins!`);
       // empty the board after a set time
       setTimeout(() => {
@@ -214,14 +243,30 @@ const squareClick = (column, row) => {
 
 // create the board container element and put it on the screen
 const initGame = () => {
+  document.body.appendChild(userDiv);
+  output('Please enter a number');
+
+  // boardContainer = document.createElement('div');
+  // document.body.appendChild(boardContainer);
+
+  // // build the board - right now it's empty
+  // buildBoard(board);
+};
+
+// function to get size of board user wants
+const getSizeOfBoard = () => {
+  sizeOfBoard = userInput.value;
+  pushBoard();
+  userDiv.classList.toggle('removeDiv');
+  output('Please click on any square!');
+
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
 
   // build the board - right now it's empty
   buildBoard(board);
-
-  // insert the output div
-  document.body.appendChild(messageDiv);
 };
+
+submitBtn.addEventListener('click', getSizeOfBoard);
 
 initGame();
