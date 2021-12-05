@@ -298,6 +298,7 @@ const findWinningMove = (mark, emptySquares) => {
 const decideAIMove = () => {
   let aiDecision = {};
 
+  // find empty squares to consider for next move
   const emptySquares = findEmptySquares();
 
   if (gameMode === 'VS_COMPUTER_EASY') {
@@ -311,7 +312,15 @@ const decideAIMove = () => {
     }
   } else {
     // find best next move
-    aiDecision = emptySquares[getRandomIndex(emptySquares.length)];
+    aiDecision = findWinningMove('O', emptySquares);
+    // if no winning move is found, find blocking move
+    if (Object.keys(aiDecision).length === 0) {
+      aiDecision = findWinningMove('X', emptySquares);
+    }
+    // if no winning move is found, choose random square
+    if (Object.keys(aiDecision).length === 0) {
+      aiDecision = emptySquares[getRandomIndex(emptySquares.length)];
+    }
   }
 
   return aiDecision;
