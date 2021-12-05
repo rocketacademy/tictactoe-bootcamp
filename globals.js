@@ -22,11 +22,27 @@ let currentPlayer = 'X';
 // 7 0 1
 // 6   2
 // 5 4 3
-const TOP = 0;
-const TOP_RIGHT = 1;
+const UP = 0;
+const UP_RIGHT = 1;
 const RIGHT = 2;
-const BOTTOM_RIGHT = 3;
-const BOTTOM = 4;
-const BOTTOM_LEFT = 5;
+const DOWN_RIGHT = 3;
+const DOWN = 4;
+const DOWN_LEFT = 5;
 const LEFT = 6;
-const TOP_LEFT = 7;
+const UP_LEFT = 7;
+
+// how many in a row determines a win
+const HOW_MANY_IN_A_ROW = 3;
+
+// array of movements in x and y terms
+/* eslint-disable no-multi-spaces */
+const MOVEMENT = [
+  { x: 0, y: -1 },  // UP
+  { x: 1, y: -1 },  // UP RIGHT
+  { x: 1, y: 0 },   // RIGHT
+  { x: 1, y: 1 },   // DOWN RIGHT
+  { x: 0, y: 1 },   // DOWN
+  { x: -1, y: 1 },  // DOWN LEFT
+  { x: -1, y: 0 },  // LEFT
+  { x: -1, y: -1 }, // UP LEFT
+];
