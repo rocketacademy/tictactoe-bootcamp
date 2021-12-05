@@ -2,8 +2,8 @@
 // global variables
 // keep data about the game in a 2-D array
 let board = [];
-
 let sizeOfBoard;
+let numOfSqnToWin;
 
 // create the array in board using nested loops
 const pushBoard = () => {
@@ -46,7 +46,7 @@ const output = (message) => {
   messageDiv.innerText = message;
 };
 
-// create a input and submit button
+// create a input and submit button for board size
 const userDiv = document.createElement('div');
 const userInput = document.createElement('input');
 const submitBtn = document.createElement('button');
@@ -65,7 +65,7 @@ const togglePlayer = () => {
 
 // create the winning logic for this game
 // check if there is a win in a row
-const checkRowWin = (board) => {
+const checkRowWin = () => {
 // [x][y] run a loop to check through these coordinates
 // run another loop inside to check all the rows
 // [0][0],[1][0],[2][0]
@@ -80,7 +80,7 @@ const checkRowWin = (board) => {
       if (board[i][j] === 'O') {
         count -= 1;
       }
-      if (count === 3 || count === -3) {
+      if (count === numOfSqnToWin || count === -numOfSqnToWin) {
         return true;
       }
     }
@@ -88,13 +88,12 @@ const checkRowWin = (board) => {
   return false;
 };
 
-const checkColWin = (board) => {
+const checkColWin = () => {
 // [0][0],[0][1],[0][2]
 // [1][0],[1][1],[1][2]
 // [2][0],[2][1],[2][2]
-  let count = 0;
   for (let i = 0; i < board.length; i += 1) {
-    count = 0;
+    let count = 0;
     for (let j = 0; j < board[i].length; j += 1) {
       if (board[j][i] === 'X') {
         count += 1;
@@ -102,7 +101,7 @@ const checkColWin = (board) => {
       if (board[j][i] === 'O') {
         count -= 1;
       }
-      if (count === 3 || count === -3) {
+      if (count === numOfSqnToWin || count === -numOfSqnToWin) {
         return true;
       }
     }
@@ -110,17 +109,48 @@ const checkColWin = (board) => {
   return false;
 };
 
-const checkDiagWin = (board) => {
-  const s0 = board[0][0];
-  const s1 = board[1][1];
-  const s2 = board[2][2];
-  const s3 = board[0][2];
-  const s4 = board[2][0];
-  if ((s0 !== '') && (s0 === s1 && s1 === s2)) {
-    return true;
+const checkRightDiagWin = () => {
+  // const s0 = board[0][0];
+  // const s1 = board[1][1];
+  // const s2 = board[2][2];
+  // const s3 = board[0][2];
+  // const s4 = board[2][0];
+  // if ((s0 !== '') && (s0 === s1 && s1 === s2)) {
+  //   return true;
+  // }
+  // if ((s3 !== '') && (s3 === s1 && s1 === s4)) {
+  //   return true;
+  // }
+  // return false;
+  let count = 0;
+  for (let i = 0; i < board.length; i += 1) {
+    if (board[i][i] === 'X') {
+      count += 1;
+    }
+    if (board[i][i] === 'O') {
+      count -= 1;
+    }
+    if (count === numOfSqnToWin || count === -numOfSqnToWin) {
+      return true;
+    }
   }
-  if ((s3 !== '') && (s3 === s1 && s1 === s4)) {
-    return true;
+  return false;
+};
+
+const checkLeftDiagWin = () => {
+  let count = 0;
+  let colCount = 0;
+  for (let i = board.length - 1; i >= 0; i -= 1) {
+    if (board[i][colCount] === 'X') {
+      count += 1;
+    }
+    if (board[i][colCount] === 'O') {
+      count -= 1;
+    }
+    if (count === numOfSqnToWin || count === -numOfSqnToWin) {
+      return true;
+    }
+    colCount += 1;
   }
   return false;
 };
@@ -132,7 +162,10 @@ const checkWin2 = () => {
   if (checkColWin(board) === true) {
     return true;
   }
-  if (checkDiagWin(board) === true) {
+  if (checkRightDiagWin(board) === true) {
+    return true;
+  }
+  if (checkLeftDiagWin(board) === true) {
     return true;
   }
   return false;
@@ -225,16 +258,13 @@ const squareClick = (column, row) => {
       output(`Player ${currentPlayer} wins!`);
       // empty the board after a set time
       setTimeout(() => {
-        board = [
-          ['', '', ''],
-          ['', '', ''],
-          ['', '', ''],
-        ];
+        board = [];
+        pushBoard();
         // rebuild the board and assign default player back to 1
         buildBoard(board);
         currentPlayer = 'X';
         output('Please click on any square!');
-      }, 3000);
+      }, 9000);
     } else {
       togglePlayer();
     }
@@ -245,21 +275,16 @@ const squareClick = (column, row) => {
 const initGame = () => {
   document.body.appendChild(userDiv);
   output('Please enter a number');
-
-  // boardContainer = document.createElement('div');
-  // document.body.appendChild(boardContainer);
-
-  // // build the board - right now it's empty
-  // buildBoard(board);
 };
 
 // function to get size of board user wants
 const getSizeOfBoard = () => {
   sizeOfBoard = userInput.value;
+  numOfSqnToWin = parseInt(sizeOfBoard, 10);
   pushBoard();
   userDiv.classList.toggle('removeDiv');
-  output('Please click on any square!');
 
+  output('Please click on any square!');
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
 
