@@ -54,6 +54,13 @@ submitBtn.innerText = 'Submit';
 userDiv.appendChild(userInput);
 userDiv.appendChild(submitBtn);
 
+const userDiv1 = document.createElement('div');
+const userInput1 = document.createElement('input');
+const submitBtn1 = document.createElement('button');
+submitBtn1.innerText = 'Submit';
+userDiv1.appendChild(userInput1);
+userDiv1.appendChild(submitBtn1);
+
 // switch the global values from one player to the next
 const togglePlayer = () => {
   if (currentPlayer === 'X') {
@@ -110,18 +117,7 @@ const checkColWin = () => {
 };
 
 const checkRightDiagWin = () => {
-  // const s0 = board[0][0];
-  // const s1 = board[1][1];
-  // const s2 = board[2][2];
-  // const s3 = board[0][2];
-  // const s4 = board[2][0];
-  // if ((s0 !== '') && (s0 === s1 && s1 === s2)) {
-  //   return true;
-  // }
-  // if ((s3 !== '') && (s3 === s1 && s1 === s4)) {
-  //   return true;
-  // }
-  // return false;
+// size 4, [1,1][2,2][3,3][4,4]
   let count = 0;
   for (let i = 0; i < board.length; i += 1) {
     if (board[i][i] === 'X') {
@@ -138,6 +134,8 @@ const checkRightDiagWin = () => {
 };
 
 const checkLeftDiagWin = () => {
+// for 4 row
+// [3,0][2,1][1,2][0,3]
   let count = 0;
   let colCount = 0;
   for (let i = board.length - 1; i >= 0; i -= 1) {
@@ -271,27 +269,35 @@ const squareClick = (column, row) => {
   }
 };
 
-// create the board container element and put it on the screen
-const initGame = () => {
-  document.body.appendChild(userDiv);
-  output('Please enter a number');
+const initBoard = () => {
+  const GetNumOfSqn = userInput1.value;
+  numOfSqnToWin = parseInt(GetNumOfSqn, 10);
+  userDiv1.classList.toggle('removeDiv');
+
+  pushBoard();
+  boardContainer = document.createElement('div');
+  document.body.appendChild(boardContainer);
+  output('Please click on any square!');
+
+  // build the board - right now it's empty
+  buildBoard(board);
 };
 
 // function to get size of board user wants
 const getSizeOfBoard = () => {
   sizeOfBoard = userInput.value;
   numOfSqnToWin = parseInt(sizeOfBoard, 10);
-  pushBoard();
   userDiv.classList.toggle('removeDiv');
 
-  output('Please click on any square!');
-  boardContainer = document.createElement('div');
-  document.body.appendChild(boardContainer);
-
-  // build the board - right now it's empty
-  buildBoard(board);
+  output('Enter the winning condition!');
+  document.body.appendChild(userDiv1);
+  submitBtn1.addEventListener('click', initBoard);
 };
 
-submitBtn.addEventListener('click', getSizeOfBoard);
+const initGame = () => {
+  output('Enter the board size!');
+  document.body.appendChild(userDiv);
+  submitBtn.addEventListener('click', getSizeOfBoard);
+};
 
 initGame();
