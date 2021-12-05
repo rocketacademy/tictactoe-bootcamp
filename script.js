@@ -7,6 +7,9 @@ const output = (message) => {
   document.querySelector('.game-info').innerText = message;
 };
 
+/**
+ * Build board-size input and number-of-squares-to-win input.
+ */
 const buildUserChoiceInput = () => {
   const userInputs = document.createElement('div');
   userInputs.classList.add('user-inputs');
@@ -24,16 +27,36 @@ const buildUserChoiceInput = () => {
   document.body.appendChild(userInputs);
 };
 
+/**
+ * Build game mode selection buttons.
+ */
 const buildGameModeInput = () => {
   const buttons = document.createElement('div');
   buttons.classList.add('buttons');
 
   const vsPlayerButton = document.createElement('button');
   vsPlayerButton.classList.add('button');
-  vsPlayerButton.addEventListener('click', () => vsPlayerButtonClick());
+  vsPlayerButton.addEventListener('click', () => buttonClick('VS_PLAYER'));
   vsPlayerButton.innerText = 'vs Player';
-
   buttons.appendChild(vsPlayerButton);
+
+  const vsComputerEasyButton = document.createElement('button');
+  vsComputerEasyButton.classList.add('button');
+  vsComputerEasyButton.addEventListener('click', () => buttonClick('VS_COMPUTER_EASY'));
+  vsComputerEasyButton.innerText = 'vs Computer (Easy)';
+  buttons.appendChild(vsComputerEasyButton);
+
+  const vsComputerNormal = document.createElement('button');
+  vsComputerNormal.classList.add('button');
+  vsComputerNormal.addEventListener('click', () => buttonClick('VS_COMPUTER_NORMAL'));
+  vsComputerNormal.innerText = 'vs Computer (Normal)';
+  buttons.appendChild(vsComputerNormal);
+
+  const vsComputerHard = document.createElement('button');
+  vsComputerHard.classList.add('button');
+  vsComputerHard.addEventListener('click', () => buttonClick('VS_COMPUTER_HARD'));
+  vsComputerHard.innerText = 'vs Computer (Hard)';
+  buttons.appendChild(vsComputerHard);
 
   document.body.appendChild(buttons);
 };
@@ -218,7 +241,90 @@ const resetBoard = () => {
     buildBoard();
     output('');
     setSquareClickable(true);
+    currentPlayer = 'X';
   }, 3000);
+};
+
+// Get a random index ranging from 0 (inclusive) to max (exclusive).
+const getRandomIndex = (max) => Math.floor(Math.random() * max);
+
+const findEmptySquares = () => {
+  const emptySquares = [];
+
+  for (let i = 0; i < board.length; i += 1) {
+    for (let j = 0; j < board[i].length; j += 1) {
+      if (board[i][j] === '') emptySquares.push({ row: i, column: j });
+    }
+  }
+
+  return emptySquares;
+};
+
+/**
+ * Find the next move that will make you win.
+ * @param {*} mark X or O
+ * @param {*} emptySquares Empty squares still available to choose
+ * @returns Square that will make you win
+ */
+const findWinningMove = (mark, emptySquares) => {
+  let winningMove = {};
+
+  // check all empty squares and put mark in each to see if that's a winning move
+  for (let i = 0; i < emptySquares.length; i += 1) {
+    // temporarily put a mark to test if that's a winning move
+    board[emptySquares[i].row][emptySquares[i].column] = mark;
+
+    if (checkWin(emptySquares[i].row, emptySquares[i].column)) {
+      winningMove = { row: emptySquares[i].row, column: emptySquares[i].column };
+
+      // erase the mark from the square used for testing
+      board[emptySquares[i].row][emptySquares[i].column] = '';
+
+      // winning move found, stop searching
+      break;
+    } else {
+      // erase the mark from the square used for testing
+      board[emptySquares[i].row][emptySquares[i].column] = '';
+    }
+  }
+
+  return winningMove;
+};
+
+/**
+ * Decide AI's next move.
+ * @returns Row and column indexes of AI next move
+ */
+const decideAIMove = () => {
+  let aiDecision = {};
+
+  const emptySquares = findEmptySquares();
+
+  if (gameMode === 'VS_COMPUTER_EASY') {
+    aiDecision = emptySquares[getRandomIndex(emptySquares.length)];
+  } else if (gameMode === 'VS_COMPUTER_NORMAL') {
+    aiDecision = findWinningMove('X', emptySquares);
+
+    // if no winning move is found, choose random square
+    if (Object.keys(aiDecision).length === 0) {
+      aiDecision = emptySquares[getRandomIndex(emptySquares.length)];
+    }
+  } else {
+    // find best next move
+    aiDecision = emptySquares[getRandomIndex(emptySquares.length)];
+  }
+
+  return aiDecision;
+};
+
+/**
+ * Let AI / Computer play.
+ */
+const artificialIntelligentPlay = () => {
+  const AIMove = decideAIMove();
+  setTimeout(() => {
+    squareClick(AIMove.row, AIMove.column);
+  }, 1000);
 };
 
 /**
@@ -241,18 +347,12 @@ const squareClick = (row, column) => {
       resetBoard();
     } else {
       togglePlayer();
+      if ((currentPlayer === 'O') && (gameMode !== 'VS_PLAYER')) {
+        artificialIntelligentPlay();
+      }
     }
   }
 };
-
-/**
- * Create the board container element and put it on the screen.
- */
-const initGame = () => {
-  buildUserChoiceInput();
-  buildGameModeInput();
-};
-initGame();
 
 /**
  * Set board size based on user input.
@@ -304,7 +404,9 @@ const disableUserInput = () =>{
 /**
  * Handle 'vsPlayer' button click.
  */
-const vsPlayerButtonClick = () => {
+const buttonClick = (mode) => {
+  gameMode = mode;
+
   setBoardSize();
   setNumberInARow();
   disableUserInput();
@@ -317,3 +419,12 @@ const vsPlayerButtonClick = () => {
   buildBoard();
   buildGameInfo();
 };
+
+/**
+ * Create the board container element and put it on the screen.
+ */
+const initGame = () => {
+  buildUserChoiceInput();
+  buildGameModeInput();
+};
+initGame();

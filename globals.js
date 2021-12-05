@@ -18,6 +18,9 @@ let squaresInARowInput;
 // current player global starts at X
 let currentPlayer = 'X';
 
+// AI / computer use O by default
+let AIPlayer = 'O';
+
 // constants for direction
 // 7 0 1
 // 6   2
@@ -51,3 +54,6 @@ const MOVEMENT = [
   { x: -1, y: 0 },  // LEFT
   { x: -1, y: -1 }, // UP LEFT
 ];
+
+// game mode
+let gameMode = 'VS_PLAYER';
