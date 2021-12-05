@@ -11,3 +11,8 @@ body {
   width: 10px;
   vertical-align: top;
 }
+
+.user-input {
+  display: block;
+  width: 250px;
+}

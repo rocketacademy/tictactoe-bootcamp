@@ -7,6 +7,37 @@ const output = (message) => {
   document.querySelector('.game-info').innerText = message;
 };
 
+const buildUserChoiceInput = () => {
+  const userInputs = document.createElement('div');
+  userInputs.classList.add('user-inputs');
+
+  boardSizeInput = document.createElement('input');
+  boardSizeInput.classList.add('user-input');
+  boardSizeInput.placeholder = 'Type in board size (3-10)';
+  userInputs.appendChild(boardSizeInput);
+
+  squaresInARowInput = document.createElement('input');
+  squaresInARowInput.classList.add('user-input');
+  squaresInARowInput.placeholder = 'Type in # of squares in a row to win (3-10)';
+  userInputs.appendChild(squaresInARowInput);
+
+  document.body.appendChild(userInputs);
+};
+
+const buildGameModeInput = () => {
+  const buttons = document.createElement('div');
+  buttons.classList.add('buttons');
+
+  const vsPlayerButton = document.createElement('button');
+  vsPlayerButton.classList.add('button');
+  vsPlayerButton.addEventListener('click', () => vsPlayerButtonClick());
+  vsPlayerButton.innerText = 'vs Player';
+
+  buttons.appendChild(vsPlayerButton);
+
+  document.body.appendChild(buttons);
+};
+
 /**
  * Build the game information area.
  */
@@ -98,8 +129,6 @@ const traverseSquares = (movement, row, column, depth) => {
   const newRow = row + movement.y;
   const newColumn = column + movement.x;
 
-  console.log(`before (${row},${column}) movement (${movement.x},${movement.y}) after (${newRow},${newColumn})`);
-
   // if the new row / column indexes are out of bounds
   if ((newRow < 0) || (newColumn < 0)
     || (newRow >= board.length) || (newColumn >= board.length)) {
@@ -126,9 +155,8 @@ const checkWin = (row, column) => {
   for (let directionIndex = 0; directionIndex < MOVEMENT.length; directionIndex += 1) {
     depth.push(traverseSquares(MOVEMENT[directionIndex], row, column, 0));
   }
-  console.log(`checkwin depth ${depth}`);
 
-  return ((getMaximumDepth(depth) + 1) >= HOW_MANY_IN_A_ROW);
+  return ((getMaximumDepth(depth) + 1) >= howManyInARow);
 };
 
 /**
@@ -157,19 +185,13 @@ const isBoardFull = () => {
 };
 
 /**
- * Reset game board.
+ * Initialize board with specified size.
  */
-const resetBoard = () => {
-  setTimeout(() => {
-    board = [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', ''],
-    ];
-    buildBoard();
-    output('');
-    setSquareClickable(true);
-  }, 3000);
+const initBoard = (size) => {
+  board = [];
+  for (let i = 0; i < size; i += 1) {
+    board.push(Array(size).fill(''));
+  }
 };
 
 /**
@@ -188,6 +210,18 @@ const setSquareClickable = (isSquareClickable) => {
 };
 
 /**
+ * Reset game board.
+ */
+const resetBoard = () => {
+  setTimeout(() => {
+    initBoard(boardSize);
+    buildBoard();
+    output('');
+    setSquareClickable(true);
+  }, 3000);
+};
+
+/**
  * Handle square's click event.
  * @param {*} row Row index of square clicked
  * @param {*} column Column index of square clicked
@@ -202,7 +236,7 @@ const squareClick = (row, column) => {
       setSquareClickable(false);
       resetBoard();
     } else if (isBoardFull()) {
-      output(`It's a draw! Let's play again!`);
+      output('It\'s a draw! Let\'s play again!');
       setSquareClickable(false);
       resetBoard();
     } else {
@@ -215,10 +249,71 @@ const squareClick = (row, column) => {
  * Create the board container element and put it on the screen.
  */
 const initGame = () => {
+  buildUserChoiceInput();
+  buildGameModeInput();
+};
+initGame();
+
+/**
+ * Set board size based on user input.
+ * If user input is not a number, board size set to default.
+ * If user input is out of range, board size set to MIN/MAX.
+ */
+const setBoardSize = () => {
+  if ((boardSizeInput.value !== '') && !Number.isNaN(boardSizeInput.value)) {
+    boardSize = parseInt(boardSizeInput.value, 10);
+
+    if (Number.isNaN(boardSize)) boardSize = MIN_BOARD_SIZE;
+    else if (boardSize > MAX_BOARD_SIZE) boardSize = MAX_BOARD_SIZE;
+    else if (boardSize < MIN_BOARD_SIZE) boardSize = MIN_BOARD_SIZE;
+  }
+
+  boardSizeInput.value = boardSize;
+};
+
+/**
+ * Set number in a row to win based on user input.
+ * If user input is not a number, number in a row to win set to default.
+ * If user input is out of range, number in a row to win set to MIN/board size.
+ */
+const setNumberInARow = () => {
+  if ((squaresInARowInput.value !== '') && !Number.isNaN(squaresInARowInput.value)) {
+    howManyInARow = parseInt(squaresInARowInput.value, 10);
+
+    if (Number.isNaN(howManyInARow)) howManyInARow = boardSize;
+    else if (howManyInARow > boardSize) howManyInARow = boardSize;
+    else if (howManyInARow < MIN_BOARD_SIZE) howManyInARow = MIN_BOARD_SIZE;
+  }
+  squaresInARowInput.value = howManyInARow;
+};
+
+/**
+ * Disabled user input after game starts.
+ */
+const disableUserInput = () =>{
+  const userInputs = document.querySelectorAll('.user-input');
+  for (let i = 0; i < userInputs.length; i += 1) {
+    userInputs[i].disabled = 'disabled';
+  }
+  const buttons = document.querySelectorAll('.button');
+  for (let j = 0; j < buttons.length; j += 1) {
+    buttons[j].disabled = 'disabled';
+  }
+};
+
+/**
+ * Handle 'vsPlayer' button click.
+ */
+const vsPlayerButtonClick = () => {
+  setBoardSize();
+  setNumberInARow();
+  disableUserInput();
+
+  initBoard(boardSize);
+
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
 
   buildBoard();
   buildGameInfo();
 };
-initGame();

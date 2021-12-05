@@ -1,9 +1,5 @@
 // keep data about the game in a 2-D array
-let board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
+let board = [];
 
 // the element that contains the rows and squares
 let boardElement;
@@ -14,6 +10,10 @@ let boardContainer;
 
 // the element that contains the game information
 let gameInfoElement;
+
+// the elements that collects user input
+let boardSizeInput;
+let squaresInARowInput;
 
 // current player global starts at X
 let currentPlayer = 'X';
@@ -31,8 +31,13 @@ const DOWN_LEFT = 5;
 const LEFT = 6;
 const UP_LEFT = 7;
 
+// board size
+const MAX_BOARD_SIZE = 10;
+const MIN_BOARD_SIZE = 3;
+let boardSize = MIN_BOARD_SIZE;
+
 // how many in a row determines a win
-const HOW_MANY_IN_A_ROW = 3;
+let howManyInARow = boardSize;
 
 // array of movements in x and y terms
 /* eslint-disable no-multi-spaces */
