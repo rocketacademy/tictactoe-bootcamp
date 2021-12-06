@@ -1,7 +1,10 @@
 // Please implement exercise logic here
-// GLOBAL VARIABLES
+/* #########################
+##### GLOBAL VARIABLES ####
+######################### */
+
 // keep data about the game in a 2-D array
-const board = [
+let board = [
   ['', '', ''],
   ['', '', ''],
   ['', '', ''],
@@ -14,11 +17,17 @@ let boardElement;
 // we can empty it out for convenience
 let boardContainer;
 
+// the element that contains the div where messages to the
+// players are displayed
+let messageContainer;
+
 // current player global starts at X
 let currentPlayer = 'X';
 
+/* ##############################
+###### HELPER FUNCTIONS #########
+############################# */
 
-// HELPER FUNCTIONS
 // completely rebuilds the entire board every time there's a click
 const buildBoard = (board) => {
   // start with an empty container
@@ -58,17 +67,6 @@ const buildBoard = (board) => {
   }
 };
 
-// GAME INITIALISATION LOGIC 
-// create the board container element and put it on the screen
-const initGame = () => {
-  boardContainer = document.createElement('div');
-  document.body.appendChild(boardContainer);
-
-  // build the board - right now it's empty
-  buildBoard(board);
-};
-
-// GAME PLAY 
 // switch the global values from one player to the next
 const togglePlayer = () => {
   if (currentPlayer === 'X') {
@@ -78,49 +76,140 @@ const togglePlayer = () => {
   }
 };
 
+const checkWin = (board) => {
+  // check every position
+  // we need to check that board[0][0] is not '' because if all 3 positions are empty, checkWin
+  // will return true
+  if (
+    board[0][0] !== '' &&
+    board[0][0] === board[0][1] &&
+    board[0][1] === board[0][2]
+  ) {
+    return true;
+  }
+  if (
+    board[1][0] !== '' &&
+    board[1][0] === board[1][1] &&
+    board[1][1] === board[1][2]
+  ) {
+    return true;
+  }
+  if (
+    board[2][0] !== '' &&
+    board[2][0] === board[2][1] &&
+    board[2][1] === board[2][2]
+  ) {
+    return true;
+  }
+  if (
+    board[0][0] !== '' &&
+    board[0][0] === board[1][0] &&
+    board[1][0] === board[2][0]
+  ) {
+    return true;
+  }
+  if (
+    board[0][1] !== '' &&
+    board[0][1] === board[1][1] &&
+    board[1][1] === board[2][1]
+  ) {
+    return true;
+  }
+  if (
+    board[0][2] !== '' &&
+    board[0][2] === board[1][2] &&
+    board[1][2] === board[2][2]
+  ) {
+    return true;
+  }
+  if (
+    board[0][0] !== '' &&
+    board[0][0] === board[1][1] &&
+    board[1][1] === board[2][2]
+  ) {
+    return true;
+  }
+  if (
+    board[2][0] !== '' &&
+    board[2][0] === board[1][1] &&
+    board[1][1] === board[0][2]
+  ) {
+    return true;
+  }
+  return false;
+};
+
+/* ##########################
+## PLAYER ACTION CALLBACKS ##
+########################### */
 const squareClick = (column, row) => {
-  console.log('coordinates', column, row);
-
-  // see if the clicked square has been clicked on before
   if (board[column][row] === '') {
-    // alter the data array, set it to the current player
     board[column][row] = currentPlayer;
-
-    // refresh the creen with a new board
-    // according to the array that was just changed
     buildBoard(board);
-
-    // change the player
-    togglePlayer();
+    if (checkWin(board) === true) {
+      // game over
+      // message to tell user who has won
+      messageContainer.innerText = `${currentPlayer} wins!`;
+      // set message to disappear and reset the game after 3 seconds
+      setTimeout(() => {
+        board = [
+          ['', '', ''],
+          ['', '', ''],
+          ['', '', ''],
+        ];
+        buildBoard(board);
+        messageContainer.innerText = 'click on a square to start';
+      }, 3000);
+    } else {
+      togglePlayer();
+    }
   }
 };
 
-initGame()
+/* ##########################
+#### GAME INITIALISATION ####
+########################## */
+
+// create the board container element and put it on the screen
+const initGame = () => {
+  messageContainer = document.createElement('div');
+  messageContainer.classList.add('message');
+  document.body.appendChild(messageContainer);
+
+  boardContainer = document.createElement('div');
+  document.body.appendChild(boardContainer);
+
+  // build the board - right now it's empty
+  buildBoard(board);
+};
+
+// #############################
+// call the function that initialises the game
+initGame();
 
 // const checkDownWin = (i, j) => {
 //   if (i === 0) {
 //     // row
-//     for (let j +=1, llsfdsfdsfds){ 
+//     for (let j +=1, llsfdsfdsfds){
 //       console.log("check row"
-        
+
 //       )}
 
 //     // col
-//        for (let i +=1 , llsfdsfdsfds){ 
+//        for (let i +=1 , llsfdsfdsfds){
 //       console.log("check col"
-        
+
 //       )}
 
 //      // for slant Dwon
 //      for (let i +=1; j +=1) {
 //        console.log ("slant")
-//      } 
-      
+//      }
+
 //     for (j == boardLength)  {
-//       i =+1; 
+//       i =+1;
 //       j=== boardLength -=1
 //     }
-     
-//   }
-// } 
 
+//   }
+// }
