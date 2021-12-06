@@ -5,11 +5,6 @@ let boardLength = 0;
 
 let roundWon = false;
 
-let leftSquareCount;
-let rightSquareCount;
-let topSquareCount;
-let bottomSquareCount;
-
 let verticalCount;
 let horizontalCount;
 let topLeftToBottomRightCount;
@@ -19,6 +14,7 @@ let squareWinCount = 0;
 let currentPlayer = "X";
 
 let availableSquareIds = [];
+let squareIdsForComputerToBlockPlayer = [];
 
 document.getElementById("boardLengthInput").addEventListener("keyup", () => {
   let boardLengthInput = parseInt(
@@ -128,8 +124,8 @@ const squareClick = (squareId, row, column) => {
       // row is -1 and col is -1
       // squareId contains the row and col
       const rowCol = squareId.split("|");
-      row = rowCol[0];
-      column = rowCol[1];
+      row = parseInt(rowCol[0]);
+      column = parseInt(rowCol[1]);
       document.getElementById(squareId).classList.add("green");
     }
 
@@ -168,6 +164,9 @@ const togglePlayer = () => {
 };
 
 // check up and down to find matches
+// if player falls short of winning by 1 box
+// it means computer can use it to block player
+// provided the box is empty
 const checkVertical = (row, column, counter) => {
   let currentForwardSquare;
   let currentReverseSquare;
@@ -220,7 +219,16 @@ const checkVertical = (row, column, counter) => {
 };
 
 // check left and right to find matches
+// if player falls short of winning by 1 box
+// it means computer can use it to block player
+// provided the box is empty
 const checkHorizontal = (row, column, counter) => {
+  if (currentPlayer === "O") {
+    console.log("??????????????????");
+    console.log("currentPlayer is O");
+    console.log("??????????????????");
+  }
+
   let currentForwardSquare;
   let currentReverseSquare;
 
@@ -233,8 +241,19 @@ const checkHorizontal = (row, column, counter) => {
   previousForwardSquare = board[row][startForwardColumn];
   column = startForwardColumn + 1;
 
+  if (currentPlayer === "O") {
+    console.log(`row: ${row}`);
+    console.log(`startForwardColumn: ${startForwardColumn}`);
+    console.log(`column: ${column}`);
+    console.log(`previousForwardSquare: ${previousForwardSquare}`);
+  }
+
   if (column < boardLength) {
     currentForwardSquare = board[row][column];
+
+    if (currentPlayer === "O") {
+      console.log(`currentForwardSquare: ${currentForwardSquare}`);
+    }
 
     if (
       currentForwardSquare == previousForwardSquare &&
@@ -268,6 +287,9 @@ const checkHorizontal = (row, column, counter) => {
 };
 
 // check from top left to bottom right to find matches
+// if player falls short of winning by 1 box
+// it means computer can use it to block player
+// provided the box is empty
 const checkDiagonalTopLeftToBottomRight = (row, column, counter) => {
   let currentForwardSquare;
   let currentReverseSquare;
@@ -325,6 +347,9 @@ const checkDiagonalTopLeftToBottomRight = (row, column, counter) => {
 };
 
 // check from bottom left to top right to find matches
+// if player falls short of winning by 1 box
+// it means computer can use it to block player
+// provided the box is empty
 const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
   let currentForwardSquare;
   let currentReverseSquare;
@@ -395,4 +420,12 @@ const checkWinner = (row, column) => {
     checkDiagonalTopLeftToBottomRight(row, column, counter);
     checkDiagonalBottomLeftToTopRight(row, column, counter);
   }
+  console.log("///////////////////////////////");
+  console.log(`currentPlayer: ${currentPlayer}`);
+  console.log(`typeof row: ${typeof row}`);
+  console.log(`verticalCount: ${verticalCount}`);
+  console.log(`horizontalCount: ${horizontalCount}`);
+  console.log(`topLeftToBottomRightCount: ${topLeftToBottomRightCount}`);
+  console.log(`bottomLeftToTopRightCount: ${bottomLeftToTopRightCount}`);
+  console.log("///////////////////////////////");
 };
