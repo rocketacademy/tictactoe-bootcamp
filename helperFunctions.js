@@ -59,7 +59,6 @@ const buildBoard = (board) => {
     // add a single row to the board
     boardContainer.appendChild(rowElement);
   }
-  console.log("Board Refreshed!");
 };
 
 // matrices and whatever
@@ -68,38 +67,13 @@ const buildBoard = (board) => {
 
 const checkRows = function (boardArr) {
   let rowCounter = 0;
-  let xFilteredRow;
-  let oFilteredRow;
-
   while (rowCounter < boardSize) {
-    // check row for a win
-    xFilteredRow = boardArr[rowCounter].filter(function (value) {
-      return value == 1;
-    });
-    // console.log(xFilteredRow);
-    oFilteredRow = boardArr[rowCounter].filter(function (value) {
-      return value == -1;
-    });
-    // console.log(oFilteredRow);
-    // xFilteredRow.reduce(add, 0);
-    // oFilteredRow.reduce(add, 0);
-    xFilteredRow = xFilteredRow.reduce((a, b) => parseInt(a) + parseInt(b), 0);
-    oFilteredRow = oFilteredRow.reduce((a, b) => parseInt(a) + parseInt(b), 0);
-    // console.log(`xFilteredRow: ${xFilteredRow}\noFilteredRow: ${oFilteredRow}`);
-
-    if (Math.abs(xFilteredRow) == boardSize) {
-      winner = "x";
-    }
-    if (Math.abs(oFilteredRow) == boardSize) {
-      winner = "O";
-    }
-
+    checkFlatArrayWin(boardArr[rowCounter]);
     rowCounter += 1;
   }
 };
 
 const transposeMaxtrix = function (matrix) {
-  // make a copy of the matrix?
   const transposed = matrix[0].map((col, i) => matrix.map((row) => row[i]));
   return transposed;
 };
@@ -120,7 +94,7 @@ const getMatrixSecondaryDiagonal = function (squareMatrix, matrixSize) {
   let secondaryDiagonalArary = [];
   for (let i = 0; i < matrixSize; i += 1) {
     for (let j = 0; j < boardSize; j += 1) {
-      if (i + j == n - 1) {
+      if (i + j == matrixSize - 1) {
         secondaryDiagonalArary.push(squareMatrix[i][j]);
       }
     }
@@ -135,6 +109,7 @@ const checkFlatArrayWin = function (arr) {
   let oFilteredRow = arr.filter(function (value) {
     return value == -1;
   });
+
   xFilteredRow = xFilteredRow.reduce((a, b) => parseInt(a) + parseInt(b), 0);
   oFilteredRow = oFilteredRow.reduce((a, b) => parseInt(a) + parseInt(b), 0);
 
@@ -147,22 +122,18 @@ const checkFlatArrayWin = function (arr) {
 };
 
 const checkDiagonals = function (boardArr) {
-  let primaryDiag = getMatrixPrimaryDiagonal(boardArr);
-  let secondaryDiag = getMatrixSecondaryDiagonal(boardArr);
+  let primaryDiag = getMatrixPrimaryDiagonal(boardArr, boardSize);
+  let secondaryDiag = getMatrixSecondaryDiagonal(boardArr, boardSize);
 
-  primaryDiag = primaryDiag.filter(function (value) {
-    return value == 1;
-  });
-  secondaryDiag = secondaryDiag.filter(function (value) {
-    return value == 1;
-  });
+  checkFlatArrayWin(primaryDiag);
+  checkFlatArrayWin(secondaryDiag);
 };
 
 const checkWin = function (boardArr) {
   checkRows(boardArr);
   // flips columns into rows and vice versa
-  console.log("boardArr transposed");
   checkRows(transposeMaxtrix(boardArr));
+  checkDiagonals(boardArr);
 
   if (winner != null) {
     winningMessageElement.innerText = `${winner} wins!`;
@@ -170,9 +141,4 @@ const checkWin = function (boardArr) {
   }
   // flips boardArr back to original state
   transposeMaxtrix(boardArr);
-  console.log("boardArr restored");
-
-  // console.log(Math.abs(xFilteredRow), Math.abs(oFilteredRow));
 };
-
-// to refactor and loop

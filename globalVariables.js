@@ -1,6 +1,6 @@
 let board = [];
 
-let boardSize = 3; // default
+let boardSize = 5; // default
 
 // the element that contains the rows and squares
 let boardElement;
