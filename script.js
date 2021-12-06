@@ -91,61 +91,46 @@ const output = (text) => {
   [20, 21, 22]
 ]
 */
-let move = 1;
-const determineWinner = () => {
-  if (winner === false) {
-    /* there are limited possible winning conditions 
+const determineWinner = (counter, i, j) => {
+  /* there are limited possible winning conditions 
   a) 3 horizonally, b) 3 vertically, c) 3 diagonally
   */
-    // loop to check vertical winner DOING
-    console.log(`move: ${move}`);
-    for (let i = 0; i < board.length; i++) {
-      let row = board[i];
-      let array = [];
-      for (let j = 0; j < row.length; j++) {
-        if (row[j] !== '') {
-          array.push(board[i][j]);
-        }
-      }
-      checkHorizontal(array);
-      // checkVertical(array);
-    }
-    move++;
-  }
-
-  // if winner is true, then output winner and end game
-  if (winner) {
-    output(`${winningChar} is the winner!`);
-    winner = false;
-  }
-};
-
-// function to check if vertical lines are all the same X or O
-const checkVertical = (arr) => {
-  let newArr = [];
-  for (let i = 0; i < arr.length; i += 1) {
-    newArr.push([]);
-    for (let j = 0; j < arr.length; j += 1) {
-      newArr[j].push(arr[i][j]);
-    }
-  }
-  console.log(newArr);
-  // check if the row contains unique X or O
-  let squareUnique = new Set(newArr);
-  // if arr = size of row & map = 1, return true;
-  if (arr.length === board.length && squareUnique.size === 1) {
-    winner = true;
-    winningChar = arr[0];
-  }
+  checkHorizontal();
+  // checkVertical();
 };
 
 // function to check if horizontal lines are all the same X or O
-const checkHorizontal = (arr) => {
-  // check if the row contains unique X or O
-  let squareUnique = new Set(arr);
-  // if arr = size of row & map = 1, return true;
-  if (arr.length === board.length && squareUnique.size === 1) {
-    winner = true;
-    winningChar = arr[0];
+const checkHorizontal = () => {
+  let prevX = false;
+  let toWinHoriz, toWinVert, toWinDiagRight, toWinDiagLeft;
+  toWinHoriz = toWinVert = toWinDiagRight = toWinDiagLeft = 0;
+  for (let i = 0; i < board.length; i += 1) {
+    let prevY = false;
+    for (let j = 0; j < board[0].length; j += 1) {
+      if (board[i][j] !== '' && (board[i][j] === prevY || prevY === false)) {
+        toWinVert += 1;
+        if (toWinVert >= board.length) {
+          console.log(board[i][j]);
+          return board[x][y];
+        } else {
+          toWinVert = 0;
+        }
+      }
+      if (board[i][j] !== '' && (board[i][j] === prevX || prevX === false)) {
+        toWinHoriz += 1;
+        if (toWinHoriz >= board.length) {
+          console.log(board[i][j]);
+          return board[i][j];
+        }
+      } else {
+        toWinHoriz = 0;
+      }
+      prevY = board[i][j];
+    }
+    prevX = board[i][j];
   }
+  return false;
 };
+
+// function to check if vertical lines are all the same X or O
+const checkVertical = (arr) => {};
