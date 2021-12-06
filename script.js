@@ -4,11 +4,11 @@
 ######################### */
 
 // keep data about the game in a 2-D array
-let board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
+// let board = [
+//   ['', '', ''],
+//   ['', '', ''],
+//   ['', '', ''],
+// ];
 
 // the element that contains the rows and squares
 let boardElement;
@@ -28,8 +28,46 @@ let currentPlayer = 'X';
 ###### HELPER FUNCTIONS #########
 ############################# */
 
+// make customize input field
+const personal = document.createElement('div');
+document.body.appendChild(personal);
+const desiredSize = document.createElement('input');
+desiredSize.setAttribute('type', 'text');
+desiredSize.setAttribute('id', 'boardSize');
+desiredSize.setAttribute('placeholder', 'Put in your board size');
+personal.appendChild(desiredSize);
+
+const submitButton = document.createElement('button');
+submitButton.innerText = 'submit';
+personal.appendChild(submitButton);
+submitButton.onclick = function () {
+  let size = Number(document.getElementById('boardSize').value);
+  board = make2DBoard(size);
+  console.log(`size`, size);
+  console.log(`Type of size`, typeof size);
+  buildBoard();
+
+};
+
+// make the 2D Array
+const make2DBoard = (size) => {
+  let aBoard = [];
+  for (let i = 0; i < size; i += 1) {
+    aBoard.push([]);
+    for (let j = 0; j < size; j += 1) {
+      aBoard[i].push('');
+    }
+  }
+  return aBoard;
+};
+
+
+const size = Number(document.getElementById('boardSize').value);
+
+let board = make2DBoard(size);
+
 // completely rebuilds the entire board every time there's a click
-const buildBoard = (board) => {
+const buildBoard = () => {
   // start with an empty container
   boardContainer.innerHTML = '';
   boardElement = document.createElement('div');
@@ -75,7 +113,7 @@ const togglePlayer = () => {
     currentPlayer = 'X';
   }
 };
-let i;
+
 const checkWin = (board) => {
   // check every position
   // we need to check that board[0][0] is not '' because if all 3 positions are empty, checkWin
@@ -162,6 +200,7 @@ const checkWin = (board) => {
 const checkH = (value) => value === currentPlayer;
 
 const checkHorizontalWin = (board) => {
+  console.log(`Horizontal`);
   for (let i = 0; i < board.length; i += 1) {
     if (board[i].every(checkH)) {
       return true;
@@ -170,13 +209,14 @@ const checkHorizontalWin = (board) => {
 };
 
 const checkVerticalWin = (board) => {
+  console.log(`Vertical`);
   for (let j = 0; j < board.length; j += 1) {
     let counter = 0;
     for (let i = 0; i < board.length; i += 1) {
       if (board[i][j] === currentPlayer) {
         counter += 1;
       }
-      if (counter === 3) {
+      if (counter === board.length) {
         return true;
       }
     }
@@ -184,19 +224,20 @@ const checkVerticalWin = (board) => {
 };
 
 const checkDiagonalDown = (board) => {
+  console.log(`DiagonalDown`);
   let counter = 0;
   for (let i = 0; i < board.length; i += 1) {
     if (board[i][i] === currentPlayer) {
       counter += 1;
     }
-    if (counter === 3) {
-      console.log('checkDiagonal1: true');
+    if (counter === board.length) {
       return true;
     }
   }
 };
 
 const checkDiagonalUp = (board) => {
+  console.log(`DiagonalUp`);
   // make a copy
   let cloneBoard = board.map((x) => x);
   let counter = 0;
@@ -206,7 +247,7 @@ const checkDiagonalUp = (board) => {
     if (cloneBoard[i][i] === currentPlayer) {
       counter += 1;
     }
-    if (counter === 3) {
+    if (counter === board.length) {
       return true;
     }
   }
@@ -225,13 +266,15 @@ const squareClick = (column, row) => {
       messageContainer.innerText = `${currentPlayer} wins!`;
       // set message to disappear and reset the game after 3 seconds
       setTimeout(() => {
-        board = [
+       
+        board =[
           ['', '', ''],
           ['', '', ''],
           ['', '', ''],
         ];
         buildBoard(board);
-        messageContainer.innerText = 'click on a square to start';
+        messageContainer.innerText =
+          'change size of board or click on a square to start or click submit to repeat';
       }, 3000);
     } else {
       togglePlayer();
@@ -259,4 +302,3 @@ const initGame = () => {
 // #############################
 // call the function that initialises the game
 initGame();
-
