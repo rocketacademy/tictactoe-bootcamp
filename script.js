@@ -1,64 +1,69 @@
+/* eslint-disable no-console */
+
+// keep data about the game in a 2-D array
+let board = [];
+
+// the element that contains the rows and squares
+let boardElement;
+
+// the element that contains the entire board
+// we can empty it out for convenience
+let boardContainer;
+
+// the element that contains the game information
+let gameInfoElement;
+
+// the elements that collects user input
+let boardSizeInput;
+let squaresInARowInput;
+
+// current player global starts at X
+let currentPlayer = 'X';
+
+// constants for direction
+// 7 0 1
+// 6   2
+// 5 4 3
+const UP = 0;
+const UP_RIGHT = 1;
+const RIGHT = 2;
+const DOWN_RIGHT = 3;
+const DOWN = 4;
+const DOWN_LEFT = 5;
+const LEFT = 6;
+const UP_LEFT = 7;
+
+// board size
+const MAX_BOARD_SIZE = 10;
+const MIN_BOARD_SIZE = 3;
+let boardSize = MIN_BOARD_SIZE;
+
+// how many in a row determines a win
+let howManyInARow = boardSize;
+
+// array of movements in x and y terms
+/* eslint-disable no-multi-spaces */
+const MOVEMENT = [
+  { x: 0, y: -1 },  // UP
+  { x: 1, y: -1 },  // UP RIGHT
+  { x: 1, y: 0 },   // RIGHT
+  { x: 1, y: 1 },   // DOWN RIGHT
+  { x: 0, y: 1 },   // DOWN
+  { x: -1, y: 1 },  // DOWN LEFT
+  { x: -1, y: 0 },  // LEFT
+  { x: -1, y: -1 }, // UP LEFT
+];
+
+// game mode
+let gameMode = 'VS_PLAYER';
+
 /**
- * Helper function for output to abstract complexity of DOM 
+ * Helper function for output to abstract complexity of DOM
  * manipulation away from game logic.
  * @param {*} message Game information message
  */
 const output = (message) => {
   document.querySelector('.game-info').innerText = message;
-};
-
-/**
- * Build board-size input and number-of-squares-to-win input.
- */
-const buildUserChoiceInput = () => {
-  const userInputs = document.createElement('div');
-  userInputs.classList.add('user-inputs');
-
-  boardSizeInput = document.createElement('input');
-  boardSizeInput.classList.add('user-input');
-  boardSizeInput.placeholder = 'Type in board size (3-10)';
-  userInputs.appendChild(boardSizeInput);
-
-  squaresInARowInput = document.createElement('input');
-  squaresInARowInput.classList.add('user-input');
-  squaresInARowInput.placeholder = 'Type in # of squares in a row to win (3-10)';
-  userInputs.appendChild(squaresInARowInput);
-
-  document.body.appendChild(userInputs);
-};
-
-/**
- * Build game mode selection buttons.
- */
-const buildGameModeInput = () => {
-  const buttons = document.createElement('div');
-  buttons.classList.add('buttons');
-
-  const vsPlayerButton = document.createElement('button');
-  vsPlayerButton.classList.add('button');
-  vsPlayerButton.addEventListener('click', () => buttonClick('VS_PLAYER'));
-  vsPlayerButton.innerText = 'vs Player';
-  buttons.appendChild(vsPlayerButton);
-
-  const vsComputerEasyButton = document.createElement('button');
-  vsComputerEasyButton.classList.add('button');
-  vsComputerEasyButton.addEventListener('click', () => buttonClick('VS_COMPUTER_EASY'));
-  vsComputerEasyButton.innerText = 'vs Computer (Easy)';
-  buttons.appendChild(vsComputerEasyButton);
-
-  const vsComputerNormal = document.createElement('button');
-  vsComputerNormal.classList.add('button');
-  vsComputerNormal.addEventListener('click', () => buttonClick('VS_COMPUTER_NORMAL'));
-  vsComputerNormal.innerText = 'vs Computer (Normal)';
-  buttons.appendChild(vsComputerNormal);
-
-  const vsComputerHard = document.createElement('button');
-  vsComputerHard.classList.add('button');
-  vsComputerHard.addEventListener('click', () => buttonClick('VS_COMPUTER_HARD'));
-  vsComputerHard.innerText = 'vs Computer (Hard)';
-  buttons.appendChild(vsComputerHard);
-
-  document.body.appendChild(buttons);
 };
 
 /**
@@ -69,48 +74,6 @@ const buildGameInfo = () => {
   gameInfoElement = document.createElement('div');
   gameInfoElement.classList.add('game-info');
   document.body.appendChild(gameInfoElement);
-};
-
-/**
- * Build the game board.
- * Completely rebuilds the entire board every time there's a click.
- */
-const buildBoard = () => {
-  // start with an empty container
-  boardContainer.innerHTML = '';
-  boardElement = document.createElement('div');
-  boardElement.classList.add('board');
-
-  // move through the board data array and create the
-  // current state of the board
-  for (let i = 0; i < board.length; i += 1) {
-    // separate var for one row / row element
-    const row = board[i];
-    const rowElement = document.createElement('div');
-    rowElement.classList.add('row');
-
-    // set each square
-    // j is the column number
-    for (let j = 0; j < row.length; j += 1) {
-      // one square element
-      const square = document.createElement('div');
-      square.classList.add('square');
-
-      // set the text of the square according to the array
-      square.innerText = board[i][j];
-
-      rowElement.appendChild(square);
-
-      // set the click all over again
-      // eslint-disable-next-line
-      square.addEventListener('click', () => {
-        squareClick(i, j);
-      });
-    }
-
-    // add a single row to the board
-    boardContainer.appendChild(rowElement);
-  }
 };
 
 /**
@@ -163,6 +126,7 @@ const traverseSquares = (movement, row, column, depth) => {
     return depth;
   }
 
+  // eslint-disable-next-line no-return-assign, no-param-reassign
   return traverseSquares(movement, newRow, newColumn, depth += 1);
 };
 
@@ -238,6 +202,7 @@ const setSquareClickable = (isSquareClickable) => {
 const resetBoard = () => {
   setTimeout(() => {
     initBoard(boardSize);
+    // eslint-disable-next-line no-use-before-define
     buildBoard();
     output('');
     setSquareClickable(true);
@@ -245,15 +210,60 @@ const resetBoard = () => {
   }, 3000);
 };
 
-// Get a random index ranging from 0 (inclusive) to max (exclusive).
+/**
+ * Get a random index ranging from 0 (inclusive) to max (exclusive).
+ * @param {*} max Max index limit
+ * @returns Random index in range
+ */
 const getRandomIndex = (max) => Math.floor(Math.random() * max);
 
+/**
+ * Is this square a side square?
+ * @param {*} row Row index of square
+ * @param {*} column Column index of square
+ * @returns True, if side square. False, otherwise.
+ */
+const isSideSquare = (row, column) => (row === 0) || (column === 0)
+    || (row === (board.length - 1)) || (column === (board.length - 1));
+
+/**
+ * Is this square a corner square?
+ * @param {*} row Row index of square
+ * @param {*} column Column index of square
+ * @returns True, if corner square. False, otherwise.
+ */
+const isCornerSquare = (row, column) => ((row === 0) && (column === 0))
+  || ((row === 0) && (column === (board.length - 1)))
+  || ((row === (board.length - 1)) && (column === 0))
+  || ((row === (board.length - 1)) && (column === (board.length - 1)));
+
+/**
+ * Is this square a center square?
+ * @param {*} row Row index of square
+ * @param {*} column Column index of square
+ * @returns True, if center square. False, otherwise.
+ */
+const isCenterSquare = (row, column) => (row === column)
+  && (boardSize % 2 !== 0) && (row === Math.floor(boardSize / 2));
+
+/**
+ * Find all empty / available squares.
+ * @returns Array of empty square rows and columns
+ */
 const findEmptySquares = () => {
   const emptySquares = [];
 
   for (let i = 0; i < board.length; i += 1) {
     for (let j = 0; j < board[i].length; j += 1) {
-      if (board[i][j] === '') emptySquares.push({ row: i, column: j });
+      if (board[i][j] === '') {
+        emptySquares.push({
+          row: i,
+          column: j,
+          center: isCenterSquare(i, j),
+          corner: isCornerSquare(i, j),
+          side: isSideSquare(i, j),
+        });
+      }
     }
   }
 
@@ -261,7 +271,58 @@ const findEmptySquares = () => {
 };
 
 /**
- * Find the next move that will make you win.
+ * Get center square if available.
+ * @param {*} emptySquares Empty squares still available to choose
+ * @returns Center square
+ */
+const getCenterSquare = (emptySquares) => {
+  const centerSquares = emptySquares.filter((square) => square.center === true);
+
+  // get random center squares
+  if (centerSquares.length > 0) {
+    return centerSquares[getRandomIndex(centerSquares.length)];
+  }
+
+  // return empty if no center squares available
+  return {};
+};
+
+/**
+ * Get corner square if available.
+ * @param {*} emptySquares Empty squares still available to choose
+ * @returns Corner square
+ */
+const getCornerSquare = (emptySquares) => {
+  const cornerSquares = emptySquares.filter((square) => square.corner === true);
+
+  // get random corner squares
+  if (cornerSquares.length > 0) {
+    return cornerSquares[getRandomIndex(cornerSquares.length)];
+  }
+
+  // return empty if no corner squares available
+  return {};
+};
+
+/**
+ * Get side square if available.
+ * @param {*} emptySquares Empty squares still available to choose
+ * @returns Side square
+ */
+const getSideSquare = (emptySquares) => {
+  const sideSquares = emptySquares.filter((square) => square.side === true);
+
+  // get random side squares
+  if (sideSquares.length > 0) {
+    return sideSquares[getRandomIndex(sideSquares.length)];
+  }
+
+  // return empty if no side squares available
+  return {};
+};
+
+/**
+ * Find the final move that will make you win.
  * @param {*} mark X or O
  * @param {*} emptySquares Empty squares still available to choose
  * @returns Square that will make you win
@@ -293,6 +354,8 @@ const findWinningMove = (mark, emptySquares) => {
 
 /**
  * Decide AI's next move.
+ * Following strategy specified in this article (except the forks):
+ * https://yndajas.co/coding/2020/10/04/coming-to-coding-chasing-the-challenge-and-tic-tac-toe-with-AI/
  * @returns Row and column indexes of AI next move
  */
 const decideAIMove = () => {
@@ -303,23 +366,57 @@ const decideAIMove = () => {
 
   if (gameMode === 'VS_COMPUTER_EASY') {
     aiDecision = emptySquares[getRandomIndex(emptySquares.length)];
+    console.log('AI move: random');
   } else if (gameMode === 'VS_COMPUTER_NORMAL') {
     aiDecision = findWinningMove('X', emptySquares);
 
-    // if no winning move is found, choose random square
+    // if no blocking move is found, choose random square
     if (Object.keys(aiDecision).length === 0) {
       aiDecision = emptySquares[getRandomIndex(emptySquares.length)];
-    }
+      console.log('AI move: random');
+    } else { console.log('AI move: block'); }
   } else {
-    // find best next move
+    // find winning move
     aiDecision = findWinningMove('O', emptySquares);
+
     // if no winning move is found, find blocking move
     if (Object.keys(aiDecision).length === 0) {
       aiDecision = findWinningMove('X', emptySquares);
+    } else {
+      console.log('AI move: win');
+      return aiDecision;
     }
-    // if no winning move is found, choose random square
+
+    // if no blocking move is found, try to get center square
+    if (Object.keys(aiDecision).length === 0) {
+      aiDecision = getCenterSquare(emptySquares);
+    } else {
+      console.log('AI move: block');
+      return aiDecision;
+    }
+
+    // if no center move is found, try to get corners
+    if (Object.keys(aiDecision).length === 0) {
+      aiDecision = getCornerSquare(emptySquares);
+    } else {
+      console.log('AI move: center');
+      return aiDecision;
+    }
+
+    // if no corner move is found, try to get sides
+    if (Object.keys(aiDecision).length === 0) {
+      aiDecision = getSideSquare(emptySquares);
+    } else {
+      console.log('AI move: corner');
+      return aiDecision;
+    }
+
+    // if no side move is found, choose random square
     if (Object.keys(aiDecision).length === 0) {
       aiDecision = emptySquares[getRandomIndex(emptySquares.length)];
+      console.log('AI move: random');
+    } else {
+      console.log('AI move: side');
     }
   }
 
@@ -332,6 +429,7 @@ const decideAIMove = () => {
 const artificialIntelligentPlay = () => {
   const AIMove = decideAIMove();
   setTimeout(() => {
+    // eslint-disable-next-line no-use-before-define
     squareClick(AIMove.row, AIMove.column);
   }, 1000);
 };
@@ -344,6 +442,7 @@ const artificialIntelligentPlay = () => {
 const squareClick = (row, column) => {
   if (board[row][column] === '') {
     board[row][column] = currentPlayer;
+    // eslint-disable-next-line no-use-before-define
     buildBoard();
 
     if (checkWin(row, column)) {
@@ -399,7 +498,7 @@ const setNumberInARow = () => {
 /**
  * Disabled user input after game starts.
  */
-const disableUserInput = () =>{
+const disableUserInput = () => {
   const userInputs = document.querySelectorAll('.user-input');
   for (let i = 0; i < userInputs.length; i += 1) {
     userInputs[i].disabled = 'disabled';
@@ -425,8 +524,105 @@ const buttonClick = (mode) => {
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
 
+  // eslint-disable-next-line no-use-before-define
   buildBoard();
   buildGameInfo();
+};
+
+/**
+ * Build board-size input and number-of-squares-to-win input.
+ */
+const buildUserChoiceInput = () => {
+  const userInputs = document.createElement('div');
+  userInputs.classList.add('user-inputs');
+
+  boardSizeInput = document.createElement('input');
+  boardSizeInput.classList.add('user-input');
+  boardSizeInput.placeholder = 'Type in board size (3-10)';
+  userInputs.appendChild(boardSizeInput);
+
+  squaresInARowInput = document.createElement('input');
+  squaresInARowInput.classList.add('user-input');
+  squaresInARowInput.placeholder = 'Type in # of squares in a row to win (3-10)';
+  userInputs.appendChild(squaresInARowInput);
+
+  document.body.appendChild(userInputs);
+};
+
+/**
+ * Build game mode selection buttons.
+ */
+const buildGameModeInput = () => {
+  const buttons = document.createElement('div');
+  buttons.classList.add('buttons');
+
+  const vsPlayerButton = document.createElement('button');
+  vsPlayerButton.classList.add('button');
+  vsPlayerButton.addEventListener('click', () => buttonClick('VS_PLAYER'));
+  vsPlayerButton.innerText = 'vs Player';
+  buttons.appendChild(vsPlayerButton);
+
+  const vsComputerEasyButton = document.createElement('button');
+  vsComputerEasyButton.classList.add('button');
+  vsComputerEasyButton.addEventListener('click', () => buttonClick('VS_COMPUTER_EASY'));
+  vsComputerEasyButton.innerText = 'vs Computer (Easy)';
+  buttons.appendChild(vsComputerEasyButton);
+
+  const vsComputerNormal = document.createElement('button');
+  vsComputerNormal.classList.add('button');
+  vsComputerNormal.addEventListener('click', () => buttonClick('VS_COMPUTER_NORMAL'));
+  vsComputerNormal.innerText = 'vs Computer (Normal)';
+  buttons.appendChild(vsComputerNormal);
+
+  const vsComputerHard = document.createElement('button');
+  vsComputerHard.classList.add('button');
+  vsComputerHard.addEventListener('click', () => buttonClick('VS_COMPUTER_HARD'));
+  vsComputerHard.innerText = 'vs Computer (Hard)';
+  buttons.appendChild(vsComputerHard);
+
+  document.body.appendChild(buttons);
+};
+
+/**
+ * Build the game board.
+ * Completely rebuilds the entire board every time there's a click.
+ */
+const buildBoard = () => {
+  // start with an empty container
+  boardContainer.innerHTML = '';
+  boardElement = document.createElement('div');
+  boardElement.classList.add('board');
+
+  // move through the board data array and create the
+  // current state of the board
+  for (let i = 0; i < board.length; i += 1) {
+    // separate var for one row / row element
+    const row = board[i];
+    const rowElement = document.createElement('div');
+    rowElement.classList.add('row');
+
+    // set each square
+    // j is the column number
+    for (let j = 0; j < row.length; j += 1) {
+      // one square element
+      const square = document.createElement('div');
+      square.classList.add('square');
+
+      // set the text of the square according to the array
+      square.innerText = board[i][j];
+
+      rowElement.appendChild(square);
+
+      // set the click all over again
+      // eslint-disable-next-line
+      square.addEventListener('click', () => {
+        squareClick(i, j);
+      });
+    }
+
+    // add a single row to the board
+    boardContainer.appendChild(rowElement);
+  }
 };
 
 /**
