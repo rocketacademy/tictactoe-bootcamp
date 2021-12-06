@@ -19,10 +19,9 @@ body {
   height: 50px;
 }
 .output {
+  display: flex;
+  padding: auto;
   margin: auto;
-  width: auto;
-  padding: 10px;
   font-family: monospace;
   color: red;
-  text-align: center;
 }

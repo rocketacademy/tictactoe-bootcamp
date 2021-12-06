@@ -14,12 +14,16 @@ const board = [
 let boardContainer;
 let boardElement;
 let outputContainer;
+let outputEL;
+
 let currentPlayer = 'X';
+let winner = false;
+let winningChar;
 
 // function that builds the board element
 const buildBoard = (board) => {
   boardContainer.innerHTML = '';
-  const boardElement = document.createElement('div');
+  boardElement = document.createElement('div');
   boardElement.classList.add('board');
   boardContainer.appendChild(boardElement);
 
@@ -61,7 +65,7 @@ const squareClick = (i, j) => {
     // change player
     changePlayer();
   }
-  determineWinner();
+  determineWinner(i, j);
 };
 
 // change player everytime function is called
@@ -70,39 +74,78 @@ const changePlayer = () => {
 };
 
 const buildOutput = () => {
-  const outputEL = document.createElement('output');
+  outputEL = document.createElement('p');
   outputEL.innerText = '';
   outputEL.classList.add('output');
   outputContainer.appendChild(outputEL);
 };
 
+const output = (text) => {
+  outputEL.innerText = text;
+};
+
+/*
+[
+  [00, 01, 02]
+  [10, 11, 12]
+  [20, 21, 22]
+]
+*/
+let move = 1;
 const determineWinner = () => {
-  /* there are limited possible winning conditions 
+  if (winner === false) {
+    /* there are limited possible winning conditions 
   a) 3 horizonally, b) 3 vertically, c) 3 diagonally
   */
-  // check horizontal
+    // loop to check vertical winner DOING
+    console.log(`move: ${move}`);
+    for (let i = 0; i < board.length; i++) {
+      let row = board[i];
+      let array = [];
+      for (let j = 0; j < row.length; j++) {
+        if (row[j] !== '') {
+          array.push(board[i][j]);
+        }
+      }
+      checkHorizontal(array);
+      // checkVertical(array);
+    }
+    move++;
+  }
 
-  // TODO don't check if squares are blank strings
-  if (
-    (board[0][0] === board[0][1] && board[0][0] === board[0][2]) ||
-    (board[1][0] === board[1][1] && board[1][0] === board[1][2]) ||
-    (board[2][0] === board[2][1] && board[2][0] === board[2][2])
-  ) {
-    console.log('win horizontal');
+  // if winner is true, then output winner and end game
+  if (winner) {
+    output(`${winningChar} is the winner!`);
+    winner = false;
   }
-  // check vertical
-  if (
-    (board[0][0] === board[1][0] && board[0][0] === board[2][0]) ||
-    (board[0][1] === board[1][1] && board[0][1] === board[2][1]) ||
-    (board[0][2] === board[1][2] && board[0][2] === board[2][2])
-  ) {
-    console.log('win vertical');
+};
+
+// function to check if vertical lines are all the same X or O
+const checkVertical = (arr) => {
+  let newArr = [];
+  for (let i = 0; i < arr.length; i += 1) {
+    newArr.push([]);
+    for (let j = 0; j < arr.length; j += 1) {
+      newArr[j].push(arr[i][j]);
+    }
   }
-  // check diagonal
-  if (
-    (board[0][0] === board[1][1] && board[0][0] === board[2][2]) ||
-    (board[2][0] === board[1][1] && board[2][0] === board[0][2])
-  ) {
-    console.log('win diagonally');
+  console.log(newArr);
+  // check if the row contains unique X or O
+  let squareUnique = new Set(newArr);
+  // if arr = size of row & map = 1, return true;
+  if (arr.length === board.length && squareUnique.size === 1) {
+    winner = true;
+    winningChar = arr[0];
+  }
+};
+
+// function to check if horizontal lines are all the same X or O
+const checkHorizontal = (arr) => {
+  // check if the row contains unique X or O
+  let squareUnique = new Set(arr);
+  // if arr = size of row & map = 1, return true;
+  if (arr.length === board.length && squareUnique.size === 1) {
+    winner = true;
+    winningChar = arr[0];
   }
 };
