@@ -141,7 +141,6 @@ const squareClick = (squareId, row, column) => {
 };
 
 const makeAMoveIfComputer = () => {
-  console.log("inside makeAMoveIfComputer");
   if (currentPlayer === "O") {
     // make a random choice that has not been taken
     let squareIsEmpty = false;
@@ -149,14 +148,6 @@ const makeAMoveIfComputer = () => {
     while (!squareIsEmpty) {
       // decide a random row and column
       const randomId = Math.floor(Math.random() * availableSquareIds.length);
-      console.log(
-        "🚀 ~ file: script.js ~ line 150 ~ makeAMoveIfComputer ~ randomId",
-        randomId
-      );
-      console.log(`availableSquareIds: ${availableSquareIds}`);
-      console.log(
-        `availableSquareIds[randomId]: ${availableSquareIds[randomId]}`
-      );
 
       if (
         document.getElementById(availableSquareIds[randomId]).innerHTML == ""
@@ -391,10 +382,6 @@ const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
 };
 
 const checkWinner = (row, column) => {
-  console.log("inside checkWinner");
-  console.log(`currentPlayer: ${currentPlayer}`);
-  console.log("🚀 ~ file: script.js ~ line 393 ~ checkWinner ~ row", row);
-  console.log("🚀 ~ file: script.js ~ line 393 ~ checkWinner ~ column", column);
   // everytime user clicks a box, check 360 degrees
   // for all boxes up till squareWinCount to find matches
   topLeftToBottomRightCount = 1;
@@ -408,21 +395,4 @@ const checkWinner = (row, column) => {
     checkDiagonalTopLeftToBottomRight(row, column, counter);
     checkDiagonalBottomLeftToTopRight(row, column, counter);
   }
-
-  console.log(
-    "🚀 ~ file: script.js ~ line 399 ~ checkWinner ~ topLeftToBottomRightCount",
-    topLeftToBottomRightCount
-  );
-  console.log(
-    "🚀 ~ file: script.js ~ line 401 ~ checkWinner ~ bottomLeftToTopRightCount",
-    bottomLeftToTopRightCount
-  );
-  console.log(
-    "🚀 ~ file: script.js ~ line 403 ~ checkWinner ~ verticalCount",
-    verticalCount
-  );
-  console.log(
-    "🚀 ~ file: script.js ~ line 405 ~ checkWinner ~ horizontalCount",
-    horizontalCount
-  );
 };
