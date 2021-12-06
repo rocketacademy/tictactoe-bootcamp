@@ -16,8 +16,9 @@ let topLeftToBottomRightCount;
 let bottomLeftToTopRightCount;
 
 let squareWinCount = 0;
-
 let currentPlayer = "X";
+
+let availableSquareIds = [];
 
 document.getElementById("boardLengthInput").addEventListener("keyup", () => {
   let boardLengthInput = parseInt(
@@ -90,6 +91,9 @@ const buildBoard = (boardLength) => {
       const square = document.createElement("div");
       square.classList.add("square");
       square.classList.add("marker");
+      square.id = `${i}|${j}`;
+
+      availableSquareIds.push(square.id);
 
       // set the text of the square according to the array
       square.innerHTML = "";
@@ -100,7 +104,9 @@ const buildBoard = (boardLength) => {
       // set the click all over again
       // eslint-disable-next-line
       square.addEventListener("click", (event) => {
-        squareClick(event, i, j);
+        if (event.target.innerHTML == "") {
+          squareClick(event.target.id, i, j);
+        }
       });
     }
 
@@ -110,29 +116,54 @@ const buildBoard = (boardLength) => {
   }
 };
 
-const squareClick = (event, row, column) => {
+const squareClick = (squareId, row, column) => {
   // see if the clicked square has been clicked on before
   if (!roundWon) {
-    if (board[row][column] === "") {
-      // alter the data array, set it to the current player
-      board[row][column] = currentPlayer;
+    availableSquareIds.splice(availableSquareIds.indexOf(squareId), 1);
+    document.getElementById(squareId).innerText = currentPlayer;
 
-      // refresh the screen with a new board
-      // according to the array that was just changed
-      // buildBoard(board);
-      event.target.innerText = currentPlayer;
+    if (currentPlayer === "X") {
+      document.getElementById(squareId).classList.add("red");
+    } else {
+      // row is -1 and col is -1
+      // squareId contains the row and col
+      const rowCol = squareId.split("|");
+      row = rowCol[0];
+      column = rowCol[1];
+      document.getElementById(squareId).classList.add("green");
+    }
 
-      if (currentPlayer === "X") {
-        event.target.classList.add("red");
-      } else {
-        event.target.classList.add("green");
+    board[row][column] = currentPlayer;
+    checkWinner(row, column);
+    togglePlayer();
+    makeAMoveIfComputer();
+  }
+};
+
+const makeAMoveIfComputer = () => {
+  console.log("inside makeAMoveIfComputer");
+  if (currentPlayer === "O") {
+    // make a random choice that has not been taken
+    let squareIsEmpty = false;
+
+    while (!squareIsEmpty) {
+      // decide a random row and column
+      const randomId = Math.floor(Math.random() * availableSquareIds.length);
+      console.log(
+        "🚀 ~ file: script.js ~ line 150 ~ makeAMoveIfComputer ~ randomId",
+        randomId
+      );
+      console.log(`availableSquareIds: ${availableSquareIds}`);
+      console.log(
+        `availableSquareIds[randomId]: ${availableSquareIds[randomId]}`
+      );
+
+      if (
+        document.getElementById(availableSquareIds[randomId]).innerHTML == ""
+      ) {
+        squareClick(availableSquareIds[randomId], -1, -1);
+        squareIsEmpty = true;
       }
-
-      // check winner
-      checkWinner(row, column);
-
-      // change the player
-      togglePlayer();
     }
   }
 };
@@ -282,10 +313,10 @@ const checkDiagonalTopLeftToBottomRight = (row, column, counter) => {
 
   if (board[startReverseRow] !== undefined) {
     previousReverseSquare = board[startReverseRow][startReverseColumn];
-    row = startReverseRow + 1;
-    column = startReverseColumn + 1;
+    row = startReverseRow - 1;
+    column = startReverseColumn - 1;
 
-    if (row < boardLength && column < boardLength && board[row] !== undefined) {
+    if (row >= 0 && column >= 0 && board[row] !== undefined) {
       currentReverseSquare = board[row][column];
 
       if (
@@ -321,7 +352,7 @@ const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
     row = startForwardRow - 1;
     column = startForwardColumn + 1;
 
-    if (row < boardLength && column < boardLength && board[row] !== undefined) {
+    if (row >= 0 && column < boardLength && board[row] !== undefined) {
       currentForwardSquare = board[row][column];
 
       if (
@@ -342,7 +373,7 @@ const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
     row = startReverseRow + 1;
     column = startReverseColumn - 1;
 
-    if (row < boardLength && column < boardLength && board[row] !== undefined) {
+    if (row < boardLength && column >= 0 && board[row] !== undefined) {
       currentReverseSquare = board[row][column];
 
       if (
@@ -360,6 +391,10 @@ const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
 };
 
 const checkWinner = (row, column) => {
+  console.log("inside checkWinner");
+  console.log(`currentPlayer: ${currentPlayer}`);
+  console.log("🚀 ~ file: script.js ~ line 393 ~ checkWinner ~ row", row);
+  console.log("🚀 ~ file: script.js ~ line 393 ~ checkWinner ~ column", column);
   // everytime user clicks a box, check 360 degrees
   // for all boxes up till squareWinCount to find matches
   topLeftToBottomRightCount = 1;
@@ -373,4 +408,21 @@ const checkWinner = (row, column) => {
     checkDiagonalTopLeftToBottomRight(row, column, counter);
     checkDiagonalBottomLeftToTopRight(row, column, counter);
   }
+
+  console.log(
+    "🚀 ~ file: script.js ~ line 399 ~ checkWinner ~ topLeftToBottomRightCount",
+    topLeftToBottomRightCount
+  );
+  console.log(
+    "🚀 ~ file: script.js ~ line 401 ~ checkWinner ~ bottomLeftToTopRightCount",
+    bottomLeftToTopRightCount
+  );
+  console.log(
+    "🚀 ~ file: script.js ~ line 403 ~ checkWinner ~ verticalCount",
+    verticalCount
+  );
+  console.log(
+    "🚀 ~ file: script.js ~ line 405 ~ checkWinner ~ horizontalCount",
+    horizontalCount
+  );
 };
