@@ -1,15 +1,6 @@
-// keep data about the game in a 2-D array
-// const board = [
-//   [0, 0, 0],
-//   [0, 0, 0],
-//   [0, 0, 0],
-// ];
+let board = [];
 
-const board = [
-  ["", "", ""],
-  ["", "", ""],
-  ["", "", ""],
-];
+let boardSize = 3; // default
 
 // the element that contains the rows and squares
 let boardElement;
@@ -19,7 +10,9 @@ let boardElement;
 let boardContainer;
 
 // current player global starts at X
-let currentPlayer = "X";
+let currentPlayer = -1;
+
+let winner = null;
 
 const boardContentsMap = {
   "-1": "O",
@@ -29,3 +22,9 @@ const boardContentsMap = {
   // so remember to use parseInt leter on in the code
   // at least for the "-1"
 };
+
+const winningMessageElement = document.getElementById("winningMessage");
+const restartButton = document.getElementById("restartButton");
+const winningMessageTextElement = document.querySelector(
+  "[data-winning-message-text]"
+);

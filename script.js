@@ -4,23 +4,25 @@ const initGame = () => {
   document.body.appendChild(boardContainer);
 
   // build the board - right now it's empty
+  // generateEmptyBoard(boardSize);
   buildBoard(board);
-}; // Please implement exercise logic here
+};
 
 // switch the global values from one player to the next
 const togglePlayer = () => {
-  if (currentPlayer === "X") {
-    currentPlayer = "O";
+  if (currentPlayer === 1) {
+    currentPlayer = -1;
+    console.log(`switched player to ${currentPlayer}`);
   } else {
-    currentPlayer = "X";
+    currentPlayer = 1;
   }
 };
 
 const squareClick = (column, row) => {
-  console.log("coordinates", column, row);
+  // console.log("coordinates", column, row);
 
   // see if the clicked square has been clicked on before
-  if (board[column][row] === "") {
+  if (board[column][row] === 0) {
     // alter the data array, set it to the current player
     board[column][row] = currentPlayer;
 
@@ -28,9 +30,12 @@ const squareClick = (column, row) => {
     // according to the array that was just changed
     buildBoard(board);
 
+    checkWin(board);
+
     // change the player
     togglePlayer();
   }
 };
 
+generateEmptyBoard(boardSize);
 initGame();
