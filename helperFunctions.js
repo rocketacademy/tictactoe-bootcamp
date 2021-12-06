@@ -62,8 +62,11 @@ const buildBoard = (board) => {
 };
 
 // matrices and whatever
-// step 1: take a column, filter elements to either +1 or -1 and check sum.
+// step 1: take a row, filter elements to either +1 or -1 and check sum.
 // step 2: if sum == boardSize, you win
+// repeat the filter, sum, and check steps for other conditions
+// for columns, transpose the matrix and check rows again
+// for diagonals, get the primary and seconday diagonals and check those
 
 const checkRows = function (boardArr) {
   let rowCounter = 0;
@@ -136,9 +139,38 @@ const checkWin = function (boardArr) {
   checkDiagonals(boardArr);
 
   if (winner != null) {
-    winningMessageElement.innerText = `${winner} wins!`;
+    winningMessageTextElement.innerText = `${winner} wins!`;
     winningMessageElement.classList.add("show");
   }
   // flips boardArr back to original state
   transposeMaxtrix(boardArr);
+};
+
+const resetBoard = function () {
+  winningMessageElement.classList.remove("show");
+  board = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0],
+  ];
+  buildBoard(board);
+};
+
+const setBoardSize = function () {
+  boardSize = initializationInputField.value;
+};
+
+const initGame = function () {
+  document.body.appendChild(initializationDiv);
+  document.addEventListener("keydown", function (event) {
+    if (event.key == "Enter" && boardSize == -1) {
+      boardSize = initializationInputField.value;
+      if (isNaN(boardSize) || boardSize < 1) {
+        boardSize = 3; //defaults to 3
+      }
+      initializationDiv.remove();
+      generateEmptyBoard(boardSize);
+      startGame();
+    }
+  });
 };

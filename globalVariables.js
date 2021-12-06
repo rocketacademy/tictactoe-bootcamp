@@ -1,6 +1,6 @@
 let board = [];
 
-let boardSize = 5; // default
+let boardSize = -1;
 
 // the element that contains the rows and squares
 let boardElement;
@@ -24,7 +24,22 @@ const boardContentsMap = {
 };
 
 const winningMessageElement = document.getElementById("winningMessage");
-const restartButton = document.getElementById("restartButton");
 const winningMessageTextElement = document.querySelector(
   "[data-winning-message-text]"
 );
+
+const restartButton = document.getElementById("restartButton");
+restartButton.addEventListener("click", () => {
+  resetBoard();
+});
+
+const initializationDiv = document.createElement("div");
+initializationDiv.classList.add("initializationDiv");
+initializationDiv.innerText =
+  "How many rows and columns would you like to have?\nEnter a numerical value.";
+
+const initializationInputField = document.createElement("input");
+initializationInputField.id = "initializationInputField";
+initializationInputField.classList.add("initializationInputField");
+
+initializationDiv.appendChild(initializationInputField);

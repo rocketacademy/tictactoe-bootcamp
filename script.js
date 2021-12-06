@@ -1,5 +1,5 @@
 // create the board container element and put it on the screen
-const initGame = () => {
+const startGame = () => {
   boardContainer = document.createElement("div");
   document.body.appendChild(boardContainer);
 
@@ -37,5 +37,6 @@ const squareClick = (column, row) => {
   }
 };
 
-generateEmptyBoard(boardSize);
+// generateEmptyBoard(boardSize);
+// startGame();
 initGame();
