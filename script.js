@@ -14,7 +14,11 @@ let squareWinCount = 0;
 let currentPlayer = "X";
 
 let availableSquareIds = [];
-let squareIdsForComputerToBlockPlayer = [];
+let squareIdsByPlayer = {};
+squareIdsByPlayer.vertical = [];
+squareIdsByPlayer.horizontal = [];
+squareIdsByPlayer.topLeftToBottomRight = [];
+squareIdsByPlayer.bottomLeftToTopRight = [];
 
 document.getElementById("boardLengthInput").addEventListener("keyup", () => {
   let boardLengthInput = parseInt(
@@ -137,7 +141,139 @@ const squareClick = (squareId, row, column) => {
 };
 
 const makeAMoveIfComputer = () => {
+  console.log("////////////////");
+  console.log(`inside makeAMoveIfComputer`);
+
   if (currentPlayer === "O") {
+    // check if user is 1 square away from a win
+    // if not, computer randomly selects
+    // loop through squareIdsByPlayer
+    // once we find an available square for computer
+    // to play, break out from loop.
+
+    // find the first box with an "X" and move through loop to find
+    // more "X". the goal is to find (squareWinCount - 1) number of "X"
+    // we can entertain only 1 blank square - which is the square
+    // for the computer to play
+    let squareIdToPlay = "";
+    let xCount = 0;
+    let blankCount = 0;
+    let currentValue = "";
+    let currentId = "";
+
+    for (let i = 0; i < squareIdsByPlayer.vertical.length; i++) {
+      let currentValue = squareIdsByPlayer.vertical[i].value;
+      let currentId = squareIdsByPlayer.vertical[i].id;
+
+      if (currentValue == "") {
+        squareIdToPlay = currentId;
+
+        if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+          // this is the square to play!
+          squareClick(squareIdToPlay, -1, -1);
+          return;
+        }
+      } else if (currentValue == "X") {
+        xCount++;
+
+        if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+          // this is the square to play!
+          squareClick(squareIdToPlay, -1, -1);
+          return;
+        }
+      }
+    }
+    squareIdToPlay = "";
+    xCount = 0;
+    blankCount = 0;
+    currentValue = "";
+    currentId = "";
+    if (squareIdToPlay == "") {
+      console.log("INSIDE CHECK HORIZONTAL");
+      for (let i = 0; i < squareIdsByPlayer.horizontal.length; i++) {
+        currentValue = squareIdsByPlayer.horizontal[i].value;
+        currentId = squareIdsByPlayer.horizontal[i].id;
+
+        if (currentValue == "") {
+          squareIdToPlay = currentId;
+
+          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+            // this is the square to play!
+            console.log("INSIDE HORIZONTAL WIN!");
+            squareClick(squareIdToPlay, -1, -1);
+            return;
+          }
+        } else if (currentValue == "X") {
+          xCount++;
+
+          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+            // this is the square to play!
+            console.log("INSIDE HORIZONTAL WIN!");
+            squareClick(squareIdToPlay, -1, -1);
+            return;
+          }
+        }
+      }
+    }
+    squareIdToPlay = "";
+    xCount = 0;
+    blankCount = 0;
+    currentValue = "";
+    currentId = "";
+    if (squareIdToPlay == "") {
+      for (let i = 0; i < squareIdsByPlayer.topLeftToBottomRight.length; i++) {
+        currentValue = squareIdsByPlayer.topLeftToBottomRight[i].value;
+        currentId = squareIdsByPlayer.topLeftToBottomRight[i].id;
+
+        if (currentValue == "") {
+          squareIdToPlay = currentId;
+
+          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+            // this is the square to play!
+            squareClick(squareIdToPlay, -1, -1);
+            return;
+          }
+        } else if (currentValue == "X") {
+          xCount++;
+
+          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+            // this is the square to play!
+            squareClick(squareIdToPlay, -1, -1);
+            return;
+          }
+        }
+      }
+    }
+    squareIdToPlay = "";
+    xCount = 0;
+    blankCount = 0;
+    currentValue = "";
+    currentId = "";
+    if (squareIdToPlay == "") {
+      for (let i = 0; i < squareIdsByPlayer.bottomLeftToTopRight.length; i++) {
+        currentValue = squareIdsByPlayer.bottomLeftToTopRight[i].value;
+        currentId = squareIdsByPlayer.bottomLeftToTopRight[i].id;
+
+        if (currentValue == "") {
+          squareIdToPlay = currentId;
+
+          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+            // this is the square to play!
+            squareClick(squareIdToPlay, -1, -1);
+            return;
+          }
+        } else if (currentValue == "X") {
+          xCount++;
+
+          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+            // this is the square to play!
+            squareClick(squareIdToPlay, -1, -1);
+            return;
+          }
+        }
+      }
+    }
+
     // make a random choice that has not been taken
     let squareIsEmpty = false;
 
@@ -177,6 +313,13 @@ const checkVertical = (row, column, counter) => {
   let startForwardRow = row + counter;
   let startReverseRow = row - counter;
 
+  if (currentPlayer === "X" && counter == 0) {
+    squareIdsByPlayer.vertical.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
+  }
+
   if (board[startForwardRow] !== undefined) {
     previousForwardSquare = board[startForwardRow][column];
     row = startForwardRow + 1;
@@ -193,6 +336,20 @@ const checkVertical = (row, column, counter) => {
         if (verticalCount == squareWinCount) {
           roundWon = true;
         }
+      }
+
+      // only check if player is 1 box win away
+      // on the last loop and if user has not
+      // win yet. if squareWinCount is 3, counter
+      // goes from 0 to 2. program traverses 3 squares
+      // excluding clicked square. we do not want to
+      // include the last square.
+
+      if (currentPlayer === "X") {
+        squareIdsByPlayer.vertical.unshift({
+          id: `${row}|${column}`,
+          value: board[row][column],
+        });
       }
     }
   }
@@ -214,6 +371,20 @@ const checkVertical = (row, column, counter) => {
           roundWon = true;
         }
       }
+
+      // only check if player is 1 box win away
+      // on the last loop and if user has not
+      // win yet. if squareWinCount is 3, counter
+      // goes from 0 to 2. program traverses 3 squares
+      // excluding clicked square. we do not want to
+      // include the last square.
+
+      if (currentPlayer === "X") {
+        squareIdsByPlayer.vertical.push({
+          id: `${row}|${column}`,
+          value: board[row][column],
+        });
+      }
     }
   }
 };
@@ -223,12 +394,6 @@ const checkVertical = (row, column, counter) => {
 // it means computer can use it to block player
 // provided the box is empty
 const checkHorizontal = (row, column, counter) => {
-  if (currentPlayer === "O") {
-    console.log("??????????????????");
-    console.log("currentPlayer is O");
-    console.log("??????????????????");
-  }
-
   let currentForwardSquare;
   let currentReverseSquare;
 
@@ -238,22 +403,18 @@ const checkHorizontal = (row, column, counter) => {
   let startForwardColumn = column + counter;
   let startReverseColumn = column - counter;
 
+  if (currentPlayer === "X" && counter == 0) {
+    squareIdsByPlayer.horizontal.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
+  }
+
   previousForwardSquare = board[row][startForwardColumn];
   column = startForwardColumn + 1;
 
-  if (currentPlayer === "O") {
-    console.log(`row: ${row}`);
-    console.log(`startForwardColumn: ${startForwardColumn}`);
-    console.log(`column: ${column}`);
-    console.log(`previousForwardSquare: ${previousForwardSquare}`);
-  }
-
   if (column < boardLength) {
     currentForwardSquare = board[row][column];
-
-    if (currentPlayer === "O") {
-      console.log(`currentForwardSquare: ${currentForwardSquare}`);
-    }
 
     if (
       currentForwardSquare == previousForwardSquare &&
@@ -264,6 +425,20 @@ const checkHorizontal = (row, column, counter) => {
       if (horizontalCount == squareWinCount) {
         roundWon = true;
       }
+    }
+
+    // only check if player is 1 box win away
+    // on the last loop and if user has not
+    // win yet. if squareWinCount is 3, counter
+    // goes from 0 to 2. program traverses 3 squares
+    // excluding clicked square. we do not want to
+    // include the last square.
+
+    if (currentPlayer === "X") {
+      squareIdsByPlayer.horizontal.unshift({
+        id: `${row}|${column}`,
+        value: board[row][column],
+      });
     }
   }
 
@@ -282,6 +457,20 @@ const checkHorizontal = (row, column, counter) => {
       if (horizontalCount == squareWinCount) {
         roundWon = true;
       }
+    }
+
+    // only check if player is 1 box win away
+    // on the last loop and if user has not
+    // win yet. if squareWinCount is 3, counter
+    // goes from 0 to 2. program traverses 3 squares
+    // excluding clicked square. we do not want to
+    // include the last square.
+
+    if (currentPlayer === "X") {
+      squareIdsByPlayer.horizontal.push({
+        id: `${row}|${column}`,
+        value: board[row][column],
+      });
     }
   }
 };
@@ -303,6 +492,13 @@ const checkDiagonalTopLeftToBottomRight = (row, column, counter) => {
   let startReverseRow = row - counter;
   let startReverseColumn = column - counter;
 
+  if (currentPlayer === "X" && counter == 0) {
+    squareIdsByPlayer.topLeftToBottomRight.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
+  }
+
   if (board[startForwardRow] !== undefined) {
     previousForwardSquare = board[startForwardRow][startForwardColumn];
     row = startForwardRow + 1;
@@ -320,6 +516,13 @@ const checkDiagonalTopLeftToBottomRight = (row, column, counter) => {
         if (topLeftToBottomRightCount == squareWinCount) {
           roundWon = true;
         }
+      }
+
+      if (currentPlayer === "X") {
+        squareIdsByPlayer.topLeftToBottomRight.unshift({
+          id: `${row}|${column}`,
+          value: board[row][column],
+        });
       }
     }
   }
@@ -342,6 +545,13 @@ const checkDiagonalTopLeftToBottomRight = (row, column, counter) => {
           roundWon = true;
         }
       }
+
+      if (currentPlayer === "X") {
+        squareIdsByPlayer.topLeftToBottomRight.push({
+          id: `${row}|${column}`,
+          value: board[row][column],
+        });
+      }
     }
   }
 };
@@ -363,6 +573,13 @@ const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
   let startReverseRow = row + counter;
   let startReverseColumn = column - counter;
 
+  if (currentPlayer === "X" && counter == 0) {
+    squareIdsByPlayer.bottomLeftToTopRight.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
+  }
+
   if (board[startForwardRow] !== undefined) {
     previousForwardSquare = board[startForwardRow][startForwardColumn];
     row = startForwardRow - 1;
@@ -380,6 +597,13 @@ const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
         if (bottomLeftToTopRightCount == squareWinCount) {
           roundWon = true;
         }
+      }
+
+      if (currentPlayer === "X") {
+        squareIdsByPlayer.bottomLeftToTopRight.unshift({
+          id: `${row}|${column}`,
+          value: board[row][column],
+        });
       }
     }
   }
@@ -402,6 +626,13 @@ const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
           roundWon = true;
         }
       }
+
+      if (currentPlayer === "X") {
+        squareIdsByPlayer.bottomLeftToTopRight.push({
+          id: `${row}|${column}`,
+          value: board[row][column],
+        });
+      }
     }
   }
 };
@@ -409,12 +640,20 @@ const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
 const checkWinner = (row, column) => {
   // everytime user clicks a box, check 360 degrees
   // for all boxes up till squareWinCount to find matches
+  if (currentPlayer === "X") {
+    squareIdsByPlayer = {};
+    squareIdsByPlayer.vertical = [];
+    squareIdsByPlayer.horizontal = [];
+    squareIdsByPlayer.topLeftToBottomRight = [];
+    squareIdsByPlayer.bottomLeftToTopRight = [];
+  }
+
   topLeftToBottomRightCount = 1;
   bottomLeftToTopRightCount = 1;
   verticalCount = 1;
   horizontalCount = 1;
 
-  for (let counter = 0; counter < squareWinCount; counter++) {
+  for (let counter = 0; counter < squareWinCount - 1; counter++) {
     checkVertical(row, column, counter);
     checkHorizontal(row, column, counter);
     checkDiagonalTopLeftToBottomRight(row, column, counter);
@@ -422,7 +661,6 @@ const checkWinner = (row, column) => {
   }
   console.log("///////////////////////////////");
   console.log(`currentPlayer: ${currentPlayer}`);
-  console.log(`typeof row: ${typeof row}`);
   console.log(`verticalCount: ${verticalCount}`);
   console.log(`horizontalCount: ${horizontalCount}`);
   console.log(`topLeftToBottomRightCount: ${topLeftToBottomRightCount}`);
