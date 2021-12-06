@@ -11,10 +11,13 @@ body {
 .square {
   padding: 10px;
   margin: 10px;
-  background-color: white;
-  display: inline-block;
-  height: 10px;
-  width: 10px;
+  color: white;
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20px;
+  width: 20px;
   vertical-align: top;
 }
 
@@ -63,6 +66,14 @@ body {
   transform: rotateY(180deg);
 }
 
+.flex {
+  display: flex;
+}
+
+.row {
+  justify-content: center;
+}
+
 .card__face--back {
   background-image: linear-gradient(
     to bottom right,
@@ -86,6 +97,18 @@ body {
 .bangers {
   font-family: "Bangers", cursive;
   letter-spacing: 2.5px;
+}
+
+.marker {
+  font-family: "Permanent Marker", cursive;
+}
+
+.red {
+  color: #ff7675;
+}
+
+.green {
+  color: #55efc4;
 }
 
 .input {
