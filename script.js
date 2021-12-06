@@ -20,6 +20,14 @@ squareIdsByPlayer.horizontal = [];
 squareIdsByPlayer.topLeftToBottomRight = [];
 squareIdsByPlayer.bottomLeftToTopRight = [];
 
+let squareIdsByComputer = {};
+squareIdsByComputer.vertical = [];
+squareIdsByComputer.horizontal = [];
+squareIdsByComputer.topLeftToBottomRight = [];
+squareIdsByComputer.bottomLeftToTopRight = [];
+
+let computerSquareCount = 0;
+
 document.getElementById("boardLengthInput").addEventListener("keyup", () => {
   let boardLengthInput = parseInt(
     document.getElementById("boardLengthInput").value
@@ -275,19 +283,35 @@ const makeAMoveIfComputer = () => {
     }
 
     // make a random choice that has not been taken
-    let squareIsEmpty = false;
+    // for computer player 3, instead of making a random choice
+    // try to win!
 
-    while (!squareIsEmpty) {
-      // decide a random row and column
-      const randomId = Math.floor(Math.random() * availableSquareIds.length);
+    // if this is the first time computer is choosing a square
+    // we want the most center square if possible
+    if (computerSquareCount == 0) {
+      // select center most square
+      const row = Math.floor(boardLength / 2);
+      const col = row;
 
-      if (
-        document.getElementById(availableSquareIds[randomId]).innerHTML == ""
-      ) {
-        squareClick(availableSquareIds[randomId], -1, -1);
-        squareIsEmpty = true;
+      // check if it's already taken
+      if (board[row][col] == "") {
+        squareClick(`${row}|${col}`, -1, -1);
       }
     }
+
+    // let squareIsEmpty = false;
+
+    // while (!squareIsEmpty) {
+    //   // decide a random row and column
+    //   const randomId = Math.floor(Math.random() * availableSquareIds.length);
+
+    //   if (
+    //     document.getElementById(availableSquareIds[randomId]).innerHTML == ""
+    //   ) {
+    //     squareClick(availableSquareIds[randomId], -1, -1);
+    //     squareIsEmpty = true;
+    //   }
+    // }
   }
 };
 
