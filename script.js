@@ -364,10 +364,10 @@ const decideAIMove = () => {
   // find empty squares to consider for next move
   const emptySquares = findEmptySquares();
 
-  if (gameMode === 'VS_COMPUTER_EASY') {
+  if (gameMode === 'VS_AI_EASY') {
     aiDecision = emptySquares[getRandomIndex(emptySquares.length)];
     console.log('AI move: random');
-  } else if (gameMode === 'VS_COMPUTER_NORMAL') {
+  } else if (gameMode === 'VS_AI_NORMAL') {
     aiDecision = findWinningMove('X', emptySquares);
 
     // if no blocking move is found, choose random square
@@ -476,7 +476,7 @@ const setBoardSize = () => {
     else if (boardSize < MIN_BOARD_SIZE) boardSize = MIN_BOARD_SIZE;
   }
 
-  boardSizeInput.value = boardSize;
+  boardSizeInput.value = `Board Size: ${boardSize}`;
 };
 
 /**
@@ -492,20 +492,29 @@ const setNumberInARow = () => {
     else if (howManyInARow > boardSize) howManyInARow = boardSize;
     else if (howManyInARow < MIN_BOARD_SIZE) howManyInARow = MIN_BOARD_SIZE;
   }
-  squaresInARowInput.value = howManyInARow;
+  squaresInARowInput.value = `Squares in a row to win: ${howManyInARow}`;
 };
 
 /**
  * Disabled user input after game starts.
+ * @param {*} mode Game mode selected
  */
-const disableUserInput = () => {
+const disableUserInput = (mode) => {
   const userInputs = document.querySelectorAll('.user-input');
   for (let i = 0; i < userInputs.length; i += 1) {
     userInputs[i].disabled = 'disabled';
   }
+
   const buttons = document.querySelectorAll('.button');
   for (let j = 0; j < buttons.length; j += 1) {
-    buttons[j].disabled = 'disabled';
+    if (((mode === 'VS_AI_HARD') && (buttons[j].innerText === 'vs AI (Hard)'))
+    || ((mode === 'VS_AI_NORMAL') && (buttons[j].innerText === 'vs AI (Normal)'))
+    || ((mode === 'VS_AI_EASY') && (buttons[j].innerText === 'vs AI (Easy)'))
+    || ((mode === 'VS_PLAYER') && (buttons[j].innerText === 'vs Player'))) {
+      buttons[j].style.setProperty('pointer-events', 'none');
+    } else {
+      buttons[j].disabled = 'disabled';
+    }
   }
 };
 
@@ -517,11 +526,12 @@ const buttonClick = (mode) => {
 
   setBoardSize();
   setNumberInARow();
-  disableUserInput();
+  disableUserInput(mode);
 
   initBoard(boardSize);
 
   boardContainer = document.createElement('div');
+  boardContainer.classList.add('board');
   document.body.appendChild(boardContainer);
 
   // eslint-disable-next-line no-use-before-define
@@ -564,20 +574,20 @@ const buildGameModeInput = () => {
 
   const vsComputerEasyButton = document.createElement('button');
   vsComputerEasyButton.classList.add('button');
-  vsComputerEasyButton.addEventListener('click', () => buttonClick('VS_COMPUTER_EASY'));
-  vsComputerEasyButton.innerText = 'vs Computer (Easy)';
+  vsComputerEasyButton.addEventListener('click', () => buttonClick('VS_AI_EASY'));
+  vsComputerEasyButton.innerText = 'vs AI (Easy)';
   buttons.appendChild(vsComputerEasyButton);
 
   const vsComputerNormal = document.createElement('button');
   vsComputerNormal.classList.add('button');
-  vsComputerNormal.addEventListener('click', () => buttonClick('VS_COMPUTER_NORMAL'));
-  vsComputerNormal.innerText = 'vs Computer (Normal)';
+  vsComputerNormal.addEventListener('click', () => buttonClick('VS_AI_NORMAL'));
+  vsComputerNormal.innerText = 'vs AI (Normal)';
   buttons.appendChild(vsComputerNormal);
 
   const vsComputerHard = document.createElement('button');
   vsComputerHard.classList.add('button');
-  vsComputerHard.addEventListener('click', () => buttonClick('VS_COMPUTER_HARD'));
-  vsComputerHard.innerText = 'vs Computer (Hard)';
+  vsComputerHard.addEventListener('click', () => buttonClick('VS_AI_HARD'));
+  vsComputerHard.innerText = 'vs AI (Hard)';
   buttons.appendChild(vsComputerHard);
 
   document.body.appendChild(buttons);
@@ -590,8 +600,6 @@ const buildGameModeInput = () => {
 const buildBoard = () => {
   // start with an empty container
   boardContainer.innerHTML = '';
-  boardElement = document.createElement('div');
-  boardElement.classList.add('board');
 
   // move through the board data array and create the
   // current state of the board

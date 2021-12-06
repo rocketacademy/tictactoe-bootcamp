@@ -1,18 +1,85 @@
 body {
   background-color: pink;
+  font-family: "Rock Salt", cursive;
+  font-weight: 700;
+  font-size: 30px;
+  text-align: center;
+  /* color: white; */
+}
+
+#header {
+  margin: 10px;
+}
+
+.board {
+  display: inline-grid;
+  background-color: rgba(206, 122, 122, 0.8);
+  padding: 10px;
+  margin: 0;
+}
+
+.board > div {
+  background-color: rgba(206, 122, 122, 0.8);
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+.user-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.user-input {
+  margin: 0 5px 10px 5px;
+  width: 250px;
+  text-align: center;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.button {
+  margin: 7px;
+  display: inline-block;
+  outline: 0;
+  border: 0;
+  font-size: 20px;
+  font-weight: 500;
+  /* color: #fff; */
+  cursor: pointer;
+  background-image: linear-gradient(to right, #e052a0, #f15c41) !important;
+  border-radius: 3px;
+  padding: 6px 8px 5px;
+  white-space: nowrap;
+}
+
+.button:disabled {
+  background-image: linear-gradient(to right, #d4d4d4, #cabdbd) !important;
+  cursor: default;
+}
+
+.button:hover:enabled {
+  background-color: #e6375a;
+  background-image: none !important;
+}
+
+.game-info {
+  margin: 10px 0 10px 0;
 }
 
 .square {
   padding: 10px;
   margin: 10px;
-  background-color: white;
+  background-color: pink;
   display: inline-block;
-  height: 10px;
-  width: 10px;
+  height: 60px;
+  width: 60px;
   vertical-align: top;
-}
-
-.user-input {
-  display: block;
-  width: 250px;
 }
