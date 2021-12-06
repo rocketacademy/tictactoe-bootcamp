@@ -75,68 +75,141 @@ const togglePlayer = () => {
     currentPlayer = 'X';
   }
 };
-
+let i;
 const checkWin = (board) => {
   // check every position
   // we need to check that board[0][0] is not '' because if all 3 positions are empty, checkWin
   // will return true
+  // if (
+  //   board[0][0] !== '' &&
+  //   board[0][0] === board[0][1] &&
+  //   board[0][1] === board[0][2]
+  // ) {
+  //   return true;
+  // }
+  // if (
+  //   board[1][0] !== '' &&
+  //   board[1][0] === board[1][1] &&
+  //   board[1][1] === board[1][2]
+  // ) {
+  //   return true;
+  // }
+  // if (
+  //   board[2][0] !== '' &&
+  //   board[2][0] === board[2][1] &&
+  //   board[2][1] === board[2][2]
+  // ) {
+  //   return true;
+  // }
+  // if (
+  //   board[0][0] !== '' &&
+  //   board[0][0] === board[1][0] &&
+  //   board[1][0] === board[2][0]
+  // ) {
+  //   return true;
+  // }
+  // if (
+  //   board[0][1] !== '' &&
+  //   board[0][1] === board[1][1] &&
+  //   board[1][1] === board[2][1]
+  // ) {
+  //   return true;
+  // }
+  // if (
+  //   board[0][2] !== '' &&
+  //   board[0][2] === board[1][2] &&
+  //   board[1][2] === board[2][2]
+  // ) {
+  //   return true;
+  // }
+  // if (
+  //   board[0][0] !== '' &&
+  //   board[0][0] === board[1][1] &&
+  //   board[1][1] === board[2][2]
+  // ) {
+  //   return true;
+  // }
+  // if (
+  //   board[2][0] !== '' &&
+  //   board[2][0] === board[1][1] &&
+  //   board[1][1] === board[0][2]
+  // ) {
+  //   return true;
+  // }
+  // if (i === 0) {
+  //   for (let j = 0; j < board.length; j += 1) {
+  //     if (board[i][j] === 'X' || board[i][j] === 'O') {
+  //       return true;
+  //     }
+  //   }
+  // }
   if (
-    board[0][0] !== '' &&
-    board[0][0] === board[0][1] &&
-    board[0][1] === board[0][2]
+    checkHorizontalWin(board) ||
+    checkVerticalWin(board) ||
+    checkDiagonalDown(board) ||
+    checkDiagonalUp(board)
   ) {
     return true;
+  } else {
+    return false;
   }
-  if (
-    board[1][0] !== '' &&
-    board[1][0] === board[1][1] &&
-    board[1][1] === board[1][2]
-  ) {
-    return true;
+};
+
+/* ##########################
+## WIN CONDITIONSS ##
+########################### */
+
+const checkH = (value) => value === currentPlayer;
+
+const checkHorizontalWin = (board) => {
+  for (let i = 0; i < board.length; i += 1) {
+    if (board[i].every(checkH)) {
+      return true;
+    }
   }
-  if (
-    board[2][0] !== '' &&
-    board[2][0] === board[2][1] &&
-    board[2][1] === board[2][2]
-  ) {
-    return true;
+};
+
+const checkVerticalWin = (board) => {
+  for (let j = 0; j < board.length; j += 1) {
+    let counter = 0;
+    for (let i = 0; i < board.length; i += 1) {
+      if (board[i][j] === currentPlayer) {
+        counter += 1;
+      }
+      if (counter === 3) {
+        return true;
+      }
+    }
   }
-  if (
-    board[0][0] !== '' &&
-    board[0][0] === board[1][0] &&
-    board[1][0] === board[2][0]
-  ) {
-    return true;
+};
+
+const checkDiagonalDown = (board) => {
+  let counter = 0;
+  for (let i = 0; i < board.length; i += 1) {
+    if (board[i][i] === currentPlayer) {
+      counter += 1;
+    }
+    if (counter === 3) {
+      console.log('checkDiagonal1: true');
+      return true;
+    }
   }
-  if (
-    board[0][1] !== '' &&
-    board[0][1] === board[1][1] &&
-    board[1][1] === board[2][1]
-  ) {
-    return true;
+};
+
+const checkDiagonalUp = (board) => {
+  // make a copy
+  let cloneBoard = board.map((x) => x);
+  let counter = 0;
+
+  cloneBoard = cloneBoard.reverse();
+  for (let i = 0; i < board.length; i += 1) {
+    if (cloneBoard[i][i] === currentPlayer) {
+      counter += 1;
+    }
+    if (counter === 3) {
+      return true;
+    }
   }
-  if (
-    board[0][2] !== '' &&
-    board[0][2] === board[1][2] &&
-    board[1][2] === board[2][2]
-  ) {
-    return true;
-  }
-  if (
-    board[0][0] !== '' &&
-    board[0][0] === board[1][1] &&
-    board[1][1] === board[2][2]
-  ) {
-    return true;
-  }
-  if (
-    board[2][0] !== '' &&
-    board[2][0] === board[1][1] &&
-    board[1][1] === board[0][2]
-  ) {
-    return true;
-  }
-  return false;
 };
 
 /* ##########################
@@ -187,29 +260,3 @@ const initGame = () => {
 // call the function that initialises the game
 initGame();
 
-// const checkDownWin = (i, j) => {
-//   if (i === 0) {
-//     // row
-//     for (let j +=1, llsfdsfdsfds){
-//       console.log("check row"
-
-//       )}
-
-//     // col
-//        for (let i +=1 , llsfdsfdsfds){
-//       console.log("check col"
-
-//       )}
-
-//      // for slant Dwon
-//      for (let i +=1; j +=1) {
-//        console.log ("slant")
-//      }
-
-//     for (j == boardLength)  {
-//       i =+1;
-//       j=== boardLength -=1
-//     }
-
-//   }
-// }
