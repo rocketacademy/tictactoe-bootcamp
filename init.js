@@ -10,7 +10,7 @@ const initGame = () => {
   outputContainer.classList.add('output-container');
   document.body.appendChild(outputContainer);
   buildOutput();
-  buildNumberedBoard(board);
+  // buildNumberedBoard(board);
 };
 initGame();
-determineWinConditions(board);
+// determineWinConditions(board);

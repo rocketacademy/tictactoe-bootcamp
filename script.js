@@ -63,6 +63,7 @@ const squareClick = (i, j) => {
     // rebuild board with the altered array
     buildBoard(board);
     // change player
+    determineWinConditions(board);
     changePlayer();
   }
   winCheck(winConditions, currentPlayer);
@@ -84,67 +85,128 @@ const output = (text) => {
   outputEL.innerText = text;
 };
 
-// checks if a player has won by fulfilling the win conditions // DOING
-const winCheck = (arr, currentPlayer) => {};
+// checks if a player has won by fulfilling the win conditions //
+const winCheck = (arr) => {
+  arr.forEach(function (subArr) {
+    // console.log(subArr);
+    let counter = 0;
+    subArr.forEach(function (element) {
+      // console.log(element, currentPlayer);
+      if (element === currentPlayer) {
+        counter += 1;
+        // console.log(counter);
+        if (counter === 3) {
+          winner = currentPlayer;
+          output(`${currentPlayer} Wins!`);
+        }
+      }
+    });
+  });
+};
 
 const determineWinConditions = (board) => {
   horizontalWinCon(board);
   verticalWinCon(board);
-  // diagonalLefttoRightWinCon(board);
-  // diagonalRighttoLeft(board);
+  diagonalTopLeftToRightWinCon(board);
+  diagonalBtmLeftToRightWinCon(board);
 };
 
-/*
-Functions to generate win conditions
-*/
-
+/**
+ * Functions to generate win conditions // TODO - left diagonals
+ */
 // build a 2d array that mirrors the TTT board but with numbers
-const buildNumberedBoard = (board) => {
-  let counter = 0;
-  let result = [];
-  for (let i = 0; i < board.length; i += 1) {
-    result[i] = [];
-    for (let j = 0; j < board.length; j += 1) {
-      result[i][j] = counter;
-      counter += 1;
-    }
-  }
-  numberedBoard = result;
-};
 
 // generate the horizontal win condition based on board size
 // old model - generating your own counter
 const horizontalWinCon = (board) => {
-  let counter = 0;
+  const arr = [];
   for (let i = 0; i < board.length; i += 1) {
     let row = [];
     for (let j = 0; j < board.length; j += 1) {
-      row.push(counter);
-      counter += 1;
+      row.push(board[i][j]);
     }
-    winConditions.push(row);
+    arr.push(row);
   }
+  winCheck(arr);
 };
 
-// generate the vertical win condition based on board size
-// using the numberedBoard
 const verticalWinCon = (board) => {
+  const arr = [];
   for (let i = 0; i < board.length; i += 1) {
     let row = [];
     for (let j = 0; j < board.length; j += 1) {
-      row.push(numberedBoard[j][i]);
+      row.push(board[j][i]);
     }
-    winConditions.push(row);
+    arr.push(row);
   }
+  winCheck(arr);
 };
 
 // generate the diagonal win condition (left-right) based on board size
-const diagonalLefttoRightWinCon = (board) => {
-  for (let i = 0; i < board.length; i += 1) {
+const diagonalTopLeftToRightWinCon = (board) => {
+  // DOING
+  let arr = [];
+  for (let x = 0; x < board.length; x += 1) {
     let row = [];
-    for (let j = 0; j < board.length; j += 1) {
-      row.push(numberedBoard[j][i]);
+    for (let i = 0, j = 0; i < board.length; i += 1, j += 1) {
+      row.push(board[i][j]);
     }
-    winConditions.push(row);
+    arr.push(row);
   }
+  winCheck(arr);
 };
+
+const diagonalBtmLeftToRightWinCon = (board) => {
+  // DOING
+  let arr = [];
+  for (let x = 0; x < board.length; x += 1) {
+    let row = [];
+    for (let i = board.length - 1, j = 0; i >= 0; i -= 1, j += 1) {
+      // console.log(i, j);
+      row.push(board[i][j]);
+    }
+    arr.push(row);
+  }
+  winCheck(arr);
+};
+
+/**
+ * Depreciated
+ */
+// generate the vertical win condition based on board size
+// using the numberedBoard
+// const verticalWinCon = (board) => {
+//   for (let i = 0; i < board.length; i += 1) {
+//     let row = [];
+//     for (let j = 0; j < board.length; j += 1) {
+//       row.push(numberedBoard[j][i]);
+//     }
+//     winConditions.push(row);
+//   }
+// };
+
+// const horizontalWinCon = (board) => {
+//   const arr = [];
+//   let counter = 0;
+//   for (let i = 0; i < board.length; i += 1) {
+//     let row = [];
+//     for (let j = 0; j < board.length; j += 1) {
+//       row.push(counter);
+//       counter += 1;
+//     }
+//     arr.push(row);
+//   }
+// };
+
+// const buildNumberedBoard = (board) => {
+//   let counter = 0;
+//   let result = [];
+//   for (let i = 0; i < board.length; i += 1) {
+//     result[i] = [];
+//     for (let j = 0; j < board.length; j += 1) {
+//       result[i][j] = counter;
+//       counter += 1;
+//     }
+//   }
+//   numberedBoard = result;
+// };
