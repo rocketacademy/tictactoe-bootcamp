@@ -148,11 +148,8 @@ const checkWin = function (boardArr) {
 
 const resetBoard = function () {
   winningMessageElement.classList.remove("show");
-  board = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0],
-  ];
+  board = [];
+  generateEmptyBoard(boardSize);
   buildBoard(board);
 };
 
