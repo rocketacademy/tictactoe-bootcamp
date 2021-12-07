@@ -426,6 +426,7 @@ const decideAIMove = () => {
 const artificialIntelligentPlay = () => {
   const AIMove = decideAIMove();
   setTimeout(() => {
+    setSquareClickable(true);
     // eslint-disable-next-line no-use-before-define
     squareClick(AIMove.row, AIMove.column);
   }, 1000);
@@ -453,6 +454,7 @@ const squareClick = (row, column) => {
     } else {
       togglePlayer();
       if ((currentPlayer === 'O') && (gameMode !== 'VS_PLAYER')) {
+        setSquareClickable(false);
         artificialIntelligentPlay();
       }
     }
