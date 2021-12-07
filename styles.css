@@ -1,17 +1,23 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
 body {
   background-color: white;
   font-family: "Roboto";
-  width: 50%;
+  width: 60%;
   margin: auto;
   text-align: center;
 }
 
 .square {
   padding: 10px;
-  margin: 20px;
+  border: 4px solid cornflowerblue;
   display: inline-block;
-  height: 40px;
-  width: 40px;
+  height: 80px;
+  width: 80px;
   vertical-align: top;
   color: cornflowerblue;
   font-weight: bold;
@@ -25,22 +31,55 @@ body {
 }
 
 .container {
-  background-image: url("board.png");
   background-size: cover;
   background-position: center;
   display: inline-block;
-  height: 300px;
-  width: 300px;
+  height: auto;
+  width: auto;
   vertical-align: top;
+  margin: 0 auto;
 }
 
 #output {
   background-color: rgb(167, 191, 236);
   border-radius: 5px;
   display: inline-block;
-  height: 40px;
+  height: 60px;
   width: 350px;
   padding: 8px;
   text-align: center;
-  margin-bottom: 20px;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+}
+
+#body {
+  display: inline-block;
+  width: 400px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+input {
+  display: inline-block;
+  width: 10rem;
+  height: 20px;
+}
+
+button {
+  display: inline-block;
+  width: 7rem;
+  margin-left: 1rem;
+  border: 0.2rem solid rgb(167, 191, 236);
+  background-color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: rgb(167, 191, 236);
+}
+
+#restart {
+  width: 10rem;
+  margin: 0 auto;
+  margin-bottom: 1rem;
 }
