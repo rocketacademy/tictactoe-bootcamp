@@ -27,6 +27,7 @@ squareIdsByComputer.topLeftToBottomRight = [];
 squareIdsByComputer.bottomLeftToTopRight = [];
 
 let computerSquareCount = 0;
+let computerCenterSquareId = "";
 
 document.getElementById("boardLengthInput").addEventListener("keyup", () => {
   let boardLengthInput = parseInt(
@@ -160,133 +161,268 @@ const makeAMoveIfComputer = () => {
     // more "X". the goal is to find (squareWinCount - 1) number of "X"
     // we can entertain only 1 blank square - which is the square
     // for the computer to play
-    let squareIdToPlay = "";
+
+    // 1st step is to check whether computer can win with 1 more square
+    // 2nd step is to check whether computer needs to defend
+    // 3rd step is to check whether computer can get center circle first
+    // 4th step is to check whether computer can get corners
+
+    // 1st step is to check whether computer can win with 1 more square
+
+    let squareIdComputerNeedsToWin = "";
+    let oCount = 0;
+    let computerBlankCount = 0;
+    let computerCurrentValue = "";
+    let computerCurrentId = "";
+
+    for (let i = 0; i < squareIdsByComputer.vertical.length; i++) {
+      let computerCurrentValue = squareIdsByComputer.vertical[i].value;
+      let computerCurrentId = squareIdsByComputer.vertical[i].id;
+
+      if (computerCurrentValue == "") {
+        squareIdComputerNeedsToWin = computerCurrentId;
+
+        if (oCount == squareWinCount - 1 && squareIdComputerNeedsToWin !== "") {
+          // this is the square to play!
+          squareClick(squareIdComputerNeedsToWin, -1, -1);
+          return;
+        }
+      } else if (computerCurrentValue == "O") {
+        oCount++;
+
+        if (oCount == squareWinCount - 1 && squareIdComputerNeedsToWin !== "") {
+          // this is the square to play!
+          squareClick(squareIdComputerNeedsToWin, -1, -1);
+          return;
+        }
+      } else if (computerCurrentValue == "X") {
+        oCount = 0;
+      }
+    }
+
+    squareIdComputerNeedsToWin = "";
+    oCount = 0;
+    computerBlankCount = 0;
+    computerCurrentValue = "";
+    computerCurrentId = "";
+    if (squareIdComputerNeedsToWin == "") {
+      for (let i = 0; i < squareIdsByComputer.horizontal.length; i++) {
+        computerCurrentValue = squareIdsByComputer.horizontal[i].value;
+        computerCurrentId = squareIdsByComputer.horizontal[i].id;
+
+        if (computerCurrentValue == "") {
+          squareIdComputerNeedsToWin = computerCurrentId;
+
+          if (oCount == squareWinCount - 1 && squareIdComputerNeedsToWin !== "") {
+            // this is the square to play!
+            squareClick(squareIdComputerNeedsToWin, -1, -1);
+            return;
+          }
+        } else if (computerCurrentValue == "O") {
+          oCount++;
+
+          if (oCount == squareWinCount - 1 && squareIdComputerNeedsToWin !== "") {
+            // this is the square to play!
+            squareClick(squareIdComputerNeedsToWin, -1, -1);
+            return;
+          }
+        } else if (computerCurrentValue == "X") {
+          oCount = 0;
+        }
+      }
+    }
+
+    squareIdComputerNeedsToWin = "";
+    oCount = 0;
+    computerBlankCount = 0;
+    computerCurrentValue = "";
+    computerCurrentId = "";
+    if (squareIdComputerNeedsToWin == "") {
+      for (let i = 0; i < squareIdsByComputer.topLeftToBottomRight.length; i++) {
+        computerCurrentValue = squareIdsByComputer.topLeftToBottomRight[i].value;
+        computerCurrentId = squareIdsByComputer.topLeftToBottomRight[i].id;
+
+        if (computerCurrentValue == "") {
+          squareIdComputerNeedsToWin = computerCurrentId;
+
+          if (oCount == squareWinCount - 1 && squareIdComputerNeedsToWin !== "") {
+            // this is the square to play!
+            squareClick(squareIdComputerNeedsToWin, -1, -1);
+            return;
+          }
+        } else if (computerCurrentValue == "O") {
+          oCount++;
+
+          if (oCount == squareWinCount - 1 && squareIdComputerNeedsToWin !== "") {
+            // this is the square to play!
+            squareClick(squareIdComputerNeedsToWin, -1, -1);
+            return;
+          }
+        } else if (computerCurrentValue == "X") {
+          oCount = 0;
+        }
+      }
+    }
+
+    squareIdComputerNeedsToWin = "";
+    oCount = 0;
+    computerBlankCount = 0;
+    computerCurrentValue = "";
+    computerCurrentId = "";
+    if (squareIdComputerNeedsToWin == "") {
+      for (let i = 0; i < squareIdsByComputer.bottomLeftToTopRight.length; i++) {
+        computerCurrentValue = squareIdsByComputer.bottomLeftToTopRight[i].value;
+        computerCurrentId = squareIdsByComputer.bottomLeftToTopRight[i].id;
+
+        if (computerCurrentValue == "") {
+          squareIdComputerNeedsToWin = computerCurrentId;
+
+          if (oCount == squareWinCount - 1 && squareIdComputerNeedsToDefend !== "") {
+            // this is the square to play!
+            squareClick(squareIdComputerNeedsToWin, -1, -1);
+            return;
+          }
+        } else if (computerCurrentValue == "O") {
+          oCount++;
+
+          if (oCount == squareWinCount - 1 && squareIdComputerNeedsToWin !== "") {
+            // this is the square to play!
+            squareClick(squareIdComputerNeedsToWin, -1, -1);
+            return;
+          }
+        } else if (computerCurrentValue == "X") {
+          oCount = 0;
+        }
+      }
+    }
+
+    // 2nd step. defend.
+
+    let squareIdComputerNeedsToDefend = "";
     let xCount = 0;
-    let blankCount = 0;
-    let currentValue = "";
-    let currentId = "";
+    let playerBlankCount = 0;
+    let playerCurrentValue = "";
+    let playerCurrentId = "";
 
     for (let i = 0; i < squareIdsByPlayer.vertical.length; i++) {
-      let currentValue = squareIdsByPlayer.vertical[i].value;
-      let currentId = squareIdsByPlayer.vertical[i].id;
+      let playerCurrentValue = squareIdsByPlayer.vertical[i].value;
+      let playerCurrentId = squareIdsByPlayer.vertical[i].id;
 
-      if (currentValue == "") {
-        squareIdToPlay = currentId;
+      if (playerCurrentValue == "") {
+        squareIdComputerNeedsToDefend = playerCurrentId;
 
-        if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+        if (xCount == squareWinCount - 1 && squareIdComputerNeedsToDefend !== "") {
           // this is the square to play!
-          squareClick(squareIdToPlay, -1, -1);
+          squareClick(squareIdComputerNeedsToDefend, -1, -1);
           return;
         }
-      } else if (currentValue == "X") {
+      } else if (playerCurrentValue == "X") {
         xCount++;
 
-        if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+        if (xCount == squareWinCount - 1 && squareIdComputerNeedsToDefend !== "") {
           // this is the square to play!
-          squareClick(squareIdToPlay, -1, -1);
+          squareClick(squareIdComputerNeedsToDefend, -1, -1);
           return;
         }
-      } else if (currentValue == "O") {
+      } else if (playerCurrentValue == "O") {
         xCount = 0;
       }
     }
-    squareIdToPlay = "";
+    squareIdComputerNeedsToDefend = "";
     xCount = 0;
-    blankCount = 0;
-    currentValue = "";
-    currentId = "";
-    if (squareIdToPlay == "") {
+    playerBlankCount = 0;
+    playerCurrentValue = "";
+    playerCurrentId = "";
+    if (squareIdComputerNeedsToDefend == "") {
       for (let i = 0; i < squareIdsByPlayer.horizontal.length; i++) {
-        currentValue = squareIdsByPlayer.horizontal[i].value;
-        currentId = squareIdsByPlayer.horizontal[i].id;
+        playerCurrentValue = squareIdsByPlayer.horizontal[i].value;
+        playerCurrentId = squareIdsByPlayer.horizontal[i].id;
 
-        if (currentValue == "") {
-          squareIdToPlay = currentId;
+        if (playerCurrentValue == "") {
+          squareIdComputerNeedsToDefend = playerCurrentId;
 
-          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+          if (xCount == squareWinCount - 1 && squareIdComputerNeedsToDefend !== "") {
             // this is the square to play!
-            squareClick(squareIdToPlay, -1, -1);
+            squareClick(squareIdComputerNeedsToDefend, -1, -1);
             return;
           }
-        } else if (currentValue == "X") {
+        } else if (playerCurrentValue == "X") {
           xCount++;
 
-          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+          if (xCount == squareWinCount - 1 && squareIdComputerNeedsToDefend !== "") {
             // this is the square to play!
-            squareClick(squareIdToPlay, -1, -1);
+            squareClick(squareIdComputerNeedsToDefend, -1, -1);
             return;
           }
-        } else if (currentValue == "O") {
+        } else if (playerCurrentValue == "O") {
           xCount = 0;
         }
       }
     }
-    squareIdToPlay = "";
+    squareIdComputerNeedsToDefend = "";
     xCount = 0;
-    blankCount = 0;
-    currentValue = "";
-    currentId = "";
-    if (squareIdToPlay == "") {
+    playerBlankCount = 0;
+    playerCurrentValue = "";
+    playerCurrentId = "";
+    if (squareIdComputerNeedsToDefend == "") {
       for (let i = 0; i < squareIdsByPlayer.topLeftToBottomRight.length; i++) {
-        currentValue = squareIdsByPlayer.topLeftToBottomRight[i].value;
-        currentId = squareIdsByPlayer.topLeftToBottomRight[i].id;
+        playerCurrentValue = squareIdsByPlayer.topLeftToBottomRight[i].value;
+        playerCurrentId = squareIdsByPlayer.topLeftToBottomRight[i].id;
 
-        if (currentValue == "") {
-          squareIdToPlay = currentId;
+        if (playerCurrentValue == "") {
+          squareIdComputerNeedsToDefend = playerCurrentId;
 
-          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+          if (xCount == squareWinCount - 1 && squareIdComputerNeedsToDefend !== "") {
             // this is the square to play!
-            squareClick(squareIdToPlay, -1, -1);
+            squareClick(squareIdComputerNeedsToDefend, -1, -1);
             return;
           }
-        } else if (currentValue == "X") {
+        } else if (playerCurrentValue == "X") {
           xCount++;
 
-          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+          if (xCount == squareWinCount - 1 && squareIdComputerNeedsToDefend !== "") {
             // this is the square to play!
-            squareClick(squareIdToPlay, -1, -1);
+            squareClick(squareIdComputerNeedsToDefend, -1, -1);
             return;
           }
-        } else if (currentValue == "O") {
+        } else if (playerCurrentValue == "O") {
           xCount = 0;
         }
       }
     }
-    squareIdToPlay = "";
+    squareIdComputerNeedsToDefend = "";
     xCount = 0;
-    blankCount = 0;
-    currentValue = "";
-    currentId = "";
-    if (squareIdToPlay == "") {
+    playerBlankCount = 0;
+    playerCurrentValue = "";
+    playerCurrentId = "";
+    if (squareIdComputerNeedsToDefend == "") {
       for (let i = 0; i < squareIdsByPlayer.bottomLeftToTopRight.length; i++) {
-        currentValue = squareIdsByPlayer.bottomLeftToTopRight[i].value;
-        currentId = squareIdsByPlayer.bottomLeftToTopRight[i].id;
+        playerCurrentValue = squareIdsByPlayer.bottomLeftToTopRight[i].value;
+        playerCurrentId = squareIdsByPlayer.bottomLeftToTopRight[i].id;
 
-        if (currentValue == "") {
-          squareIdToPlay = currentId;
+        if (playerCurrentValue == "") {
+          squareIdComputerNeedsToDefend = playerCurrentId;
 
-          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+          if (xCount == squareWinCount - 1 && squareIdComputerNeedsToDefend !== "") {
             // this is the square to play!
-            squareClick(squareIdToPlay, -1, -1);
+            squareClick(squareIdComputerNeedsToDefend, -1, -1);
             return;
           }
-        } else if (currentValue == "X") {
+        } else if (playerCurrentValue == "X") {
           xCount++;
 
-          if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
+          if (xCount == squareWinCount - 1 && squareIdComputerNeedsToDefend !== "") {
             // this is the square to play!
-            squareClick(squareIdToPlay, -1, -1);
+            squareClick(squareIdComputerNeedsToDefend, -1, -1);
             return;
           }
-        } else if (currentValue == "O") {
+        } else if (playerCurrentValue == "O") {
           xCount = 0;
         }
       }
     }
 
-    // make a random choice that has not been taken
-    // for computer player 3, instead of making a random choice
-    // try to win!
+    // 2nd step. get center circle. 
 
     // if this is the first time computer is choosing a square
     // we want the most center square if possible
@@ -298,37 +434,120 @@ const makeAMoveIfComputer = () => {
       // check if it's already taken
       if (board[row][col] == "") {
         squareClick(`${row}|${col}`, -1, -1);
+        computerCenterSquareId = `${row}|${col}`;
         computerSquareCount++;
         return;
+      } else {
+        // if computer cannot find the direct center of the grid
+        // find another center closest to the original center
+        // 1. left 2. top left 3. top 4. top right 5. right 6. bottom right
+        // 7. bottom 8. bottom left
+
+        if (board[row][col-1] !== undefined && board[row][col-1] === "") {
+          // 1. left
+          squareClick(`${row}|${col-1}`, -1, -1);
+          computerCenterSquareId = `${row}|${col-1}`;
+          computerSquareCount++;
+          return;
+        } else if (board[row-1] !== undefined && board[row-1][col-1] !== undefined && board[row-1][col-1] === "") {
+          // 2. top left
+          squareClick(`${row-1}|${col-1}`, -1, -1);
+          computerCenterSquareId = `${row-1}|${col-1}`;
+          computerSquareCount++;
+          return;
+        } else if (board[row-1] !== undefined && board[row-1][col] === "") {
+          // 3. top
+          squareClick(`${row-1}|${col}`, -1, -1);
+          computerCenterSquareId = `${row-1}|${col}`;
+          computerSquareCount++;
+          return;
+        } else if (board[row-1] !== undefined && board[row-1][col+1] !== undefined && board[row-1][col+1] === "") {
+          // 4. top right
+          squareClick(`${row-1}|${col+1}`, -1, -1);
+          computerCenterSquareId = `${row-1}|${col+1}`;
+          computerSquareCount++;
+          return;
+        } else if (board[row][col+1] !== undefined && board[row][col+1] === "") {
+          // 5. right
+          squareClick(`${row}|${col+1}`, -1, -1);
+          computerCenterSquareId = `${row}|${col+1}`;
+          computerSquareCount++;
+          return;
+        } else if (board[row+1] !== undefined && board[row+1][col+1] !== undefined && board[row+1][col+1] === "") {
+          // 6. bottom right
+          squareClick(`${row+1}|${col+1}`, -1, -1);
+          computerCenterSquareId = `${row+1}|${col+1}`;
+          computerSquareCount++;
+          return;
+        } else if (board[row+1] !== undefined && board[row+1][col] === "") {
+          // 7. bottom
+          squareClick(`${row+1}|${col}`, -1, -1);
+          computerCenterSquareId = `${row+1}|${col}`;
+          computerSquareCount++;
+          return;
+        } else if (board[row+1] !== undefined && board[row+1][col-1] !== undefined && board[row+1][col-1] === "") {
+          // 8. bottom left
+          squareClick(`${row+1}|${col-1}`, -1, -1);
+          computerCenterSquareId = `${row+1}|${col-1}`;
+          computerSquareCount++;
+          return;
+        }
+      }
+    } 
+
+    // 3rd step. try to win!
+    
+
+    // 4th step. try to find corners.
+    // boundary of corners is dependent on squareWinCount.
+    // if boardSize is 25 x 25 and squareWinCount is 3,
+    // we do not want to set the corners of the grid as it would take too long 
+    // the corners take bearing from the first square 
+
+    // 1. top left 2. top right 3. bottom right 4. bottom left
+
+    const computerCenterRow = parseInt(computerCenterSquareId.split("|")[0]);
+    const computerCenterCol = parseInt(computerCenterSquareId.split("|")[1]);
+    const difference = Math.floor(squareWinCount / 2);
+
+    if (board[computerCenterRow - difference][computerCenterCol - difference] == "") {
+      // 1. top left
+      squareClick(`${computerCenterRow - difference}|${computerCenterCol - difference}`, -1, -1);
+      computerSquareCount++;
+      return;
+    } else if (board[computerCenterRow - difference][computerCenterCol + difference] == "") {
+      // 2. top right
+      squareClick(`${computerCenterRow - difference}|${computerCenterCol + difference}`, -1, -1);
+      computerSquareCount++;
+      return;
+    } else if (board[computerCenterRow + difference][computerCenterCol + difference] == "") {
+      // 3. bottom right
+      squareClick(`${computerCenterRow + difference}|${computerCenterCol + difference}`, -1, -1);
+      computerSquareCount++;
+      return;
+    } else if (board[computerCenterRow + difference][computerCenterCol - difference] == "") {
+      // 4. bottom left
+      squareClick(`${computerCenterRow + difference}|${computerCenterCol - difference}`, -1, -1);
+      computerSquareCount++;
+      return;
+    }
+
+    // if all else fails
+    // make a random choice
+
+    let squareIsEmpty = false;
+
+    while (!squareIsEmpty) {
+      // decide a random row and column
+      const randomId = Math.floor(Math.random() * availableSquareIds.length);
+
+      if (
+        document.getElementById(availableSquareIds[randomId]).innerHTML == ""
+      ) {
+        squareClick(availableSquareIds[randomId], -1, -1);
+        squareIsEmpty = true;
       }
     }
-
-    // check corners
-    if (board[0][0] == "") {
-      squareClick(`0|0`, -1, -1);
-    } else if (board[boardLength - 1][0] == "") {
-      squareClick(`${boardLength - 1}|0`, -1, -1);
-    } else if (board[0][boardLength - 1] == "") {
-      squareClick(`0|${boardLength - 1}`, -1, -1);
-    } else if (board[boardLength - 1][boardLength - 1] == "") {
-      squareClick(`${boardLength - 1}|${boardLength - 1}`, -1, -1);
-    }
-
-    computerSquareCount++;
-
-    // let squareIsEmpty = false;
-
-    // while (!squareIsEmpty) {
-    //   // decide a random row and column
-    //   const randomId = Math.floor(Math.random() * availableSquareIds.length);
-
-    //   if (
-    //     document.getElementById(availableSquareIds[randomId]).innerHTML == ""
-    //   ) {
-    //     squareClick(availableSquareIds[randomId], -1, -1);
-    //     squareIsEmpty = true;
-    //   }
-    // }
   }
 };
 
@@ -356,6 +575,11 @@ const checkVertical = (row, column, counter) => {
 
   if (currentPlayer === "X" && counter == 0) {
     squareIdsByPlayer.vertical.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
+  } else if (currentPlayer === "O" && counter == 0) {
+    squareIdsByComputer.vertical.push({
       id: `${row}|${column}`,
       value: board[row][column],
     });
@@ -391,6 +615,11 @@ const checkVertical = (row, column, counter) => {
           id: `${row}|${column}`,
           value: board[row][column],
         });
+      } else {
+        squareIdsByComputer.vertical.unshift({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
       }
     }
   }
@@ -425,6 +654,11 @@ const checkVertical = (row, column, counter) => {
           id: `${row}|${column}`,
           value: board[row][column],
         });
+      } else {
+        squareIdsByComputer.vertical.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
       }
     }
   }
@@ -446,6 +680,11 @@ const checkHorizontal = (row, column, counter) => {
 
   if (currentPlayer === "X" && counter == 0) {
     squareIdsByPlayer.horizontal.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
+  } else if (currentPlayer === "O" && counter == 0) {
+    squareIdsByComputer.horizontal.push({
       id: `${row}|${column}`,
       value: board[row][column],
     });
@@ -480,6 +719,11 @@ const checkHorizontal = (row, column, counter) => {
         id: `${row}|${column}`,
         value: board[row][column],
       });
+    } else {
+      squareIdsByComputer.horizontal.unshift({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
     }
   }
 
@@ -512,6 +756,11 @@ const checkHorizontal = (row, column, counter) => {
         id: `${row}|${column}`,
         value: board[row][column],
       });
+    } else {
+      squareIdsByComputer.horizontal.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
     }
   }
 };
@@ -535,6 +784,11 @@ const checkDiagonalTopLeftToBottomRight = (row, column, counter) => {
 
   if (currentPlayer === "X" && counter == 0) {
     squareIdsByPlayer.topLeftToBottomRight.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
+  } else if (currentPlayer === "O" && counter == 0) {
+    squareIdsByComputer.topLeftToBottomRight.push({
       id: `${row}|${column}`,
       value: board[row][column],
     });
@@ -564,6 +818,11 @@ const checkDiagonalTopLeftToBottomRight = (row, column, counter) => {
           id: `${row}|${column}`,
           value: board[row][column],
         });
+      } else {
+        squareIdsByComputer.topLeftToBottomRight.unshift({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
       }
     }
   }
@@ -592,6 +851,11 @@ const checkDiagonalTopLeftToBottomRight = (row, column, counter) => {
           id: `${row}|${column}`,
           value: board[row][column],
         });
+      } else {
+        squareIdsByComputer.topLeftToBottomRight.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
       }
     }
   }
@@ -616,6 +880,11 @@ const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
 
   if (currentPlayer === "X" && counter == 0) {
     squareIdsByPlayer.bottomLeftToTopRight.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
+  } else if (currentPlayer === "O" && counter == 0) {
+    squareIdsByComputer.bottomLeftToTopRight.push({
       id: `${row}|${column}`,
       value: board[row][column],
     });
@@ -645,6 +914,11 @@ const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
           id: `${row}|${column}`,
           value: board[row][column],
         });
+      } else {
+        squareIdsByComputer.bottomLeftToTopRight.unshift({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
       }
     }
   }
@@ -673,6 +947,11 @@ const checkDiagonalBottomLeftToTopRight = (row, column, counter) => {
           id: `${row}|${column}`,
           value: board[row][column],
         });
+      } else {
+        squareIdsByComputer.bottomLeftToTopRight.push({
+      id: `${row}|${column}`,
+      value: board[row][column],
+    });
       }
     }
   }
@@ -687,6 +966,12 @@ const checkWinner = (row, column) => {
     squareIdsByPlayer.horizontal = [];
     squareIdsByPlayer.topLeftToBottomRight = [];
     squareIdsByPlayer.bottomLeftToTopRight = [];
+  } else {
+    squareIdsByComputer = {};
+    squareIdsByComputer.vertical = [];
+    squareIdsByComputer.horizontal = [];
+    squareIdsByComputer.topLeftToBottomRight = [];
+    squareIdsByComputer.bottomLeftToTopRight = [];
   }
 
   topLeftToBottomRightCount = 1;
