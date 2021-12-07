@@ -46,6 +46,7 @@ submitButton.onclick = function () {
   console.log(`size`, size);
   console.log(`Type of size`, typeof size);
   buildBoard();
+  desiredSize.value = ""
 
 };
 
@@ -274,7 +275,7 @@ const squareClick = (column, row) => {
         ];
         buildBoard(board);
         messageContainer.innerText =
-          'change size of board or click on a square to start or click submit to repeat';
+          'change size of board or click on a square to start';
       }, 3000);
     } else {
       togglePlayer();
