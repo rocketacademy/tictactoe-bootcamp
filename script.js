@@ -243,7 +243,9 @@ const checkDiagonalUp = (board) => {
   let cloneBoard = board.map((x) => x);
   let counter = 0;
 
+  // matrix transformation for flipping case of DiagonalDown
   cloneBoard = cloneBoard.reverse();
+  // case of checkDiagonalDown
   for (let i = 0; i < board.length; i += 1) {
     if (cloneBoard[i][i] === currentPlayer) {
       counter += 1;
