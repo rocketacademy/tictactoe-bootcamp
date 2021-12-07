@@ -11,14 +11,14 @@ const board = [
   ['', '', ''],
   ['', '', ''],
 ];
+let numberedBoard = [];
 let boardContainer;
 let boardElement;
 let outputContainer;
 let outputEL;
 
+const winConditions = [];
 let currentPlayer = 'X';
-let winner = false;
-let winningChar;
 
 // function that builds the board element
 const buildBoard = (board) => {
@@ -65,7 +65,7 @@ const squareClick = (i, j) => {
     // change player
     changePlayer();
   }
-  determineWinner(i, j);
+  winCheck(winConditions, currentPlayer);
 };
 
 // change player everytime function is called
@@ -84,53 +84,67 @@ const output = (text) => {
   outputEL.innerText = text;
 };
 
+// checks if a player has won by fulfilling the win conditions // DOING
+const winCheck = (arr, currentPlayer) => {};
+
+const determineWinConditions = (board) => {
+  horizontalWinCon(board);
+  verticalWinCon(board);
+  // diagonalLefttoRightWinCon(board);
+  // diagonalRighttoLeft(board);
+};
+
 /*
-[
-  [00, 01, 02]
-  [10, 11, 12]
-  [20, 21, 22]
-]
+Functions to generate win conditions
 */
-const determineWinner = (counter, i, j) => {
-  /* there are limited possible winning conditions 
-  a) 3 horizonally, b) 3 vertically, c) 3 diagonally
-  */
-  checkHorizontal();
-  // checkVertical();
-};
 
-// function to check if horizontal lines are all the same X or O
-const checkHorizontal = () => {
-  let prevX = false;
-  let toWinHoriz, toWinVert, toWinDiagRight, toWinDiagLeft;
-  toWinHoriz = toWinVert = toWinDiagRight = toWinDiagLeft = 0;
+// build a 2d array that mirrors the TTT board but with numbers
+const buildNumberedBoard = (board) => {
+  let counter = 0;
+  let result = [];
   for (let i = 0; i < board.length; i += 1) {
-    let prevY = false;
-    for (let j = 0; j < board[0].length; j += 1) {
-      if (board[i][j] !== '' && (board[i][j] === prevY || prevY === false)) {
-        toWinVert += 1;
-        if (toWinVert >= board.length) {
-          console.log(board[i][j]);
-          return board[x][y];
-        } else {
-          toWinVert = 0;
-        }
-      }
-      if (board[i][j] !== '' && (board[i][j] === prevX || prevX === false)) {
-        toWinHoriz += 1;
-        if (toWinHoriz >= board.length) {
-          console.log(board[i][j]);
-          return board[i][j];
-        }
-      } else {
-        toWinHoriz = 0;
-      }
-      prevY = board[i][j];
+    result[i] = [];
+    for (let j = 0; j < board.length; j += 1) {
+      result[i][j] = counter;
+      counter += 1;
     }
-    prevX = board[i][j];
   }
-  return false;
+  numberedBoard = result;
 };
 
-// function to check if vertical lines are all the same X or O
-const checkVertical = (arr) => {};
+// generate the horizontal win condition based on board size
+// old model - generating your own counter
+const horizontalWinCon = (board) => {
+  let counter = 0;
+  for (let i = 0; i < board.length; i += 1) {
+    let row = [];
+    for (let j = 0; j < board.length; j += 1) {
+      row.push(counter);
+      counter += 1;
+    }
+    winConditions.push(row);
+  }
+};
+
+// generate the vertical win condition based on board size
+// using the numberedBoard
+const verticalWinCon = (board) => {
+  for (let i = 0; i < board.length; i += 1) {
+    let row = [];
+    for (let j = 0; j < board.length; j += 1) {
+      row.push(numberedBoard[j][i]);
+    }
+    winConditions.push(row);
+  }
+};
+
+// generate the diagonal win condition (left-right) based on board size
+const diagonalLefttoRightWinCon = (board) => {
+  for (let i = 0; i < board.length; i += 1) {
+    let row = [];
+    for (let j = 0; j < board.length; j += 1) {
+      row.push(numberedBoard[j][i]);
+    }
+    winConditions.push(row);
+  }
+};
