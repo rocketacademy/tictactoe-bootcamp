@@ -11,14 +11,42 @@ const board = [
   ['', '', ''],
   ['', '', ''],
 ];
+let board1 = [];
 let numberedBoard = [];
 let boardContainer;
 let boardElement;
 let outputContainer;
-let outputEL;
+let inputContainer;
+let inputEl;
+let boardSize = 0;
 
 const winConditions = [];
 let currentPlayer = 'X';
+
+const buildBoard1 = (boardSize) => {
+  boardContainer.innerHTML = '';
+  boardElement = document.createElement('div');
+  boardElement.classList.add('board');
+  boardContainer.appendChild(boardElement);
+
+  for (let i = 0; i < boardSize; i += 1) {
+    let row = [];
+    const rowEl = document.createElement('div');
+    rowEl.classList.add('row');
+    for (let j = 0; j < boardSize; j += 1) {
+      row.push('');
+      const square = document.createElement('div');
+      square.classList.add('square');
+      square.innerHTML = '';
+      square.addEventListener('click', () => {
+        squareClick(i, j);
+      });
+      rowEl.appendChild(square);
+    }
+    board1.push(row);
+    boardElement.appendChild(rowEl);
+  }
+};
 
 // function that builds the board element
 const buildBoard = (board) => {
@@ -85,6 +113,28 @@ const output = (text) => {
   outputEL.innerText = text;
 };
 
+// function to build input box
+const buildInput = () => {
+  const inputBox = document.createElement('input');
+  const inputBtn = document.createElement('button');
+  inputEl = document.createElement('span');
+  inputEl.classList.add('label');
+  inputEl.innerText = 'Please input the size of board:';
+  inputContainer.appendChild(inputEl);
+  inputBox.classList.add('input');
+  inputContainer.appendChild(inputBox);
+  inputBtn.classList.add('input-button');
+  inputBtn.innerText = 'Submit';
+  inputContainer.appendChild(inputBtn);
+
+  // function to take size of board input and set the size to build board
+  // DOING
+  inputBtn.addEventListener('click', function () {
+    boardSize = Number(inputBox.value);
+    buildBoard1(boardSize);
+  });
+};
+
 // checks if a player has won by fulfilling the win conditions //
 const winCheck = (arr) => {
   arr.forEach(function (subArr) {
@@ -112,12 +162,9 @@ const determineWinConditions = (board) => {
 };
 
 /**
- * Functions to generate win conditions // TODO - left diagonals
+ * Functions to generate win conditions //
  */
-// build a 2d array that mirrors the TTT board but with numbers
 
-// generate the horizontal win condition based on board size
-// old model - generating your own counter
 const horizontalWinCon = (board) => {
   const arr = [];
   for (let i = 0; i < board.length; i += 1) {
@@ -142,9 +189,7 @@ const verticalWinCon = (board) => {
   winCheck(arr);
 };
 
-// generate the diagonal win condition (left-right) based on board size
 const diagonalTopLeftToRightWinCon = (board) => {
-  // DOING
   let arr = [];
   for (let x = 0; x < board.length; x += 1) {
     let row = [];
@@ -157,7 +202,6 @@ const diagonalTopLeftToRightWinCon = (board) => {
 };
 
 const diagonalBtmLeftToRightWinCon = (board) => {
-  // DOING
   let arr = [];
   for (let x = 0; x < board.length; x += 1) {
     let row = [];
