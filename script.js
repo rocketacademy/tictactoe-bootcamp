@@ -228,3 +228,32 @@ const initGame = () => {
 };
 
 initGame();
+
+// create tally to tally card names
+
+// Create hand array of 5 cards
+// var hand = [];
+// for (let i = 0; i < 5; i += 1) {
+//   hand.push(deck.pop());
+// }
+
+// // Create Object as tally
+// var cardNameTally = {};
+
+// // Loop over hand
+// for (let i = 0; i < hand.length; i += 1) {
+//   var cardName = hand[i].name;
+//   // If we have seen the card name before, increment its count
+//   if (cardName in cardNameTally) {
+//     cardNameTally[cardName] += 1;
+//   }
+//   // Else, initialise count of this card name to 1
+//   else {
+//     cardNameTally[cardName] = 1;
+//   }
+// }
+
+// // to read tally
+// for (cardName in cardNameTally) {
+//   console.log(`There are ${cardNameTally[cardName]} ${cardName}s in the hand`);
+// }
