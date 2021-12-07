@@ -149,9 +149,6 @@ const squareClick = (squareId, row, column) => {
 };
 
 const makeAMoveIfComputer = () => {
-  console.log("////////////////");
-  console.log(`inside makeAMoveIfComputer`);
-
   if (currentPlayer === "O") {
     // check if user is 1 square away from a win
     // if not, computer randomly selects
@@ -189,6 +186,8 @@ const makeAMoveIfComputer = () => {
           squareClick(squareIdToPlay, -1, -1);
           return;
         }
+      } else if (currentValue == "O") {
+        xCount = 0;
       }
     }
     squareIdToPlay = "";
@@ -197,7 +196,6 @@ const makeAMoveIfComputer = () => {
     currentValue = "";
     currentId = "";
     if (squareIdToPlay == "") {
-      console.log("INSIDE CHECK HORIZONTAL");
       for (let i = 0; i < squareIdsByPlayer.horizontal.length; i++) {
         currentValue = squareIdsByPlayer.horizontal[i].value;
         currentId = squareIdsByPlayer.horizontal[i].id;
@@ -207,7 +205,6 @@ const makeAMoveIfComputer = () => {
 
           if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
             // this is the square to play!
-            console.log("INSIDE HORIZONTAL WIN!");
             squareClick(squareIdToPlay, -1, -1);
             return;
           }
@@ -216,10 +213,11 @@ const makeAMoveIfComputer = () => {
 
           if (xCount == squareWinCount - 1 && squareIdToPlay !== "") {
             // this is the square to play!
-            console.log("INSIDE HORIZONTAL WIN!");
             squareClick(squareIdToPlay, -1, -1);
             return;
           }
+        } else if (currentValue == "O") {
+          xCount = 0;
         }
       }
     }
@@ -249,6 +247,8 @@ const makeAMoveIfComputer = () => {
             squareClick(squareIdToPlay, -1, -1);
             return;
           }
+        } else if (currentValue == "O") {
+          xCount = 0;
         }
       }
     }
@@ -278,6 +278,8 @@ const makeAMoveIfComputer = () => {
             squareClick(squareIdToPlay, -1, -1);
             return;
           }
+        } else if (currentValue == "O") {
+          xCount = 0;
         }
       }
     }
@@ -296,8 +298,23 @@ const makeAMoveIfComputer = () => {
       // check if it's already taken
       if (board[row][col] == "") {
         squareClick(`${row}|${col}`, -1, -1);
+        computerSquareCount++;
+        return;
       }
     }
+
+    // check corners
+    if (board[0][0] == "") {
+      squareClick(`0|0`, -1, -1);
+    } else if (board[boardLength - 1][0] == "") {
+      squareClick(`${boardLength - 1}|0`, -1, -1);
+    } else if (board[0][boardLength - 1] == "") {
+      squareClick(`0|${boardLength - 1}`, -1, -1);
+    } else if (board[boardLength - 1][boardLength - 1] == "") {
+      squareClick(`${boardLength - 1}|${boardLength - 1}`, -1, -1);
+    }
+
+    computerSquareCount++;
 
     // let squareIsEmpty = false;
 
@@ -683,11 +700,4 @@ const checkWinner = (row, column) => {
     checkDiagonalTopLeftToBottomRight(row, column, counter);
     checkDiagonalBottomLeftToTopRight(row, column, counter);
   }
-  console.log("///////////////////////////////");
-  console.log(`currentPlayer: ${currentPlayer}`);
-  console.log(`verticalCount: ${verticalCount}`);
-  console.log(`horizontalCount: ${horizontalCount}`);
-  console.log(`topLeftToBottomRightCount: ${topLeftToBottomRightCount}`);
-  console.log(`bottomLeftToTopRightCount: ${bottomLeftToTopRightCount}`);
-  console.log("///////////////////////////////");
 };
