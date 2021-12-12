@@ -37,7 +37,7 @@ const buildBoard1 = (boardSize) => {
       row.push('');
       const square = document.createElement('div');
       square.classList.add('square');
-      square.innerHTML = '';
+      square.innerHTML = board1[i][j]; // BUG create the board before running this function
       square.addEventListener('click', () => {
         squareClick(i, j);
       });
@@ -86,15 +86,17 @@ const buildBoard = (board) => {
 const squareClick = (i, j) => {
   // based on the current player, add X or O to the square
   if (board[i][j] === '') {
+    // DOING
     // alter the board array to current player
     board[i][j] = currentPlayer;
     // rebuild board with the altered array
-    buildBoard(board);
+    buildBoard(board); // DOING
+    // buildBoard1(boardSize);
     // change player
-    determineWinConditions(board);
+    determineWinConditions(board); // DOING
     changePlayer();
   }
-  winCheck(winConditions, currentPlayer);
+  // winCheck(winConditions, currentPlayer);
 };
 
 // change player everytime function is called
@@ -135,7 +137,10 @@ const buildInput = () => {
   });
 };
 
-// checks if a player has won by fulfilling the win conditions //
+/**
+ * Checks if a player has won by fulfilling the win conditions.
+ * @param {takes arr of hor/vert/diag and determines if 3 in a row} arr
+ */
 const winCheck = (arr) => {
   arr.forEach(function (subArr) {
     // console.log(subArr);

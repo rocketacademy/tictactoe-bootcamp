@@ -9,7 +9,7 @@ const initGame = () => {
   boardContainer = document.createElement('div');
   boardContainer.classList.add('board-container');
   document.body.appendChild(boardContainer);
-  buildBoard(board);
+  buildBoard(board); // DOING
   // build output container
   outputContainer = document.createElement('div');
   outputContainer.classList.add('output-container');
