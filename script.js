@@ -11,15 +11,47 @@ const board = [
   ['', '', ''],
   ['', '', ''],
 ];
+let board1 = [];
+let numberedBoard = [];
 let boardContainer;
 let boardElement;
 let outputContainer;
+let inputContainer;
+let inputEl;
+let boardSize = 0;
+
+const winConditions = [];
 let currentPlayer = 'X';
+
+const buildBoard1 = (boardSize) => {
+  boardContainer.innerHTML = '';
+  boardElement = document.createElement('div');
+  boardElement.classList.add('board');
+  boardContainer.appendChild(boardElement);
+
+  for (let i = 0; i < boardSize; i += 1) {
+    let row = [];
+    const rowEl = document.createElement('div');
+    rowEl.classList.add('row');
+    for (let j = 0; j < boardSize; j += 1) {
+      row.push('');
+      const square = document.createElement('div');
+      square.classList.add('square');
+      square.innerHTML = board1[i][j]; // BUG create the board before running this function
+      square.addEventListener('click', () => {
+        squareClick(i, j);
+      });
+      rowEl.appendChild(square);
+    }
+    board1.push(row);
+    boardElement.appendChild(rowEl);
+  }
+};
 
 // function that builds the board element
 const buildBoard = (board) => {
   boardContainer.innerHTML = '';
-  const boardElement = document.createElement('div');
+  boardElement = document.createElement('div');
   boardElement.classList.add('board');
   boardContainer.appendChild(boardElement);
 
@@ -54,14 +86,17 @@ const buildBoard = (board) => {
 const squareClick = (i, j) => {
   // based on the current player, add X or O to the square
   if (board[i][j] === '') {
+    // DOING
     // alter the board array to current player
     board[i][j] = currentPlayer;
     // rebuild board with the altered array
-    buildBoard(board);
+    buildBoard(board); // DOING
+    // buildBoard1(boardSize);
     // change player
+    determineWinConditions(board); // DOING
     changePlayer();
   }
-  determineWinner();
+  // winCheck(winConditions, currentPlayer);
 };
 
 // change player everytime function is called
@@ -70,42 +105,157 @@ const changePlayer = () => {
 };
 
 const buildOutput = () => {
-  const outputEL = document.createElement('output');
+  outputEL = document.createElement('p');
   outputEL.innerText = '';
   outputEL.classList.add('output');
   outputContainer.appendChild(outputEL);
 };
 
-const determineWinner = () => {
-  /* there are limited possible winning conditions 
-  a) 3 horizonally, b) 3 vertically, c) 3 diagonally
-  */
-  // check horizontal
-
-  // TODO don't check if squares are blank strings
-  if (
-    (board[0][0] === board[0][1] && board[0][0] === board[0][2]) ||
-    (board[1][0] === board[1][1] && board[1][0] === board[1][2]) ||
-    (board[2][0] === board[2][1] && board[2][0] === board[2][2])
-  ) {
-    console.log('win horizontal');
-  }
-  // check vertical
-  if (
-    (board[0][0] === board[1][0] && board[0][0] === board[2][0]) ||
-    (board[0][1] === board[1][1] && board[0][1] === board[2][1]) ||
-    (board[0][2] === board[1][2] && board[0][2] === board[2][2])
-  ) {
-    console.log('win vertical');
-  }
-  // check diagonal
-  if (
-    (board[0][0] === board[1][1] && board[0][0] === board[2][2]) ||
-    (board[2][0] === board[1][1] && board[2][0] === board[0][2])
-  ) {
-    console.log('win diagonally');
-  }
+const output = (text) => {
+  outputEL.innerText = text;
 };
 
+// function to build input box
+const buildInput = () => {
+  const inputBox = document.createElement('input');
+  const inputBtn = document.createElement('button');
+  inputEl = document.createElement('span');
+  inputEl.classList.add('label');
+  inputEl.innerText = 'Please input the size of board:';
+  inputContainer.appendChild(inputEl);
+  inputBox.classList.add('input');
+  inputContainer.appendChild(inputBox);
+  inputBtn.classList.add('input-button');
+  inputBtn.innerText = 'Submit';
+  inputContainer.appendChild(inputBtn);
 
+  // function to take size of board input and set the size to build board
+  // DOING
+  inputBtn.addEventListener('click', function () {
+    boardSize = Number(inputBox.value);
+    buildBoard1(boardSize);
+  });
+};
 
+/**
+ * Checks if a player has won by fulfilling the win conditions.
+ * @param {takes arr of hor/vert/diag and determines if 3 in a row} arr
+ */
+const winCheck = (arr) => {
+  arr.forEach(function (subArr) {
+    // console.log(subArr);
+    let counter = 0;
+    subArr.forEach(function (element) {
+      // console.log(element, currentPlayer);
+      if (element === currentPlayer) {
+        counter += 1;
+        // console.log(counter);
+        if (counter === 3) {
+          winner = currentPlayer;
+          output(`${currentPlayer} Wins!`);
+        }
+      }
+    });
+  });
+};
+
+const determineWinConditions = (board) => {
+  horizontalWinCon(board);
+  verticalWinCon(board);
+  diagonalTopLeftToRightWinCon(board);
+  diagonalBtmLeftToRightWinCon(board);
+};
+
+/**
+ * Functions to generate win conditions //
+ */
+
+const horizontalWinCon = (board) => {
+  const arr = [];
+  for (let i = 0; i < board.length; i += 1) {
+    let row = [];
+    for (let j = 0; j < board.length; j += 1) {
+      row.push(board[i][j]);
+    }
+    arr.push(row);
+  }
+  winCheck(arr);
+};
+
+const verticalWinCon = (board) => {
+  const arr = [];
+  for (let i = 0; i < board.length; i += 1) {
+    let row = [];
+    for (let j = 0; j < board.length; j += 1) {
+      row.push(board[j][i]);
+    }
+    arr.push(row);
+  }
+  winCheck(arr);
+};
+
+const diagonalTopLeftToRightWinCon = (board) => {
+  let arr = [];
+  for (let x = 0; x < board.length; x += 1) {
+    let row = [];
+    for (let i = 0, j = 0; i < board.length; i += 1, j += 1) {
+      row.push(board[i][j]);
+    }
+    arr.push(row);
+  }
+  winCheck(arr);
+};
+
+const diagonalBtmLeftToRightWinCon = (board) => {
+  let arr = [];
+  for (let x = 0; x < board.length; x += 1) {
+    let row = [];
+    for (let i = board.length - 1, j = 0; i >= 0; i -= 1, j += 1) {
+      // console.log(i, j);
+      row.push(board[i][j]);
+    }
+    arr.push(row);
+  }
+  winCheck(arr);
+};
+
+/**
+ * Depreciated
+ */
+// generate the vertical win condition based on board size
+// using the numberedBoard
+// const verticalWinCon = (board) => {
+//   for (let i = 0; i < board.length; i += 1) {
+//     let row = [];
+//     for (let j = 0; j < board.length; j += 1) {
+//       row.push(numberedBoard[j][i]);
+//     }
+//     winConditions.push(row);
+//   }
+// };
+
+// const horizontalWinCon = (board) => {
+//   const arr = [];
+//   let counter = 0;
+//   for (let i = 0; i < board.length; i += 1) {
+//     let row = [];
+//     for (let j = 0; j < board.length; j += 1) {
+//       row.push(counter);
+//       counter += 1;
+//     }
+//     arr.push(row);
+//   }
+// };
+
+// const buildNumberedBoard = (board) => {
+//   let counter = 0;
+//   let result = [];
+//   for (let i = 0; i < board.length; i += 1) {
+//     result[i] = [];
+//     for (let j = 0; j < board.length; j += 1) {
+//       result[i][j] = counter;
+//       counter += 1;
+//     }
+//   }
+//   numberedBoard = result;
+// };
