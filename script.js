@@ -120,6 +120,20 @@ const addGameInfo = (message) => {
 	document.body.appendChild(gameInfoContainer);
 };
 
+const resetGame = () => {
+	// Reset the board
+	for (let i = 0; i < board.length; i += 1) {
+		for (let j = 0; j < board[i].length; j += 1) {
+			board[i][j] = '';
+		}
+	}
+	// Draw board
+	drawBoard();
+	changePlayer();
+	addGameInfo(`${currentPlayer}, you start!`);
+	gameOn = true;
+};
+
 // ***** GAMEPLAY *****************************************
 
 // What happens when user clicks on a square
@@ -131,8 +145,9 @@ const squareClick = (row, column) => {
 		// Draw the board again
 		drawBoard();
 		if (didPlayerWin() === true) {
-			addGameInfo(`${currentPlayer} wins`);
+			addGameInfo(`${currentPlayer} wins!`);
 			gameOn = false;
+			setTimeout(resetGame, 2000);
 			return;
 		}
 
@@ -141,6 +156,7 @@ const squareClick = (row, column) => {
 		addGameInfo(`${currentPlayer}, your turn`);
 	}
 };
+
 // ***** GAME INITIALISATION ******************************
 
 const initGame = () => {
