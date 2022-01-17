@@ -16,6 +16,7 @@ let boardContainer;
 // current player global starts at X
 let currentPlayer = 'X';
 
+let computerMode = false
 
 //message container
 let messageContainer = document.createElement('div')
@@ -30,10 +31,11 @@ messageOutput.innerText = ""
 
 // reset button
 
-let resetButton = document.createElement('button')
-messageContainer.appendChild(resetButton)
-resetButton.innerText = "reset"
-resetButton.addEventListener('click', ()=>{window.location.reload()})
+// let resetButton = document.createElement('button')
+// messageContainer.appendChild(resetButton)
+// resetButton.innerText = "reset"
+// resetButton.addEventListener('click', ()=>{window.location.reload()})
+
 
 let canClick = true
 
@@ -92,6 +94,7 @@ const initGame = () => {
 const togglePlayer = () => {
   if (currentPlayer === 'X') {
     currentPlayer = 'O';
+
   } else {
     currentPlayer = 'X';
   }
@@ -152,13 +155,6 @@ const togglePlayer = () => {
 //   return false
 // };
 
-
-// let board = [
-//   ['', '', ''],
-//   ['', '', ''],
-//   ['', '', ''],
-// ];
-
 const checkWin = (board, currentPlayer) => { 
 
 //check row match
@@ -207,7 +203,6 @@ const checkWin = (board, currentPlayer) => {
   }
    
 
-
 const squareClick = function (row, column) {
   console.log('coordinates', row, column);
   if (board[row][column] === '') {
@@ -227,6 +222,33 @@ const squareClick = function (row, column) {
   
 };
 
+const computer = () =>{
+  computerMode === true
+  let allSquares = document.getElementsByClassName("square")
+  let allSquaresArray = Array.from(document.getElementsByClassName("square"))
+  let emptySquares =[]
+  for (let i = 0; i < allSquaresArray.length; i +=1){
+    if (allSquaresArray[i].innerText === ""){
+      emptySquares.push(i) // just push index of empty square
+    }
+  }
+  // console.log(emptySquares)
+  // console.log(allSquaresArray)
+
+  let randomChoice = Math.floor(Math.random() * emptySquares.length)
+  let selectedSquareIndex = emptySquares[randomChoice]
+  // console.log(selectedSquareIndex)
+  let selectedSquare = allSquares[selectedSquareIndex] // pick from html array
+  selectedSquare.click()
+  // console.log(selectedSquare)
+  
+};
+
+let computerButton = document.createElement('button')
+messageContainer.append(computerButton)
+computerButton.innerText = "computer play"
+computerButton.addEventListener('click', computer)
 
 
 initGame()
+console.log(document.getElementsByClassName("square"))
