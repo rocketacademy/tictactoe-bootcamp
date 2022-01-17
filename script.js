@@ -1,5 +1,9 @@
 // ***** GLOBAL VARIABLES *********************************
-let currentPlayer = 'X';
+// Players
+const playerNames = ['👻', '🐯'];
+let currentPlayer = playerNames[0];
+
+// Board
 const board = [
 	['', '', ''],
 	['', '', ''],
@@ -8,16 +12,72 @@ const board = [
 let boardContainer;
 
 // ***** HELPER FUNCTIONS *********************************
-
 // Change player
 const changePlayer = () => {
-	if (currentPlayer === 'X') {
-		currentPlayer = 'O';
+	if (currentPlayer === playerNames[0]) {
+		currentPlayer = playerNames[1];
 	} else {
-		currentPlayer = 'X';
+		currentPlayer = playerNames[0];
 	}
 };
-// ***** GAMEPLAY *****************************************
+
+// Check to see if player won
+const didPlayerWin = () => {
+	// win conditions
+	// horizontal win
+	// 0,0 == 0,1 == 0,2
+	// 1,0 == 1,1 == 1,2
+	// 2,0 == 2,1 == 2,2
+	// vertical win
+	// 0,0 == 1,0 == 2,0
+	// 0,1 == 1,1 ==  2,1
+	// 0,2 == 1,2 == 2,2
+	// diagonal win
+	// 0,0 == 1,1 == 2,2 // top-left to bottom-right
+	// 0,2 == 1,1 == 2,0 // top-right to bottom-left
+
+	let win = false;
+
+	// Check for horizontal win
+	// Go through each row and check if the squares match
+	for (let i = 0; i < board.length; i += 1) {
+		let row = board[i];
+		// check the value of each square in the row against one another
+		for (let j = 0; j < row.length; j += 1) {
+			if (row[j] !== '' && row[j] === row[j + 1] && row[j] === row[j + 2]) {
+				win = true;
+			}
+		}
+	}
+	// Check for vertical win
+	// Go through each column to check if there's a vertical win
+	// check the value of each square in the row against one another
+	for (let i = 0; i < board[0].length; i += 1) {
+		let topRow = board[0];
+		if (
+			topRow[i] !== '' &&
+			topRow[i] === board[1][i] &&
+			topRow[i] === board[2][i]
+		) {
+			win = true;
+		}
+	}
+
+	// Check for diagonal win
+	if (
+		(board[0][0] !== '' &&
+			board[0][0] === board[1][1] &&
+			board[1][1] === board[2][2]) ||
+		(board[0][2] !== '' &&
+			board[0][2] === board[1][1] &&
+			board[1][1] === board[2][0])
+	) {
+		win = true;
+	}
+
+	// return true / false
+	return win;
+};
 
 // Draw the tic-tac-toe board
 const drawBoard = () => {
@@ -49,18 +109,25 @@ const drawBoard = () => {
 	document.body.appendChild(boardContainer);
 };
 
+// ***** GAMEPLAY *****************************************
+
 // What happens when user clicks on a square
 const squareClick = (row, column) => {
 	if (board[row][column] == '') {
 		// Take the element's position, correspond to the board, set the value
 		board[row][column] = currentPlayer;
+
 		// Draw the board again
 		drawBoard();
+		if (didPlayerWin() === true) {
+			console.log(`${currentPlayer} wins`);
+			return;
+		}
+
 		// Change player turn
 		changePlayer();
 	}
 };
-
 // ***** GAME INITIALISATION ******************************
 
 const initGame = () => {
