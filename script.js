@@ -10,6 +10,7 @@ const board = [
 	['', '', ''],
 ];
 let boardContainer;
+let gameInfoContainer;
 
 // ***** HELPER FUNCTIONS *********************************
 // Change player
@@ -109,6 +110,15 @@ const drawBoard = () => {
 	document.body.appendChild(boardContainer);
 };
 
+// Create game info container
+const addGameInfo = (message) => {
+	gameInfoContainer.innerHTML = ``;
+	const gameInfo = document.createElement('p');
+	gameInfo.innerHTML = message;
+	gameInfoContainer.appendChild(gameInfo);
+	document.body.appendChild(gameInfoContainer);
+};
+
 // ***** GAMEPLAY *****************************************
 
 // What happens when user clicks on a square
@@ -120,12 +130,13 @@ const squareClick = (row, column) => {
 		// Draw the board again
 		drawBoard();
 		if (didPlayerWin() === true) {
-			console.log(`${currentPlayer} wins`);
+			addGameInfo(`${currentPlayer} wins`);
 			return;
 		}
 
 		// Change player turn
 		changePlayer();
+		addGameInfo(`${currentPlayer}, your turn`);
 	}
 };
 // ***** GAME INITIALISATION ******************************
@@ -134,7 +145,11 @@ const initGame = () => {
 	boardContainer = document.createElement('div');
 	boardContainer.classList.add('board');
 
+	gameInfoContainer = document.createElement('div');
+	gameInfoContainer.classList.add('game-info-container');
+
 	drawBoard();
+	addGameInfo(`${currentPlayer} starts`);
 };
 
 initGame();
