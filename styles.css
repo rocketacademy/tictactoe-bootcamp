@@ -9,6 +9,10 @@ body {
   text-align: center;
 }
 
+body > div {
+  padding: 13px;
+}
+
 h1 {
   font-size: 50px;
 }
@@ -21,6 +25,10 @@ h1 {
   height: 30px;
   width: 30px;
   vertical-align: top;
+}
+
+.square:hover {
+  background-color: rgba(255, 212, 219, 0.205);
 }
 
 .board {
@@ -88,7 +96,11 @@ button {
   border: none;
   display: inline-block;
   margin: 10px auto;
-  background-color: lightpink;
+  background-color: rgba(144, 238, 144, 0.774);
+}
+
+button:hover {
+  background-color: lightgreen;
 }
 
 ::placeholder {

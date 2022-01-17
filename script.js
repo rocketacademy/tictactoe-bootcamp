@@ -110,26 +110,104 @@ const winConditions = () => {
     }
   } return false;
 };
-// the element that contains the rows and squares
-// let boardElement;
-
-// the element that contains the entire board
-// we can empty it out for convenience
-let boardContainer;
 
 // current player global starts at X
 let currentPlayer = 'X';
+let boardContainer;
 
-// switch the global values from one player to the next
+// // switch the global values from one player to the next
 const togglePlayer = () => {
   if (currentPlayer === 'X') {
     currentPlayer = 'O';
-  } else {
+  } else if (currentPlayer === 'O')
+  {
     currentPlayer = 'X';
   }
 };
 
-// HELPERS
+// cpu plays
+const cpuTurn = () => {
+  if (currentPlayer === 'O') { // cpu to only move if player is O
+    // get random column and row number to feed into squareClicks(row, column)
+    // let randomColumn = Math.floor(Math.random() * board.length);
+    // let randomRow = Math.floor(Math.random() * board.length);
+
+    const emptySquares = [];
+    // loop to add squares that are empty into an array:
+    for (let i = 0; i < board.length; i += 1) {
+      for (let j = 0; j < board.length; j += 1) {
+        if (board[i][j] === '') {
+          emptySquares.push([i, j]);
+        }
+      }
+    }
+
+    const randomNumber = Math.floor(Math.random() * emptySquares.length);
+    const randomRow = emptySquares[randomNumber][0];
+    const randomColumn = emptySquares[randomNumber][1];
+
+    canClick = true;
+    cpuSquareClick(randomRow, randomColumn);
+    console.log(`cpu moved! [${randomRow}][${randomColumn}]`);
+  }
+};
+
+const cpuSquareClick = (column, row) => { // WRONG!!! it's actually (row, column)
+  console.log('coordinates', column, row);
+
+  // see if the clicked square has been clicked on before
+  if (board[column][row] === '' && canClick) {
+    // alter the data array, set it to the current player
+    board[column][row] = currentPlayer;
+
+    // refresh the creen with a new board
+    // according to the array that was just changed
+    buildBoard(board);
+
+    // count successful square clicks:
+    squareClicks += 1;
+
+    console.log(`win:${winConditions()}`);
+
+    if (winConditions()) {
+      const winMessage = document.createElement('div');
+      winMessage.classList.add('message');
+      winMessage.innerText = `${currentPlayer} WINS!`;
+      document.body.appendChild(winMessage);
+      buildResetButton();
+      // disable clicking the board
+      canClick = false;
+    }
+
+    // draw conditions
+    else if (!winConditions() && squareClicks === board.length * board.length) {
+      const drawMessage = document.createElement('div');
+      drawMessage.classList.add('message');
+      drawMessage.innerText = 'IT\'S A 👔!';
+      document.body.appendChild(drawMessage);
+      buildResetButton();
+    }
+
+    // change the player
+    else {
+      togglePlayer();
+    }
+  }
+};
+
+// reset game
+const resetGame = () => {
+  location.reload();
+};
+
+// builds the reset button when you win/lose;
+const buildResetButton = () => {
+  const resetButton = document.createElement('button');
+  resetButton.innerText = 'Rematch?';
+  resetButton.addEventListener('click', resetGame);
+  document.body.appendChild(resetButton);
+  console.log('builded');
+};
 
 const squareClick = (column, row) => {
   console.log('coordinates', column, row);
@@ -153,7 +231,7 @@ const squareClick = (column, row) => {
       winMessage.classList.add('message');
       winMessage.innerText = `${currentPlayer} WINS!`;
       document.body.appendChild(winMessage);
-
+      buildResetButton();
       // disable clicking the board
       canClick = false;
     }
@@ -164,10 +242,16 @@ const squareClick = (column, row) => {
       drawMessage.classList.add('message');
       drawMessage.innerText = 'IT\'S A 👔!';
       document.body.appendChild(drawMessage);
+      buildResetButton();
+      canClick = false;
     }
+
     // change the player
     else {
-      togglePlayer(); }
+      togglePlayer();
+      canClick = false;
+      const cpuTurnRef = setTimeout(cpuTurn, 1000);
+    }
   }
 };
 
@@ -220,17 +304,19 @@ const getBoardSize = () => {
   console.log('clicked');
 
   const questionInput = document.getElementById('question-input1');
-  boardSize = questionInput.value;
-  buildBoardArray(); // build the board array only after letting the user define boardsize
 
-  // const questionElements = document.getElementById('question');
-  // questionElements.style = 'display:hidden';
+  if (questionInput.value >= 1 && questionInput.value <= 21) {
+    boardSize = questionInput.value;
+    buildBoardArray(); // build the board array only after letting the user define boardsize
 
-  questionDiv.innerHTML = ''; // clear inner html because i can't figure out how to make visible
-  boardContainer.style = 'display:show';
+    // const questionElements = document.getElementById('question');
+    // questionElements.style = 'display:hidden';
 
-  buildBoard(board); // only build board after submitting
-  getNumbertoWin();
+    questionDiv.innerHTML = ''; // clear inner html because i can't figure out how to make visible
+    boardContainer.style = 'display:show';
+
+    buildBoard(board); // only build board after submitting
+    getNumbertoWin(); }
 };
 
 const askBoardSize = () => {
