@@ -17,6 +17,12 @@ const getNumbertoWin = () => {
   numberToWin = board.length;
 };
 
+// for advanced cpu
+let xAboutToWin = false; // for computer to make block
+let aboutToWinType = '';
+let iValue = 0;
+let moveBlockArray = [];
+
 let boardSize;
 const board = [];
 let questionDiv;
@@ -52,12 +58,15 @@ const winConditions = () => {
         oCount += 1;
       }
     }
+    if (xCount === boardSize - 1 && oCount === 0) {
+      xAboutToWin = true;
+      aboutToWinType = 'row';
+      iValue = i;
+      console.log(`about to win: ${xAboutToWin}, type: ${aboutToWinType}`);
+    }
     if (xCount === numberToWin || oCount === numberToWin) {
       return true;
     }
-
-    // console.log(`x row ${i}:  ${xCount}`);
-    // console.log(`o row ${i}:  ${oCount}`);
 
     // check columns
     xCount = 0;
@@ -71,11 +80,14 @@ const winConditions = () => {
         oCount += 1;
       }
     }
+    if (xCount === boardSize - 1 && oCount === 0 && aboutToWinType === '') { //  do not store new values for cpu if aboutToWinType is already stored
+      xAboutToWin = true;
+      aboutToWinType = 'column';
+      iValue = i;
+    }
     if (xCount === numberToWin || oCount === numberToWin) {
       return true;
     }
-    // console.log(`x column ${i}:  ${xCount}`);
-    // console.log(`o column ${i}:  ${oCount}`);
 
     // check diagonals: top left to bottom right
     xCount = 0;
@@ -87,6 +99,10 @@ const winConditions = () => {
       }
       if (board[j][j] === 'O') {
         oCount += 1;
+      }
+      if (xCount === boardSize - 1 && oCount === 0 && aboutToWinType === '') {
+        xAboutToWin = true;
+        aboutToWinType = 'tlbr';
       }
       if (xCount === numberToWin || oCount === numberToWin) {
         return true;
@@ -103,6 +119,10 @@ const winConditions = () => {
       }
       if (board[j][board.length - 1 - j] === 'O') {
         oCount += 1;
+      }
+      if (xCount === boardSize - 1 && oCount === 0 && aboutToWinType === '') {
+        xAboutToWin = true;
+        aboutToWinType = 'trbl';
       }
       if (xCount === numberToWin || oCount === numberToWin) {
         return true;
@@ -127,34 +147,84 @@ const togglePlayer = () => {
 
 // cpu plays
 const cpuTurn = () => {
-  if (currentPlayer === 'O') { // cpu to only move if player is O
-    // get random column and row number to feed into squareClicks(row, column)
-    // let randomColumn = Math.floor(Math.random() * board.length);
-    // let randomRow = Math.floor(Math.random() * board.length);
-
-    const emptySquares = [];
-    // loop to add squares that are empty into an array:
-    for (let i = 0; i < board.length; i += 1) {
-      for (let j = 0; j < board.length; j += 1) {
-        if (board[i][j] === '') {
-          emptySquares.push([i, j]);
+  if (currentPlayer === 'O') { // cpu to only move if player is 'O'
+    // const moveBlockArray = []; // empty array to store blocking move
+    // if X is about to win;
+    if (xAboutToWin) {
+      // row check
+      if (aboutToWinType === 'row') {
+        for (let j = 0; j < boardSize; j += 1) {
+          if (board[iValue][j] === '') {
+            moveBlockArray.push(iValue);
+            moveBlockArray.push(j);
+          }
         }
       }
+      // column check
+      if (aboutToWinType === 'column') {
+        for (let j = 0; j < boardSize; j += 1) {
+          if (board[j][iValue] === '') {
+            moveBlockArray.push(j);
+            moveBlockArray.push(iValue);
+          }
+        }
+      }
+
+      // top left to bottom right / tlbr check
+      if (aboutToWinType === 'tlbr') {
+        for (let j = 0; j < board.length; j += 1) {
+          if (board[j][j] === '') {
+            moveBlockArray.push(j);
+            moveBlockArray.push(j);
+          }
+        }
+      }
+
+      // top right to bottom left / trbl check
+      if (aboutToWinType === 'trbl') {
+        for (let j = 0; j < board.length; j += 1) {
+          if (board[j][board.length - 1 - j] === '') {
+            moveBlockArray.push(j);
+            moveBlockArray.push(board.length - 1 - j);
+          }
+        }
+      }
+      console.log('advanced cpu activated');
+      console.log(`array to block: ${moveBlockArray}`);
+      canClick = true;
+      cpuSquareClick(moveBlockArray[0], moveBlockArray[1]);
+      canClick = true;
+
+      // reset global checking variables
+      xAboutToWin = false;
+      aboutToWinType = '';
+      moveBlockArray = [];
     }
 
-    const randomNumber = Math.floor(Math.random() * emptySquares.length);
-    const randomRow = emptySquares[randomNumber][0];
-    const randomColumn = emptySquares[randomNumber][1];
+    else {
+      // regular random square select
+      const emptySquares = [];
+      // loop to add squares that are empty into an array:
+      for (let i = 0; i < board.length; i += 1) {
+        for (let j = 0; j < board.length; j += 1) {
+          if (board[i][j] === '') {
+            emptySquares.push([i, j]);
+          }
+        }
+      }
+      // get random column and row number to feed into squareClicks(row, column)
+      const randomNumber = Math.floor(Math.random() * emptySquares.length);
+      const randomRow = emptySquares[randomNumber][0];
+      const randomColumn = emptySquares[randomNumber][1];
 
-    canClick = true;
-    cpuSquareClick(randomRow, randomColumn);
-    console.log(`cpu moved! [${randomRow}][${randomColumn}]`);
+      canClick = true;
+      cpuSquareClick(randomRow, randomColumn);
+      canClick = true;
+    }
   }
 };
 
 const cpuSquareClick = (column, row) => { // WRONG!!! it's actually (row, column)
-  console.log('coordinates', column, row);
-
   // see if the clicked square has been clicked on before
   if (board[column][row] === '' && canClick) {
     // alter the data array, set it to the current player
