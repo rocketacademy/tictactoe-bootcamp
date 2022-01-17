@@ -11,6 +11,7 @@ const board = [
 ];
 let boardContainer;
 let gameInfoContainer;
+let gameOn = true;
 
 // ***** HELPER FUNCTIONS *********************************
 // Change player
@@ -123,7 +124,7 @@ const addGameInfo = (message) => {
 
 // What happens when user clicks on a square
 const squareClick = (row, column) => {
-	if (board[row][column] == '') {
+	if (board[row][column] == '' && gameOn === true) {
 		// Take the element's position, correspond to the board, set the value
 		board[row][column] = currentPlayer;
 
@@ -131,6 +132,7 @@ const squareClick = (row, column) => {
 		drawBoard();
 		if (didPlayerWin() === true) {
 			addGameInfo(`${currentPlayer} wins`);
+			gameOn = false;
 			return;
 		}
 
