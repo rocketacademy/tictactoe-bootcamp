@@ -97,97 +97,123 @@ const togglePlayer = () => {
   }
 };
 
-const checkWin = (board) => {
-
-  // check every position
-  // there is a conditional for all 15 win conditions
-  if ((board[0][0]!== '') && (board[0][0]=== board[0][1]) && (board[0][1] === board[0][2])) {
-    // XXX 1st row
-  console.log('XXX 1st row')
-  return true
-  } 
-
-  if (board[1][0]!== '' && board[1][0]=== board[1][1] && board[1][1] === board[1][2]) {
-    // XXX 2nd row
-  console.log('XXX 2md row')
-  return true
-  }
-
-  if (board[2][0]!== '' && board[2][0]=== board[2][1] && board[2][1] === board[2][2]) {
-    // XXX 3rd row
-  return true
-  } 
-  
-
-  if ( board[0][0]!== '' && board[0][0] === board[1][0] && board[1][0] === board[2][0]) {
-    // X 1st column
-    // X
-    // X
-  return true
-  }
-
-  if ( board[0][1]!== '' && board[0][1] === board[1][1] && board[1][1] === board[2][1]) {
-    // X 2nd column
-    // X
-    // X
-  return true
-  }
-
-  if ( board[0][2]!== '' && board[0][2] === board[1][2] && board[1][2] === board[2][2]) {
-    // X 3rd column
-    // X
-    // X
-  return true
-  }
-
-  if ( board[0][0]!== '' && board[0][0] === board[1][1] && board[1][1] === board[2][2]) {
-    // 1st diagonal 
-  return true
-  }
-  if ( board[0][2]!== '' && board[0][2] === board[1][1] && board[1][1] === board[2][0]) {
-    // 2nd diagonal 
-  return true
-  }
-  
-  return false
-};
-
-
 // const checkWin = (board) => {
-// // move through the board data array and create the
-//   // is is the row number
-//   for (let i = 0; i < board.length; i += 1) {
-//     // j is the column number
-//     for (let j = 0; j < board[i].length; j += 1) {
-      
-//       if (board[i][j] === currentPlayer && board[i][j] !== ""){
-//         console.log ("1" + board[i][j])
-//         return true
-//       }
-//       if (board[j][i] === currentPlayer && board[j][i] !== ""){
-//         console.log ("2")
-//         return true
-//       }
-//       return false
-//     }
-//     if (board [i][i] === currentPlayer && board [i][i] !== ""){
-      
-//       console.log ("3")
-//       return true
-//     }
-//     if(board [i][abs(i-2)] === currentPlayer && board [i][abs(i-2)] !== ""){console.log ("4")
-//       return true
-//     }
-//     return false
+
+//   // check every position
+//   // there is a conditional for all 15 win conditions
+//   if ((board[0][0]!== '') && (board[0][0]=== board[0][1]) && (board[0][1] === board[0][2])) {
+//     // XXX 1st row
+//   console.log('XXX 1st row')
+//   return true
+//   } 
+
+//   if (board[1][0]!== '' && board[1][0]=== board[1][1] && board[1][1] === board[1][2]) {
+//     // XXX 2nd row
+//   console.log('XXX 2md row')
+//   return true
 //   }
+
+//   if (board[2][0]!== '' && board[2][0]=== board[2][1] && board[2][1] === board[2][2]) {
+//     // XXX 3rd row
+//   return true
+//   } 
+  
+
+//   if ( board[0][0]!== '' && board[0][0] === board[1][0] && board[1][0] === board[2][0]) {
+//     // X 1st column
+//     // X
+//     // X
+//   return true
+//   }
+
+//   if ( board[0][1]!== '' && board[0][1] === board[1][1] && board[1][1] === board[2][1]) {
+//     // X 2nd column
+//     // X
+//     // X
+//   return true
+//   }
+
+//   if ( board[0][2]!== '' && board[0][2] === board[1][2] && board[1][2] === board[2][2]) {
+//     // X 3rd column
+//     // X
+//     // X
+//   return true
+//   }
+
+//   if ( board[0][0]!== '' && board[0][0] === board[1][1] && board[1][1] === board[2][2]) {
+//     // 1st diagonal 
+//   return true
+//   }
+//   if ( board[0][2]!== '' && board[0][2] === board[1][1] && board[1][1] === board[2][0]) {
+//     // 2nd diagonal 
+//   return true
+//   }
+  
+//   return false
 // };
+
+
+// let board = [
+//   ['', '', ''],
+//   ['', '', ''],
+//   ['', '', ''],
+// ];
+
+const checkWin = (board, currentPlayer) => { 
+
+//check row match
+  for (let i = 0; i < board.length; i += 1) {
+    let rowSet = new Set(board[i])
+    if (rowSet.has("") === false && rowSet.size === 1){
+      return true
+    }
+  }
+  
+// check column match
+  for (let i = 0; i <board.length; i+=1){
+    let column = []
+    for(let j = 0 ; j < board.length; j +=1){
+      let columnStart = board[j]
+      column.push(columnStart[i])
+      console.log(column)
+    }
+    let columnSet = new Set(column)
+    if (columnSet.has("") === false && columnSet.size === 1){
+      return true
+    }
+    console.log(currentPlayer)
+    console.log(columnSet)   
+  }
+  //check diagonal match
+  let firstDiagonal = []
+  let secondDiagonal = []
+  for (let i = 0; i < board.length; i +=1){
+    
+    firstDiagonal.push(board[i][i]) //first diagonal
+    secondDiagonal.push(board[i][Math.abs(i-(board.length-1))]) //second diagonal
+  }
+  let firstDiagonalSet = new Set(firstDiagonal)
+  let secondDiagonalSet = new Set(secondDiagonal)
+  console.log(secondDiagonal)
+
+  if (firstDiagonalSet.has("") === false && firstDiagonalSet.size === 1){
+    return true
+  }
+  if (secondDiagonalSet.has("") === false && secondDiagonalSet.size === 1){
+    return true
+  }
+  return false   
+
+  }
+   
+
 
 const squareClick = function (row, column) {
   console.log('coordinates', row, column);
   if (board[row][column] === '') {
     board[row][column] = currentPlayer;
     // buildBoard(board)
-    if (checkWin(board) === true) {
+    if (checkWin(board, currentPlayer) === true) {
       messageOutput.innerText = `${currentPlayer} wins!`
       canClick = false
       buildBoard(board)
