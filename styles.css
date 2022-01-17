@@ -1,5 +1,16 @@
 body {
   background-color: lightskyblue;
+  font-family: "Tillium Web", sans-serif;
+  font-weight: 100;
+
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+h1 {
+  font-size: 50px;
 }
 
 .square {
@@ -7,27 +18,81 @@ body {
   margin: 10px;
   background-color: white;
   display: inline-block;
-  height: 10px;
-  width: 10px;
+  height: 30px;
+  width: 30px;
   vertical-align: top;
+}
+
+.board {
+  background-color: antiquewhite;
+  margin: 0 auto;
+  display: inline-block;
+  justify-content: center;
+}
+
+.message {
+  padding: 50px;
+
+  font-family: "Tillium Web", sans-serif;
+  /* font-style: italic; */
+  font-size: xx-large;
+  font-weight: 750;
 }
 
 .o-cell {
+  font-family: "Tillium Web", sans-serif;
+  font-size: xx-large;
+  font-weight: 1000;
   padding: 10px;
   margin: 10px;
-  background-color: lightgoldenrodyellow;
+  background-color: lightyellow;
   display: inline-block;
-  height: 10px;
-  width: 10px;
-  vertical-align: top;
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  text-align: center;
 }
 
 .x-cell {
+  font-family: "Tillium Web", sans-serif;
+  font-size: xx-large;
+
+  font-weight: 1000;
   padding: 10px;
   margin: 10px;
   background-color: lightpink;
   display: inline-block;
-  height: 10px;
-  width: 10px;
-  vertical-align: top;
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  text-align: center;
+}
+
+input {
+  width: 60vw;
+  background-color: white;
+  font-family: "Tillium Web", sans-serif;
+  font-weight: 100;
+  font-size: x-large;
+  text-align: center;
+  border: none;
+  display: inline-block;
+  margin: 0 auto;
+}
+
+button {
+  width: 60vw;
+  font-family: "Tillium Web", sans-serif;
+  font-size: x-large;
+  text-align: center;
+  border: none;
+  display: inline-block;
+  margin: 10px auto;
+  background-color: lightpink;
+}
+
+::placeholder {
+  font-family: "Tillium Web", sans-serif;
+  color: lightgrey;
+  font-size: small;
 }

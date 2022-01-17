@@ -3,42 +3,115 @@
 // GLOBAL VARIABLES
 
 // keep data about the game in a 2-D array
-const board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
+// let board = [
+//   ['', '', ''],
+//   ['', '', ''],
+//   ['', '', ''],
+// ];
+
+// whether the user can click the board or not
+let canClick = true;
+let squareClicks = 0; // checks if game is over or not
+let numberToWin = 0; // board.length;
+const getNumbertoWin = () => {
+  numberToWin = board.length;
+};
+
+let boardSize;
+const board = [];
+let questionDiv;
+
+const buildBoardArray = () => {
+  for (let i = 0; i < boardSize; i += 1) {
+    board[i] = [];
+    for (let j = 0; j < boardSize; j += 1) {
+      board[i].push('');
+    }
+  }
+};
 
 // check for win conditions
 // if value of board elements in a row/column/diagonal are equal to each other, win.
 // code for same row: board[i][j] == board[i][j+1] && board[i][j] == board[i][j+2], loop i < 3
 // code for same column: board[j][i] == board[j+1][i] board[j][i] == board[j+2][i]
 // code for diagonal win: board[0][0] == board[1][1] && board [0][0] == board[2][2]
-const winConditions = () => {
-  // 3 in a row.
-  for (let i = 0; i < 3; i += 1) {
-    if (board[i][0] === board[i][1] && board[i][0] === board[i][2] && board[i][0] !== '') {
-      return true;
-    }
-  }
-  // 3 in a column
-  for (let i = 0; i < 3; i += 1) {
-    if (board[0][i] === board[1][i] && board[0][i] === board[2][i] && board[0][i] !== '') {
-      return true;
-    }
-  }
-  // 3 in a diagonal
-  if (board[1][1] === board[0][0] && board[1][1] === board[2][2] && board[1][1] !== '') {
-    return true;
-  }
-  if (board[1][1] === board[0][2] && board[1][1] === board[2][0] && board[1][1] !== '') {
-    return true;
-  }
-  return false;
-};
 
+const winConditions = () => {
+  // new attempt
+
+  for (let i = 0; i < board.length; i += 1) {
+    // check rows
+    let xCount = 0;
+    let oCount = 0;
+
+    for (let j = 0; j < board.length; j += 1) {
+      if (board[i][j] === 'X') {
+        xCount += 1;
+      }
+      if (board[i][j] === 'O') {
+        oCount += 1;
+      }
+    }
+    if (xCount === numberToWin || oCount === numberToWin) {
+      return true;
+    }
+
+    // console.log(`x row ${i}:  ${xCount}`);
+    // console.log(`o row ${i}:  ${oCount}`);
+
+    // check columns
+    xCount = 0;
+    oCount = 0;
+
+    for (let j = 0; j < board.length; j += 1) {
+      if (board[j][i] === 'X') {
+        xCount += 1;
+      }
+      if (board[j][i] === 'O') {
+        oCount += 1;
+      }
+    }
+    if (xCount === numberToWin || oCount === numberToWin) {
+      return true;
+    }
+    // console.log(`x column ${i}:  ${xCount}`);
+    // console.log(`o column ${i}:  ${oCount}`);
+
+    // check diagonals: top left to bottom right
+    xCount = 0;
+    oCount = 0;
+
+    for (let j = 0; j < board.length; j += 1) {
+      if (board[j][j] === 'X') {
+        xCount += 1;
+      }
+      if (board[j][j] === 'O') {
+        oCount += 1;
+      }
+      if (xCount === numberToWin || oCount === numberToWin) {
+        return true;
+      }
+    }
+
+    // check diagonals: top right to bottom left
+    xCount = 0;
+    oCount = 0;
+
+    for (let j = 0; j < board.length; j += 1) {
+      if (board[j][board.length - 1 - j] === 'X') {
+        xCount += 1;
+      }
+      if (board[j][board.length - 1 - j] === 'O') {
+        oCount += 1;
+      }
+      if (xCount === numberToWin || oCount === numberToWin) {
+        return true;
+      }
+    }
+  } return false;
+};
 // the element that contains the rows and squares
-let boardElement;
+// let boardElement;
 
 // the element that contains the entire board
 // we can empty it out for convenience
@@ -62,7 +135,7 @@ const squareClick = (column, row) => {
   console.log('coordinates', column, row);
 
   // see if the clicked square has been clicked on before
-  if (board[column][row] === '') {
+  if (board[column][row] === '' && canClick) {
     // alter the data array, set it to the current player
     board[column][row] = currentPlayer;
 
@@ -70,10 +143,31 @@ const squareClick = (column, row) => {
     // according to the array that was just changed
     buildBoard(board);
 
+    // count successful square clicks:
+    squareClicks += 1;
+
     console.log(`win:${winConditions()}`);
 
+    if (winConditions()) {
+      const winMessage = document.createElement('div');
+      winMessage.classList.add('message');
+      winMessage.innerText = `${currentPlayer} WINS!`;
+      document.body.appendChild(winMessage);
+
+      // disable clicking the board
+      canClick = false;
+    }
+
+    // draw conditions
+    else if (!winConditions() && squareClicks === board.length * board.length) {
+      const drawMessage = document.createElement('div');
+      drawMessage.classList.add('message');
+      drawMessage.innerText = 'IT\'S A 👔!';
+      document.body.appendChild(drawMessage);
+    }
     // change the player
-    togglePlayer();
+    else {
+      togglePlayer(); }
   }
 };
 
@@ -81,8 +175,8 @@ const squareClick = (column, row) => {
 const buildBoard = (board) => {
   // start with an empty container
   boardContainer.innerHTML = '';
-  boardElement = document.createElement('div');
-  boardElement.classList.add('board');
+  // boardElement = document.createElement('div');
+  boardContainer.classList.add('board');
 
   // move through the board data array and create the
   // current state of the board
@@ -122,15 +216,61 @@ const buildBoard = (board) => {
   }
 };
 
+const getBoardSize = () => {
+  console.log('clicked');
+
+  const questionInput = document.getElementById('question-input1');
+  boardSize = questionInput.value;
+  buildBoardArray(); // build the board array only after letting the user define boardsize
+
+  // const questionElements = document.getElementById('question');
+  // questionElements.style = 'display:hidden';
+
+  questionDiv.innerHTML = ''; // clear inner html because i can't figure out how to make visible
+  boardContainer.style = 'display:show';
+
+  buildBoard(board); // only build board after submitting
+  getNumbertoWin();
+};
+
+const askBoardSize = () => {
+  // create div to hold question elements
+  questionDiv = document.createElement('div');
+  questionDiv.style.display = 'show';
+  questionDiv.setAttribute('id', 'question-div');
+  document.body.appendChild(questionDiv);
+
+  // create question to show on screen
+  const question = document.createElement('div');
+  question.classList.add('question');
+  question.classList.add('message');
+  question.innerText = 'How long is your board? 😏';
+  questionDiv.appendChild(question);
+
+  // create input
+  const questionInput = document.createElement('input');
+  question.classList.add('question');
+  questionInput.setAttribute('id', 'question-input1');
+  questionInput.placeholder = 'Pick a number from 1 to infinity';
+  questionDiv.appendChild(questionInput);
+
+  // create button for input;
+  const questionButton = document.createElement('button');
+  question.classList.add('question');
+  questionButton.innerText = "Let's go!";
+  questionButton.addEventListener('click', getBoardSize);
+  questionDiv.appendChild(questionButton);
+};
+
 // INITIALISE GAME
 
 // create the board container element and put it on the screen
 const initGame = () => {
+  askBoardSize();
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
-
-  // build the board - right now it's empty
-  buildBoard(board);
+  boardContainer.style = 'display:none';
+  // boardContainer.style = 'display:show';
 };
 
-initGame();
+initGame(); //
