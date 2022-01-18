@@ -129,8 +129,8 @@ const checkWinner = (board, currentPlayer) => {
   let diagSet = []
   let diagSetOpp = []
   for (let i = 0; i < board.length; i +=1){
-    diagSet.push(board[i][i]) //first diagonal
-    diagSetOpp.push(board[i][Math.abs(i-(board.length-1))]) //second diagonal
+    diagSet.push(board[i][i])
+    diagSetOpp.push(board[i][Math.abs(i-(board.length-1))])
   }
   diagSet = new Set(diagSet)
   diagSetOpp = new Set(diagSetOpp)
