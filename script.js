@@ -100,31 +100,40 @@ const squareClick = (column, row) => {
 };
 
 //check winner
-const checkWinner = (board, currentPlayer) => { 
+const checkWinner = () => { 
+ for (let i = 0; i < board.length; i += 1) {
+    // check rows
+    xCount = 0;
+    oCount = 0;
 
-//check row match
-  for (let i = 0; i < board.length; i += 1) {
-    let rowSet = new Set(board[i])
-    if (rowSet.has("") === false && rowSet.size === 1){
-      return true
+    for (let j = 0; j < board.length; j += 1) {
+      if (board[i][j] === 'X') {
+        xCount += 1;
+      }
+      if (board[i][j] === 'O') {
+        oCount += 1;
+      }
     }
-  }
-  
-// check column match
-  for (let i = 0; i <board.length; i+=1){
-    let column = []
-    for(let j = 0 ; j < board.length; j +=1){
-      let columnStart = board[j]
-      column.push(columnStart[i])
-      console.log(column)
+    if (xCount === 3 || oCount === 3) {
+      return true;
     }
-    let columnSet = new Set(column)
-    if (columnSet.has("") === false && columnSet.size === 1){
-      return true
+
+    // check columns
+    xCount = 0;
+    oCount = 0;
+
+    for (let j = 0; j < board.length; j += 1) {
+      if (board[j][i] === 'X') {
+        xCount += 1;
+      }
+      if (board[j][i] === 'O') {
+        oCount += 1;
+      }
     }
-    console.log(currentPlayer)
-    console.log(columnSet)   
-  }
+    if (xCount === 3 || oCount === 3) {
+      return true;
+    }
+ }
   //check diagonal match
   let diagSet = []
   let diagSetOpp = []
@@ -142,7 +151,33 @@ const checkWinner = (board, currentPlayer) => {
     return true
   }
   return false   
-  };
+  
+};
+
+// //check row match
+//   for (let i = 0; i < board.length; i += 1) {
+//     let rowSet = new Set(board[i])
+//     if (rowSet.has("") === false && rowSet.size === 1){
+//       return true
+//     }
+//   }
+  
+// // check column match
+//   for (let i = 0; i <board.length; i+=1){
+//     let column = []
+//     for(let j = 0 ; j < board.length; j +=1){
+//       let columnStart = board[j]
+//       column.push(columnStart[i])
+//       console.log(column)
+//     }
+//     let columnSet = new Set(column)
+//     if (columnSet.has("") === false && columnSet.size === 1){
+//       return true
+//     }
+//     console.log(currentPlayer)
+//     console.log(columnSet)   
+//   }
+ 
 
 ///////////////INITISATION///////////////
 // create the board container element and put it on the screen
