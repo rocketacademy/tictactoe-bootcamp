@@ -12,6 +12,11 @@
 // whether the user can click the board or not
 let canClick = true;
 let squareClicks = 0; // checks if game is over or not
+
+// for checking wins are determining cpu move
+let xCount = 0;
+let oCount = 0;
+
 let numberToWin = 0; // board.length;
 const getNumbertoWin = () => {
   numberToWin = board.length;
@@ -36,6 +41,20 @@ const buildBoardArray = () => {
   }
 };
 
+// reset game
+const resetGame = () => {
+  location.reload();
+};
+
+// builds the reset button when you win/lose;
+const buildResetButton = () => {
+  const resetButton = document.createElement('button');
+  resetButton.innerText = 'Rematch?';
+  resetButton.addEventListener('click', resetGame);
+  document.body.appendChild(resetButton);
+  console.log('builded');
+};
+
 // check for win conditions
 // if value of board elements in a row/column/diagonal are equal to each other, win.
 // code for same row: board[i][j] == board[i][j+1] && board[i][j] == board[i][j+2], loop i < 3
@@ -47,8 +66,8 @@ const winConditions = () => {
 
   for (let i = 0; i < board.length; i += 1) {
     // check rows
-    let xCount = 0;
-    let oCount = 0;
+    xCount = 0;
+    oCount = 0;
 
     for (let j = 0; j < board.length; j += 1) {
       if (board[i][j] === 'X') {
@@ -88,47 +107,49 @@ const winConditions = () => {
     if (xCount === numberToWin || oCount === numberToWin) {
       return true;
     }
+  }
 
-    // check diagonals: top left to bottom right
-    xCount = 0;
-    oCount = 0;
+  // check diagonals: top left to bottom right
+  xCount = 0;
+  oCount = 0;
 
-    for (let j = 0; j < board.length; j += 1) {
-      if (board[j][j] === 'X') {
-        xCount += 1;
-      }
-      if (board[j][j] === 'O') {
-        oCount += 1;
-      }
-      if (xCount === boardSize - 1 && oCount === 0 && aboutToWinType === '') {
-        xAboutToWin = true;
-        aboutToWinType = 'tlbr';
-      }
-      if (xCount === numberToWin || oCount === numberToWin) {
-        return true;
-      }
+  for (let j = 0; j < board.length; j += 1) {
+    if (board[j][j] === 'X') {
+      xCount += 1;
     }
-
-    // check diagonals: top right to bottom left
-    xCount = 0;
-    oCount = 0;
-
-    for (let j = 0; j < board.length; j += 1) {
-      if (board[j][board.length - 1 - j] === 'X') {
-        xCount += 1;
-      }
-      if (board[j][board.length - 1 - j] === 'O') {
-        oCount += 1;
-      }
-      if (xCount === boardSize - 1 && oCount === 0 && aboutToWinType === '') {
-        xAboutToWin = true;
-        aboutToWinType = 'trbl';
-      }
-      if (xCount === numberToWin || oCount === numberToWin) {
-        return true;
-      }
+    if (board[j][j] === 'O') {
+      oCount += 1;
     }
-  } return false;
+    if (xCount === boardSize - 1 && oCount === 0 && aboutToWinType === '') {
+      xAboutToWin = true;
+      aboutToWinType = 'tlbr';
+    }
+    if (xCount === numberToWin || oCount === numberToWin) {
+      return true;
+    }
+  }
+
+  // check diagonals: top right to bottom left
+  xCount = 0;
+  oCount = 0;
+
+  for (let j = 0; j < board.length; j += 1) {
+    if (board[j][board.length - 1 - j] === 'X') {
+      xCount += 1;
+    }
+    if (board[j][board.length - 1 - j] === 'O') {
+      oCount += 1;
+    }
+    if (xCount === boardSize - 1 && oCount === 0 && aboutToWinType === '') {
+      xAboutToWin = true;
+      aboutToWinType = 'trbl';
+    }
+    if (xCount === numberToWin || oCount === numberToWin) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 // current player global starts at X
@@ -263,20 +284,6 @@ const cpuSquareClick = (column, row) => { // WRONG!!! it's actually (row, column
       togglePlayer();
     }
   }
-};
-
-// reset game
-const resetGame = () => {
-  location.reload();
-};
-
-// builds the reset button when you win/lose;
-const buildResetButton = () => {
-  const resetButton = document.createElement('button');
-  resetButton.innerText = 'Rematch?';
-  resetButton.addEventListener('click', resetGame);
-  document.body.appendChild(resetButton);
-  console.log('builded');
 };
 
 const squareClick = (column, row) => {
