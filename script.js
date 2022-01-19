@@ -27,6 +27,7 @@ x = `${boardSize.options[boardSize.selectedIndex].text}`;
 console.log(x);
 };
 
+//create board with size input
 const createBoardSize = () => {
   document.querySelector('div').outerHTML ="";
   inputBoardSize();
