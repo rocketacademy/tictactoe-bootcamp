@@ -1,22 +1,10 @@
 //////////GLOBAL VARIABLES//////////
   
-let board;
-const createBoard = (x,y)=>{
-board = [];
-  for (i=0; i<y; i +=1){
-    board.push([]);
-    for(j=0; j<x;j +=1){
-    board[i].push(''); 
-    }
-  }
-};
-createBoard(4,4);
-
+// elements for playing board
 let boardElement;
-
-
-// the element that contains the entire board
 let boardContainer;
+let x;
+let board;
 
 // current player global starts at X
 let currentPlayer = 'X';
@@ -32,15 +20,36 @@ let messageOutput = document.createElement('span')
 messageContainer.append(messageOutput)
 messageOutput.innerText = ""
 
-// reset button
-let resetButton = document.createElement('button')
-messageContainer.appendChild(resetButton)
-resetButton.innerText = "reset"
-resetButton.addEventListener('click', ()=>{window.location.reload()})
+//set size of board
+const inputBoardSize = () => {
+let boardSize = document.getElementById("boardSize");
+x = `${boardSize.options[boardSize.selectedIndex].text}`;
+console.log(x);
+};
+
+const createBoardSize = () => {
+  document.querySelector('div').outerHTML ="";
+  inputBoardSize();
+  board = [];
+  for (let i = 0; i < x; i += 1) {
+    board.push([]);
+    for (let j = 0; j < x; j += 1) {
+      board[i].push('');
+    }
+  }
+  initGame();
+};
+
+// reset board 
+let resetButton = document.createElement('button');
+messageContainer.appendChild(resetButton);
+resetButton.innerText = "Reset";
+resetButton.addEventListener('click', ()=>{window.location.reload()});
 
 
 //////////HELPER FUNCTIONS//////////
 // completely rebuilds the entire board every time there's a click
+
 
 const buildBoard = (board) => {
   boardContainer.innerHTML = '';
@@ -228,8 +237,6 @@ const checkWinner = () => {
 const initGame = () => {
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
-  // build the board - right now it's empty
   buildBoard(board);
 };
 
-initGame();
