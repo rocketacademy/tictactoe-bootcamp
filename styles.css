@@ -1,3 +1,59 @@
+h1 {
+  margin: 30px;
+  height: 45px;
+  line-height: 50px;
+  color: white;
+}
 body {
-  background-color: pink;
+  background-color: salmon;
+  font-family: "Dongle", sans-serif;
+  text-align: center;
+  font-size: 40px;
+}
+
+div {
+  text-align: center;
+  vertical-align: top;
+}
+
+.square {
+  margin: 10px;
+  /* background-color: orange; */
+  display: inline-block;
+  height: 80px;
+  width: 80px;
+  border: 2px solid yellow;
+  font-family: "Architects Daughter", cursive;
+  font-size: 80px;
+  line-height: 80px;
+  color: yellow;
+}
+
+.message {
+  height: 150px;
+}
+
+span {
+  height: 30px;
+  display: block;
+  padding: 5px;
+  line-height: 30px;
+  color: white;
+  margin: 30px;
+}
+
+button {
+  background-color: white;
+  color: salmon;
+  border: none;
+  font-size: 30px;
+  font-family: "Dongle", sans-serif;
+  width: max-content;
+  height: 35px;
+  line-height: 35px;
+  margin: 30px;
+}
+
+button:active {
+  background-color: yellow;
 }
