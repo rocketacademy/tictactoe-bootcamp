@@ -1,15 +1,19 @@
-let resetButton;
 let outputBox;
 let gameOver = false;
-const boardSize = 3;
+let boardSize;
+let sizeBox;
 
 // keep data about the game in a 2-D array
-let board = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
-
+let board;
+const boardCreate = () => {
+  board = [];
+  for (let i = 0; i < boardSize; i += 1) {
+    board.push([]);
+    for (let j = 0; j < boardSize; j += 1) {
+      board[i].push('');
+    }
+  }
+};
 // the element that contains the rows and squares
 let boardElement;
 
@@ -59,22 +63,54 @@ const buildBoard = (brd) => {
   }
 };
 
+const reset = () => {
+  boardCreate();
+  buildBoard(board);
+  gameOver = false;
+  outputBox.innerText = '';
+  currentPlayer = 'X';
+};
+
 // create the board container element and put it on the screen
 const initGame = () => {
-  resetButton = document.createElement('button');
+  const resetButton = document.createElement('button');
   document.body.appendChild(resetButton);
   resetButton.innerText = 'Reset Game';
+  resetButton.addEventListener('click', reset);
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
   outputBox = document.createElement('div');
   outputBox.className = 'output';
   document.body.appendChild(outputBox);
+  boardCreate();
 
   // build the board - right now it's empty
   buildBoard(board);
 };
 
-initGame();
+const sizeCheck = (num) => {
+  if (Number(num) >= 3) {
+    boardSize = Number(num);
+    sizeBox.remove();
+    initGame();
+  }
+};
+
+const preGame = () => {
+  sizeBox = document.createElement('div');
+  const sizeInput = document.createElement('input');
+  sizeInput.placeholder = 'Enter size of board (at least 3)';
+  sizeInput.style = 'width: 35%;';
+  const sizeButton = document.createElement('button');
+  sizeButton.addEventListener('click', () => sizeCheck(sizeInput.value));
+  sizeButton.innerText = 'Submit';
+  sizeBox.appendChild(sizeInput);
+  sizeBox.appendChild(sizeButton);
+
+  document.body.appendChild(sizeBox);
+};
+preGame();
+// initGame();
 
 // switch the global values from one player to the next
 const togglePlayer = () => {
@@ -155,16 +191,3 @@ const squareClick = (column, row) => {
     }
   }
 };
-
-const reset = () => {
-  board = [
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', ''],
-  ];
-  buildBoard(board);
-  gameOver = false;
-  outputBox.innerText = '';
-  currentPlayer = 'X';
-};
-resetButton.addEventListener('click', reset);
