@@ -1,6 +1,10 @@
-// Please implement exercise logic here
+let resetButton;
+let outputBox;
+let gameOver = false;
+const boardSize = 3;
+
 // keep data about the game in a 2-D array
-const board = [
+let board = [
   ['', '', ''],
   ['', '', ''],
   ['', '', ''],
@@ -57,8 +61,14 @@ const buildBoard = (brd) => {
 
 // create the board container element and put it on the screen
 const initGame = () => {
+  resetButton = document.createElement('button');
+  document.body.appendChild(resetButton);
+  resetButton.innerText = 'Reset Game';
   boardContainer = document.createElement('div');
   document.body.appendChild(boardContainer);
+  outputBox = document.createElement('div');
+  outputBox.className = 'output';
+  document.body.appendChild(outputBox);
 
   // build the board - right now it's empty
   buildBoard(board);
@@ -75,19 +85,86 @@ const togglePlayer = () => {
   }
 };
 
+const checkEqual = (array) => new Set(array).size === 1;
+
+const inverseBoard = (brd) => {
+  const inverse = [];
+  for (let i = 0; i < boardSize; i += 1) {
+    inverse.push([]);
+    for (let j = 0; j < boardSize; j += 1) {
+      inverse[i].push(brd[j][i]);
+    }
+  }
+  return inverse;
+};
+
+const diagonalBoard = (brd) => {
+  const diagonal = [];
+  for (let i = 0; i < 2; i += 1) {
+    diagonal.push([]);
+    for (let j = 0; j < boardSize; j += 1) {
+      const k = j;
+      const l = (boardSize - 1) - k;
+      if (i === 0) {
+        diagonal[i].push(brd[j][k]);
+      }
+      else {
+        diagonal[i].push(brd[j][l]);
+      }
+    }
+  }
+  return diagonal;
+};
+
+const checkWin = (brd) => {
+  let win = false;
+  const inverse = inverseBoard(brd);
+  const diagonal = diagonalBoard(brd);
+
+  for (let i = 0; i < brd.length; i += 1) {
+    // checking horizontal
+    if (checkEqual(brd[i]) && !brd[i].includes('')) {
+      win = true;
+      console.log('horizontal match!');
+    }
+    // checking vertical
+    if (checkEqual(inverse[i]) && !inverse[i].includes('')) {
+      win = true;
+      console.log('vertical match!');
+    }
+    // checking diagonal
+    if (checkEqual(diagonal[i]) && !diagonal[i].includes('')) {
+      win = true;
+      console.log('diagonal match!');
+    }
+  }
+  return win;
+};
+
 const squareClick = (column, row) => {
-  console.log('coordinates', column, row);
-
-  // see if the clicked square has been clicked on before
-  if (board[column][row] === '') {
-    // alter the data array, set it to the current player
-    board[column][row] = currentPlayer;
-
-    // refresh the creen with a new board
-    // according to the array that was just changed
-    buildBoard(board);
-
-    // change the player
-    togglePlayer();
+  if (gameOver === false) {
+    if (board[column][row] === '') {
+      board[column][row] = currentPlayer;
+      buildBoard(board);
+      if (checkWin(board) === true) {
+        outputBox.innerText = `${currentPlayer} wins!`;
+        gameOver = true;
+      } else {
+        togglePlayer();
+      }
+    }
   }
 };
+
+const reset = () => {
+  board = [
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ];
+  buildBoard(board);
+  gameOver = false;
+  outputBox.innerText = '';
+  currentPlayer = 'X';
+};
+resetButton.addEventListener('click', reset);
