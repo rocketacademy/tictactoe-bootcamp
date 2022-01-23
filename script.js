@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 let outputBox;
 let gameOver = false;
 let boardSize;
@@ -134,10 +135,45 @@ const preGame = () => {
 };
 preGame();
 
+const randomIndex = (max) => Math.floor(Math.random() * max);
+
+const checkBoardFull = () => {
+  let boardFull = true;
+  const checkArrays = [];
+  for (let i = 0; i < boardSize; i += 1) {
+    checkArrays.push(board[i].includes(''));
+  }
+  if (checkArrays.includes(true) === true) {
+    boardFull = false;
+  }
+  return boardFull;
+};
+
+const computerTurn = () => {
+  let computerPlayed = false;
+
+  while (computerPlayed === false && checkBoardFull() === false) {
+    const randomComputerRow = randomIndex(boardSize);
+    const randomComputerColumn = randomIndex(boardSize);
+    if (board[randomComputerRow][randomComputerColumn] === '') {
+      board[randomComputerRow][randomComputerColumn] = currentPlayer;
+      computerPlayed = true;
+    }
+  }
+};
+
 // switch the global values from one player to the next
 const togglePlayer = () => {
   if (currentPlayer === 'X') {
     currentPlayer = 'O';
+    computerTurn();
+    buildBoard(board);
+    if (checkWin(board) === true) {
+      outputBox.innerText = `${currentPlayer} wins!`;
+      gameOver = true;
+    } else {
+      togglePlayer();
+    }
   } else {
     currentPlayer = 'X';
   }
@@ -202,17 +238,17 @@ const checkWin = (brd) => {
         // checking horizontal
         if (checkEqual(evalSet[k]) && !evalSet[k].includes('')) {
           win = true;
-          console.log('horizontal match!');
+          // console.log('horizontal match!');
         }
         // checking vertical
         if (checkEqual(inverse[k]) && !inverse[k].includes('')) {
           win = true;
-          console.log('vertical match!');
+          // console.log('vertical match!');
         }
         // checking diagonal
         if (checkEqual(diagonal[k]) && !diagonal[k].includes('')) {
           win = true;
-          console.log('diagonal match!');
+          // console.log('diagonal match!');
         }
       } } }
   return win;
